@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Laviju – ugdymo kompanionas tėvams. Padedame suprasti ir ugdyti vaiko kompetencijas namuose, bendradarbiaujant su darželiu." />
+  <meta name="keywords" content="Laviju, vaiko ugdymas, ikimokyklinis ugdymas, darželis, kompetencijos, tėvams, programėlė" />
+  <meta name="author" content="Laviju" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#3565B0" />
+  <link rel="canonical" href="https://laviju.lt/" />
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Laviju – Ugdymo kompanionas" />
+  <meta property="og:description" content="Padedame tėvams suprasti ir ugdyti vaiko kompetencijas namuose." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://laviju.lt/" />
+  <meta property="og:site_name" content="Laviju" />
+  <meta property="og:locale" content="lt_LT" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Laviju – Ugdymo kompanionas" />
+  <meta name="twitter:description" content="Padedame tėvams suprasti ir ugdyti vaiko kompetencijas namuose." />
+
+  <title>Laviju – Ugdymo kompanionas tėvams</title>
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Laviju",
+      "url": "https://laviju.lt/",
+      "logo": "https://laviju.lt/favicon.svg",
+      "email": "info@laviju.lt"
+    }
+  </script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo" id="nav-logo">
+        <svg class="nav__logo-icon" viewBox="0 0 40 40" fill="none">
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3565B0"/>
+              <stop offset="1" stop-color="#8FBAE8"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="20" fill="url(#logoGrad)"/>
+          <path d="M20 10L12 26h4l4-8 4 8h4L20 10z" fill="white" opacity="0.95"/>
+        </svg>
+        <span>Laviju</span>
+      </a>
+      <div class="nav__links" id="nav-links">
+        <a href="#features" class="nav__link" id="nav-features">Funkcijos</a>
+        <a href="#how-it-works" class="nav__link" id="nav-how">Kaip veikia</a>
+        <a href="#contact" class="nav__link" id="nav-contact">Kontaktai</a>
+        <a href="/docs" class="nav__link" id="nav-docs">Dokumentacija</a>
+        <a href="https://admin.laviju.lt" class="nav__link" id="nav-admin">Administravimas</a>
+      </div>
+      <button class="nav__menu-btn" id="nav-menu-btn" aria-label="Meniu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#features" class="mobile-menu__link">Funkcijos</a>
+    <a href="#how-it-works" class="mobile-menu__link">Kaip veikia</a>
+    <a href="#contact" class="mobile-menu__link">Kontaktai</a>
+    <a href="/docs" class="mobile-menu__link">Dokumentacija</a>
+    <a href="https://admin.laviju.lt" class="mobile-menu__link">Administravimas</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero__bg">
+      <div class="hero__orb hero__orb--1"></div>
+      <div class="hero__orb hero__orb--2"></div>
+      <div class="hero__orb hero__orb--3"></div>
+      <div class="hero__grid"></div>
+    </div>
+    <div class="hero__content">
+      <div class="hero__text">
+        <div class="hero__badge" id="hero-badge">
+          <span class="hero__badge-dot"></span>
+          Nauja platforma tėvams
+        </div>
+        <h1 class="hero__title" id="hero-title">
+          Ugdymo <span class="hero__title-accent">kompanionas</span> jūsų šeimai
+        </h1>
+        <p class="hero__subtitle" id="hero-subtitle">
+          Laviju padeda tėvams suprasti ir ugdyti vaiko kompetencijas namuose, 
+          glaudžiai bendradarbiaujant su darželio pedagogais.
+        </p>
+        <div class="hero__actions" id="hero-actions">
+          <a href="#features" class="btn btn--primary" id="hero-cta">
+            <span>Sužinoti daugiau</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#how-it-works" class="btn btn--ghost" id="hero-secondary">Kaip tai veikia?</a>
+        </div>
+        <div class="store-links" aria-label="Programėlės parduotuvės">
+          <div class="store-badge store-badge--disabled" aria-disabled="true">
+            <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#34A853" d="M3.2 2.6c-.3.3-.5.8-.5 1.4v16c0 .6.2 1.1.5 1.4l8.6-9.4-8.6-9.4z"/>
+              <path fill="#FBBC04" d="m14.5 9.1-2.7 2.9 2.7 2.9 3.6-2c1.2-.7 1.2-1.1 0-1.8l-3.6-2z"/>
+              <path fill="#4285F4" d="M3.2 2.6 14.5 9.1 11.8 12 3.2 2.6z"/>
+              <path fill="#EA4335" d="m3.2 21.4 8.6-9.4 2.7 2.9L3.2 21.4z"/>
+            </svg>
+            <span>
+              <small>Jau greitai</small>
+              Google Play
+            </span>
+          </div>
+          <div class="store-badge store-badge--disabled" aria-disabled="true">
+            <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M16.4 12.6c0-2.7 2.2-4 2.3-4.1-1.3-1.9-3.2-2.1-3.9-2.2-1.7-.2-3.2 1-4.1 1-.8 0-2.1-1-3.5-.9-1.8 0-3.4 1-4.3 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.3 2.5 1.3-.1 1.8-.8 3.4-.8s2.1.8 3.5.8c1.4 0 2.4-1.2 3.2-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.6-1-2.6-3.7zM13.7 4.6c.7-.9 1.2-2.1 1.1-3.3-1.1 0-2.4.7-3.1 1.6-.7.8-1.3 2-1.1 3.2 1.2.1 2.4-.6 3.1-1.5z"/>
+            </svg>
+            <span>
+              <small>Jau greitai</small>
+              App Store
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="hero__visual" id="hero-visual">
+        <div class="phone-mockup">
+          <div class="phone-mockup__frame">
+            <div class="phone-mockup__notch"></div>
+            <div class="phone-mockup__screen">
+              <div class="mockup-header">
+                <div class="mockup-greeting">Labas, Emilija!</div>
+                <div class="mockup-date">2026 m. birželio 11 d.</div>
+              </div>
+              <div class="mockup-hero-card">
+                <div class="mockup-hero-label">Šios savaitės tema</div>
+                <div class="mockup-hero-title">Rudens spalvos</div>
+                <div class="mockup-hero-sub">Tyrinėkite gamtos spalvų paletę!</div>
+              </div>
+              <div class="mockup-section-title">Šiandien rekomenduojame</div>
+              <div class="mockup-activity">
+                <div class="mockup-activity-title">Spalvų medžioklė</div>
+                <div class="mockup-activity-sub">Ugdo kūrybiškumą ir stebėjimą</div>
+                <div class="mockup-badge">15 min</div>
+              </div>
+              <div class="mockup-activity">
+                <div class="mockup-activity-title">Lapų kolekcija</div>
+                <div class="mockup-activity-sub">Lavina smulkiąją motoriką</div>
+                <div class="mockup-badge">20 min</div>
+              </div>
+            </div>
+          </div>
+          <!-- Floating elements around phone -->
+          <div class="phone-float phone-float--1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A7FD4" stroke-width="2"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/></svg>
+          </div>
+          <div class="phone-float phone-float--2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5BA3B5" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="phone-float phone-float--3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8FBAE8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="section__inner">
+      <div class="section__header">
+        <span class="section__tag">Funkcijos</span>
+        <h2 class="section__title">Viskas, ko reikia vaiko ugdymui namuose</h2>
+        <p class="section__subtitle">Laviju sujungia darželio pedagogų žinias su kasdiene šeimos rutina</p>
+      </div>
+      <div class="features__grid">
+        <div class="feature-card" id="feature-1">
+          <div class="feature-card__icon feature-card__icon--blue">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/></svg>
+          </div>
+          <h3 class="feature-card__title">Personalizuotos veiklos</h3>
+          <p class="feature-card__desc">Kasdien gaukite veiklų rekomendacijas, pritaikytas jūsų vaiko amžiui ir ugdymo poreikiams.</p>
+        </div>
+        <div class="feature-card" id="feature-2">
+          <div class="feature-card__icon feature-card__icon--teal">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3 class="feature-card__title">Ekspertų straipsniai</h3>
+          <p class="feature-card__desc">Savaitiniai straipsniai, parašyti ikimokyklinio ugdymo specialistų, padedantys suprasti vaiko raidą.</p>
+        </div>
+        <div class="feature-card" id="feature-3">
+          <div class="feature-card__icon feature-card__icon--purple">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <h3 class="feature-card__title">Pažangos stebėjimas</h3>
+          <p class="feature-card__desc">Sekite vaiko augimą šešiose ugdymo srityse su aiškiais pasiekimų rodikliais.</p>
+        </div>
+        <div class="feature-card" id="feature-4">
+          <div class="feature-card__icon feature-card__icon--green">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="feature-card__title">Darželio integracija</h3>
+          <p class="feature-card__desc">Darželio pedagogai kuria turinį, o tėvai gauna savaitines temas ir rekomendacijas.</p>
+        </div>
+        <div class="feature-card" id="feature-5">
+          <div class="feature-card__icon feature-card__icon--orange">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 class="feature-card__title">Saugi aplinka</h3>
+          <p class="feature-card__desc">Jokių reklamų, jokio sekimo. Vaiko duomenys apsaugoti ir priklausomi tik jums.</p>
+        </div>
+        <div class="feature-card" id="feature-6">
+          <div class="feature-card__icon feature-card__icon--pink">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3 class="feature-card__title">Su meile Lietuvai</h3>
+          <p class="feature-card__desc">Visas turinys lietuvių kalba, sukurtas remiantis Lietuvos ikimokyklinio ugdymo programa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="section__inner">
+      <div class="section__header">
+        <span class="section__tag">Procesas</span>
+        <h2 class="section__title">Kaip veikia Laviju?</h2>
+        <p class="section__subtitle">Trys paprasti žingsniai iki prasmingo ugdymo namuose</p>
+      </div>
+      <div class="steps">
+        <div class="step" id="step-1">
+          <div class="step__number">01</div>
+          <div class="step__content">
+            <h3 class="step__title">Darželis sukuria turinį</h3>
+            <p class="step__desc">Pedagogai paruošia savaitines temas, veiklas ir straipsnius, pritaikytus jūsų vaiko amžiaus grupei ir ugdymo programai.</p>
+          </div>
+          <div class="step__visual">
+            <div class="step__icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4A7FD4" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="step__connector">
+          <svg width="24" height="60" viewBox="0 0 24 60"><path d="M12 0 L12 60" stroke="#D8E2EF" stroke-width="2" stroke-dasharray="4 4"/></svg>
+        </div>
+        <div class="step" id="step-2">
+          <div class="step__number">02</div>
+          <div class="step__content">
+            <h3 class="step__title">Gaukite rekomendacijas</h3>
+            <p class="step__desc">Kiekvieną dieną gausite asmenines veiklų rekomendacijas su aiškiais žingsniais ir patarimais, kaip jas atlikti namuose.</p>
+          </div>
+          <div class="step__visual">
+            <div class="step__icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5BA3B5" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="step__connector">
+          <svg width="24" height="60" viewBox="0 0 24 60"><path d="M12 0 L12 60" stroke="#D8E2EF" stroke-width="2" stroke-dasharray="4 4"/></svg>
+        </div>
+        <div class="step" id="step-3">
+          <div class="step__number">03</div>
+          <div class="step__content">
+            <h3 class="step__title">Stebėkite pažangą</h3>
+            <p class="step__desc">Matuokite vaiko augimą per šešias ugdymo sritis ir švęskite pasiekimus kartu su visa šeima.</p>
+          </div>
+          <div class="step__visual">
+            <div class="step__icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6B9BD2" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Domains / Areas Section -->
+  <section class="domains" id="domains">
+    <div class="section__inner">
+      <div class="section__header">
+        <span class="section__tag">Ugdymo sritys</span>
+        <h2 class="section__title">Šešios kompetencijų sritys</h2>
+        <p class="section__subtitle">Remiantis Lietuvos ikimokyklinio ugdymo programa</p>
+      </div>
+      <div class="domains__grid">
+        <div class="domain-card" id="domain-kalba" style="--domain-color: #3D6EB8;">
+          <div class="domain-card__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3 class="domain-card__title">Kalba</h3>
+          <p class="domain-card__desc">Kalbos raida, žodynas ir komunikacija</p>
+        </div>
+        <div class="domain-card" id="domain-matematika" style="--domain-color: #5690CE;">
+          <div class="domain-card__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          <h3 class="domain-card__title">Matematika</h3>
+          <p class="domain-card__desc">Skaičiai, formos ir loginis mąstymas</p>
+        </div>
+        <div class="domain-card" id="domain-gamta" style="--domain-color: #4E85C0;">
+          <div class="domain-card__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66L12 14l5 5 2-2-5-5 1-1c3-3 5-5 5-8 0-4.5-5-4.5-8-2z"/><path d="M2 22l10-10"/></svg>
+          </div>
+          <h3 class="domain-card__title">Gamta</h3>
+          <p class="domain-card__desc">Gamtos pažinimas ir tyrinėjimas</p>
+        </div>
+        <div class="domain-card" id="domain-sveikata" style="--domain-color: #6B9BD2;">
+          <div class="domain-card__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3 class="domain-card__title">Sveikata</h3>
+          <p class="domain-card__desc">Fizinis aktyvumas ir savijauta</p>
+        </div>
+        <div class="domain-card" id="domain-socialinis" style="--domain-color: #7AACE0;">
+          <div class="domain-card__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="domain-card__title">Socialinis ugdymas</h3>
+          <p class="domain-card__desc">Bendravimas ir emocinis intelektas</p>
+        </div>
+        <div class="domain-card" id="domain-meninis" style="--domain-color: #3565B0;">
+          <div class="domain-card__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          </div>
+          <h3 class="domain-card__title">Meninis ugdymas</h3>
+          <p class="domain-card__desc">Kūrybiškumas, muzika ir dailė</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta" id="cta">
+    <div class="cta__inner">
+      <div class="cta__bg">
+        <div class="cta__orb cta__orb--1"></div>
+        <div class="cta__orb cta__orb--2"></div>
+      </div>
+      <div class="cta__content">
+        <h2 class="cta__title">Pradėkite ugdyti prasmingai</h2>
+        <p class="cta__subtitle">Laviju yra visiškai nemokama darželių šeimoms. Pasiteiraukite savo darželyje!</p>
+        <a href="#contact" class="btn btn--white" id="cta-btn">
+          <span>Susisiekite su mumis</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / Kontaktai Section -->
+  <section class="contact" id="contact">
+    <div class="section__inner">
+      <div class="section__header">
+        <span class="section__tag">Kontaktai</span>
+        <h2 class="section__title">Susisiekime</h2>
+        <p class="section__subtitle">Turite klausimų? Mielai atsakysime!</p>
+      </div>
+      <div class="contact__grid">
+        <div class="contact__info">
+          <div class="contact__card" id="contact-general">
+            <div class="contact__card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B9BD2" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="contact__card-content">
+              <span class="contact__card-role">Bendri klausimai</span>
+              <h3 class="contact__card-name">Laviju administracija</h3>
+              <a href="mailto:info@laviju.lt" class="contact__card-email" id="contact-email-general">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                info@laviju.lt
+              </a>
+            </div>
+          </div>
+          <div class="contact__card" id="contact-director">
+            <div class="contact__card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A7FD4" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="contact__card-content">
+              <span class="contact__card-role">Direktorė</span>
+              <h3 class="contact__card-name">Kotryna Ašakaitė</h3>
+              <a href="mailto:kotryna.asakaite@laviju.lt" class="contact__card-email" id="contact-email-director">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                kotryna.asakaite@laviju.lt
+              </a>
+            </div>
+          </div>
+          <div class="contact__card" id="contact-developer">
+            <div class="contact__card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5BA3B5" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div class="contact__card-content">
+              <span class="contact__card-role">DevOps inžinierius</span>
+              <h3 class="contact__card-name">Rokas Liukenskas</h3>
+              <a href="mailto:rokas.liukenskas@laviju.lt" class="contact__card-email" id="contact-email-dev">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                rokas.liukenskas@laviju.lt
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="#" class="footer__logo">
+            <svg class="footer__logo-icon" viewBox="0 0 40 40" fill="none">
+              <defs>
+                <linearGradient id="footerLogoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#4A7FD4"/>
+                  <stop offset="1" stop-color="#8FBAE8"/>
+                </linearGradient>
+              </defs>
+              <circle cx="20" cy="20" r="20" fill="url(#footerLogoGrad)"/>
+              <path d="M20 10L12 26h4l4-8 4 8h4L20 10z" fill="white" opacity="0.95"/>
+            </svg>
+            <span>Laviju</span>
+          </a>
+          <p class="footer__tagline">Ugdymo kompanionas jūsų šeimai</p>
+        </div>
+        <div class="footer__links">
+          <div class="footer__col">
+            <h4 class="footer__col-title">Navigacija</h4>
+            <a href="#features" class="footer__link">Funkcijos</a>
+            <a href="#how-it-works" class="footer__link">Kaip veikia</a>
+            <a href="#domains" class="footer__link">Ugdymo sritys</a>
+            <a href="/docs" class="footer__link">Dokumentacija</a>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__col-title">Kontaktai</h4>
+            <a href="mailto:kotryna.asakaite@laviju.lt" class="footer__link">kotryna.asakaite@laviju.lt</a>
+            <a href="mailto:rokas.liukenskas@laviju.lt" class="footer__link">rokas.liukenskas@laviju.lt</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 Laviju. Visos teisės saugomos.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Laviju platformos dokumentacija. Sužinokite, kaip veikia Laviju ir kaip naudotis programėle." />
+  <meta name="keywords" content="Laviju dokumentacija, naudotojo gidas, vaiko ugdymas" />
+  <meta name="author" content="Laviju" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#3565B0" />
+  <link rel="canonical" href="https://laviju.lt/docs" />
+  <meta property="og:title" content="Dokumentacija — Laviju" />
+  <meta property="og:description" content="Laviju platformos dokumentacija: kaip veikia Laviju ir kaip naudotis programėle." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://laviju.lt/docs" />
+  <meta property="og:site_name" content="Laviju" />
+  <meta property="og:locale" content="lt_LT" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Dokumentacija — Laviju" />
+  <meta name="twitter:description" content="Laviju platformos dokumentacija: kaip veikia Laviju ir kaip naudotis programėle." />
+  
+  <title>Dokumentacija — Laviju</title>
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/docs/docs.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Dokumentacija — Laviju",
+      "url": "https://laviju.lt/docs",
+      "description": "Laviju platformos dokumentacija: kaip veikia Laviju ir kaip naudotis programėle.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Laviju",
+        "url": "https://laviju.lt/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Docs Header -->
+  <header class="docs-header">
+    <a href="/" class="docs-header__logo">
+      <svg class="docs-header__logo-icon" viewBox="0 0 40 40" fill="none" style="width: 32px; height: 32px;">
+        <defs>
+          <linearGradient id="logoGradDocs" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#3565B0"/>
+            <stop offset="1" stop-color="#8FBAE8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="20" cy="20" r="20" fill="url(#logoGradDocs)"/>
+        <path d="M20 10L12 26h4l4-8 4 8h4L20 10z" fill="white" opacity="0.95"/>
+      </svg>
+      <span>Laviju</span>
+    </a>
+    <div class="docs-header__nav">
+      <span class="docs-badge docs-badge--blue">Dokumentacija</span>
+      <a href="/">Grįžti į svetainę</a>
+      <a href="/#contact">Kontaktai</a>
+    </div>
+    <button class="docs-header__menu-btn" id="docs-menu-btn" aria-label="Meniu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Docs Layout -->
+  <div class="docs-layout">
+    
+    <!-- Sidebar -->
+    <aside class="docs-sidebar" id="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        
+        <div class="docs-sidebar__section">
+          <h4>Bendra informacija</h4>
+          <a href="#apie" id="link-apie">Apie platformą</a>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <h4>Naudotojo gidai</h4>
+          <a href="#teveliams" id="link-teveliams">Gidas tėvams (App)</a>
+          <a href="#pedagogams" id="link-pedagogams">Gidas pedagogams</a>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <h4>Pagalba</h4>
+          <a href="#duk" id="link-duk">DUK (Klausimai)</a>
+        </div>
+
+      </nav>
+    </aside>
+
+    <!-- Overlay for mobile drawer -->
+    <div class="docs-overlay" id="docs-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="docs-main">
+      <div class="docs-content">
+        
+        <!-- Breadcrumb & Last Updated -->
+        <div class="docs-breadcrumb" id="docs-breadcrumb">
+          <a href="#pradzia">Dokumentacija</a>
+          <span class="docs-breadcrumb__sep">/</span>
+          <span id="breadcrumb-current">Pradinis puslapis</span>
+        </div>
+
+        <div class="docs-updated" id="docs-updated">
+          Atnaujinta: 2026 m. birželio 11 d.
+        </div>
+
+        <!-- =============================================
+             ARTICLE: HUB / INDEX (#pradzia)
+             ============================================= -->
+        <article id="sec-pradzia" class="docs-sec">
+          <h1>Laviju dokumentacijos centras</h1>
+          <p class="docs-subtitle">Viskas, ką reikia žinoti apie Laviju platformą – nuo pirmųjų žingsnių iki naudojimosi programėle ir valdymo skydeliu.</p>
+          
+          <div class="docs-callout docs-callout--info">
+            <span class="docs-callout__title">Kas yra Laviju?</span>
+            <p>Laviju – tai pažangi SaaS (programinė įranga kaip paslauga) platforma, sukurta sujungti darželių pedagogus ir tėvus. Programėlė padeda tėvams suprasti vaiko stiprybes bei ugdymo poreikius namuose, remiantis darželyje taikoma Lietuvos ikimokyklinio ugdymo programa.</p>
+          </div>
+
+          <h2 style="margin-top: 32px;">Pasirinkite dokumentacijos temą</h2>
+          <div class="docs-cards">
+            
+            <a href="#apie" class="docs-card">
+              <div class="docs-card__icon docs-card__icon--blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </div>
+              <h3 class="docs-card__title">Apie platformą</h3>
+              <p class="docs-card__desc">Bendras veikimo principas, sistemos architektūra ir nauda ugdymui.</p>
+            </a>
+
+            <a href="#teveliams" class="docs-card">
+              <div class="docs-card__icon docs-card__icon--teal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h3 class="docs-card__title">Tėvų gidas</h3>
+              <p class="docs-card__desc">Kaip naudotis mobiliąja programėle, atlikti veiklas ir stebėti vaiko pažangą.</p>
+            </a>
+
+            <a href="#pedagogams" class="docs-card">
+              <div class="docs-card__icon docs-card__icon--purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+              </div>
+              <h3 class="docs-card__title">Pedagogų gidas</h3>
+              <p class="docs-card__desc">Grupės pasiekimų vertinimas, savaitinių temų valdymas ir straipsnių publikavimas.</p>
+            </a>
+
+            <a href="#duk" class="docs-card">
+              <div class="docs-card__icon docs-card__icon--red">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <h3 class="docs-card__title">DUK skyrelis</h3>
+              <p class="docs-card__desc">Atsakymai į dažniausiai kylančius klausimus tėvams ir darželiams.</p>
+            </a>
+
+          </div>
+        </article>
+
+        <!-- =============================================
+             ARTICLE: ABOUT PLATFORM (#apie)
+             ============================================= -->
+        <article id="sec-apie" class="docs-sec" style="display: none;">
+          <h1>Apie platformą</h1>
+          <p class="docs-subtitle">Laviju ekosistemos supratimas ir pagrindiniai principai.</p>
+
+          <p>Laviju yra skirta spręsti vieną didžiausių iššūkių ikimokykliniame ugdyme – atotrūkį tarp to, ką vaikas veikia darželyje, ir to, kaip jo kompetencijos yra lavinamos namuose. Tradiciškai bendradarbiavimas tarp pedagogų ir šeimų apsiriboja trumpais pokalbiais ryte ar vakare. Laviju suteikia įrankius šiam procesui susisteminti.</p>
+
+          <h2>Platformos dalys</h2>
+          <p>Sistemą sudaro trys tarpusavyje glaudžiai integruoti moduliai:</p>
+          <ul>
+            <li><strong>Mobilioji programėlė tėvams:</strong> Skirta kasdieniam naudojimui namuose. Tėvai čia mato savo vaiko darželio grupės savaitines temas, specialistų parengtas veiklas ir straipsnius, skirtus suprasti vaiko raidos etapus.</li>
+            <li><strong>Pedagogų ir administracijos valdymo skydelis:</strong> Aplinka, kurioje mokytojai gali stebėti bendrą grupės pažangą (pagal 6 ugdymo sritis), įvertinti vaiko kompetencijų lygį, kurti savaitinius planus bei kviesti tėvus prisijungti prie sistemos.</li>
+            <li><strong>Debesų kompiuterijos infrastruktūra:</strong> Užtikrina greitą duomenų sinchronizavimą realiu laiku, autorizacijos valdymą ir saugų informacijos saugojimą.</li>
+          </ul>
+
+          <h2>6 Ugdymo sritys</h2>
+          <p>Visa Laviju platforma yra sukurta remiantis Lietuvos Respublikos Švietimo, mokslo ir sporto ministerijos patvirtinta ikimokyklinio ugdymo programa. Programėlė padeda sekti pasiekimus šiose srityse:</p>
+          <div class="docs-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sritis</th>
+                  <th>Kompetencijų pavyzdžiai</th>
+                  <th>Ką tai reiškia namuose?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Kalba</strong></td>
+                  <td>Žodynas, rišli kalba, klausymasis, pasakojimas, raidžių pažinimas.</td>
+                  <td>Pasakų skaitymas vakare, diskusijos apie perskaitytą knygą, raidžių formavimas iš plastilino.</td>
+                </tr>
+                <tr>
+                  <td><strong>Matematika</strong></td>
+                  <td>Skaičiavimas, matavimas, formų pažinimas, erdvinis suvokimas.</td>
+                  <td>Žingsnių skaičiavimas pasivaikščiojimo metu, indų rūšiavimas pagal dydį gaminant.</td>
+                </tr>
+                <tr>
+                  <td><strong>Gamta</strong></td>
+                  <td>Gamtos reiškinių stebėjimas, ekologija, gyvosios gamtos pažinimas.</td>
+                  <td>Lapų kolekcionavimas parke, paukščių stebėjimas pro langą didinamuoju stiklu.</td>
+                </tr>
+                <tr>
+                  <td><strong>Sveikata</strong></td>
+                  <td>Fizinis aktyvumas, higienos įgūdžiai, sveika mityba, motorika.</td>
+                  <td>Rytinė mankšta, dantukų valymo rutinos kūrimas, sveiko maisto lėkštelės paruošimas.</td>
+                </tr>
+                <tr>
+                  <td><strong>Socialinis ugdymas</strong></td>
+                  <td>Emocijų atpažinimas, savarankiškumas, bendradarbiavimas, taisyklės.</td>
+                  <td>Rolių žaidimai su žaislais, padedantys spręsti konfliktus, savo lovytės tvarkymas ryte.</td>
+                </tr>
+                <tr>
+                  <td><strong>Meninis ugdymas</strong></td>
+                  <td>Kūrybiškumas, muzikalumas, dailė, konstravimas.</td>
+                  <td>Piešimas pagal išgirstą muziką, ritmo plojimo žaidimai, klijavimas iš gamtinių medžiagų.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="docs-callout docs-callout--warning">
+            <span class="docs-callout__title">Pastaba dėl autorinių teisių</span>
+            <p>Visas sistemoje patalpintas veiklų ir straipsnių turinys priklauso MB „Laviju“ arba licencijuotiems darželiams. Komercinis jo kopijavimas ar platinimas be atskiro sutikimo yra draudžiamas.</p>
+          </div>
+        </article>
+
+        <!-- =============================================
+             ARTICLE: PARENT GUIDE (#teveliams)
+             ============================================= -->
+        <article id="sec-teveliams" class="docs-sec" style="display: none;">
+          <h1>Gidas tėvams (Mobilioji programėlė)</h1>
+          <p class="docs-subtitle">Instrukcija, kaip tėvams naudotis mobiliąja Laviju programėle savo telefone.</p>
+
+          <h2>1. Pirmasis prisijungimas</h2>
+          <p>Tėvai negali savarankiškai užsiregistruoti sistemoje – taip užtikrinamas vaikų duomenų privatumas. Registracija vyksta per darželį:</p>
+          <ol class="docs-steps">
+            <li>
+              <strong>Gaukite pakvietimą</strong>
+              Darželio administracija atsiųs pakvietimo nuorodą į jūsų el. paštą.
+            </li>
+            <li>
+              <strong>Sukurkite slaptažodį</strong>
+              Paspaudę nuorodą el. pašte, būsite nukreipti į slaptažodžio nustatymo puslapį. Sukurkite saugų slaptažodį.
+            </li>
+            <li>
+              <strong>Atsisiųskite programėlę</strong>
+              Atsisiųskite Laviju programėlę iš Google Play arba Apple App Store ir prisijunkite su savo el. paštu bei sukurtu slaptažodžiu.
+            </li>
+          </ol>
+
+          <h2>2. Pagrindinis ekranas (Pradinis)</h2>
+          <p>Prisijungus programėlėje jus pasitiks vaiko vardas ir pagrindinė informacija:</p>
+          <ul>
+            <li><strong>Savaitės tema:</strong> Pedagogų nustatyta tema (pvz., „Rudens spalvos“ arba „Kosmoso paslaptys“). Tai parodo, kokį pasaulį vaikas stebi šią savaitę darželyje.</li>
+            <li><strong>Dienos rekomendacijos:</strong> 2–3 trumpos veiklos, kurias pedagogai rekomenduoja atlikti namuose. Kiekviena veikla turi trukmę (dažniausiai 15–30 min.) ir tikslią instrukciją.</li>
+          </ul>
+
+          <h2>3. Veiklų atlikimas</h2>
+          <p>Spustelėję ant rekomenduojamos veiklos, pamatysite:</p>
+          <ul>
+            <li><strong>„Kodėl tai naudinga“:</strong> trumpas aprašymas apie veiklos įtaką vaiko smegenims ar fiziniam vystymuisi.</li>
+            <li><strong>Reikalingos priemonės:</strong> sąrašas paprastų namų apyvokos daiktų, kurių reikės (pvz., popierius, lapai, plastilinas).</li>
+            <li><strong>Eiga žingsnis po žingsnio:</strong> lengvai suprantama instrukcija, kaip atlikti veiklą kartu su vaiku.</li>
+          </ul>
+          <p>Atlikę veiklą, ekrano apačioje paspauskite mygtuką <strong>„Atlikta“</strong>. Tai užregistruos veiklą duomenų bazėje. Pedagogai matys, kad veikla buvo atlikta, o vaiko pažangos taškai atitinkamoje ugdymo srityje bus atnaujinti automatiškai.</p>
+
+          <h2>4. Pažangos stebėjimas (Profilis)</h2>
+          <p>Skiltyje „Profilis“ galite matyti vaiko pasiekimus 6 ugdymo srityse. Kiekviena sritis yra vaizduojama spalvota pažangos juosta:</p>
+          <ul>
+            <li>Kiekvienas pasiekimų lygis susideda iš 6 žingsnių (nuo 1 iki 6).</li>
+            <li>Žingsniai parodo, kokius įgūdžius vaikas jau įsisavino. Pavyzdžiui, Matematikos 2 žingsnis gali būti „atpažįsta geometrines formas“, o 5 žingsnis – „skaičiuoja iki 20 ir supranta sudėtį“.</li>
+            <li>Pažanga didėja tėvams žymint atliktas veiklas namuose bei pedagogui atnaujinant vertinimus darželio skydelyje.</li>
+          </ul>
+
+          <div class="docs-callout docs-callout--info">
+            <span class="docs-callout__title">Patarimas užimtumu besiskundžiantiems tėvams</span>
+            <p>Laviju veiklos sukurtos taip, kad jas būtų galima integruoti į kasdienę buitį. Jums nereikia skirti papildomų valandų – skaičiuokite laiptus eidami į darželį (matematika) arba aptarkite pasaką prieš miegą (kalba).</p>
+          </div>
+        </article>
+
+        <!-- =============================================
+             ARTICLE: TEACHER GUIDE (#pedagogams)
+             ============================================= -->
+        <article id="sec-pedagogams" class="docs-sec" style="display: none;">
+          <h1>Gidas pedagogams (Valdymo skydelis)</h1>
+          <p class="docs-subtitle">Kaip auklėtojams ir mokytojams administruoti vaikų grupes bei vertinti pasiekimus.</p>
+
+          <h2>1. Prisijungimas prie valdymo skydelio</h2>
+          <p>Pedagogai jungiasi per kompiuterį arba planšetinį kompiuterį adresu <code>admin.laviju.lt</code>. Prisijungimo duomenis el. paštu atsiunčia jūsų darželio administratorius.</p>
+
+          <h2>2. Grupės apžvalga (Dashboard)</h2>
+          <p>Pradiniame puslapyje matysite bendrą savo grupės (pvz., „Smalsučiai“) pasiekimų grafiką:</p>
+          <ul>
+            <li>Stulpeliai vaizduoja vidutinį grupės vaikų lygį kiekvienoje iš 6 ugdymo sričių.</li>
+            <li>Tai leidžia pedagogui pamatyti, kurioje srityje grupė atsilieka (pvz., meninis ugdymas) ir atitinkamai parinkti daugiau veiklų tai sričiai.</li>
+          </ul>
+
+          <h2>3. Vaikų pasiekimų vertinimas</h2>
+          <p>Nukeliavę į skiltį <strong>„Vaikai“</strong> ir pasirinkę konkretų vaiką:</p>
+          <ul>
+            <li>Matysite vaiko pasiekimų kortelę su 6 ugdymo sritimis.</li>
+            <li>Norėdami pakeisti vaiko lygį, spustelėkite redagavimo piktogramą ir pakeiskite esamą žingsnį (skalėje nuo 0 iki 6).</li>
+            <li>Šie pakeitimai iškart atsispindi tėvų mobiliojoje programėlėje, todėl tėvai visada mato naujausią informaciją.</li>
+          </ul>
+
+          <h2>4. Savaitės plano nustatymas</h2>
+          <p>Pedagogas gali valdyti temas, kurias vaikai nagrinėja:</p>
+          <ul>
+            <li>Skiltyje <strong>„Valdymas“</strong> galite įvesti šios savaitės ugdymo temą.</li>
+            <li>Sistemos duomenų bazėje galite parinkti rekomenduojamas veiklas iš bendro Laviju sąrašo arba sukurti savo individualias užduotis.</li>
+            <li>Šios užduotys pirmadienio rytą bus automatiškai išsiųstos tėvams į jų telefonus.</li>
+          </ul>
+        </article>
+
+        <!-- =============================================
+             ARTICLE: FAQ (#duk)
+             ============================================= -->
+        <article id="sec-duk" class="docs-sec" style="display: none;">
+          <h1>Dažniausiai užduodami klausimai (DUK)</h1>
+          <p class="docs-subtitle">Greiti atsakymai į dažniausiai tėvams ir darželių darbuotojams kylančius klausimus.</p>
+
+          <h2>Klausimai tėvams</h2>
+          
+          <div class="docs-faq-item">
+            <button class="docs-faq-question">
+              <span>Ar programėlė Laviju yra mokama tėvams?</span>
+              <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="docs-faq-answer">
+              <p>Ne. Mobiliąją programėlę tėvai gali atsisiųsti ir naudotis visiškai nemokamai. Visas licencijavimo išlaidas apmoka jūsų vaiko lankoma ikimokyklinio ugdymo įstaiga (darželis).</p>
+            </div>
+          </div>
+
+          <div class="docs-faq-item">
+            <button class="docs-faq-question">
+              <span>Negaunu pakvietimo laiško registracijai. Ką daryti?</span>
+              <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="docs-faq-answer">
+              <p>Pirmiausia patikrinkite savo pašto dėžutės „Spam“ (Šlamštas) bei „Promotions“ (Reklamos) skiltis. Jeigu laiško vis tiek nerandate, kreipkitės į savo darželio auklėtoją – administratorius valdymo skydelyje gali sugeneruoti <strong>rankinę registracijos nuorodą</strong> ir atsiųsti ją jums žinute.</p>
+            </div>
+          </div>
+
+          <div class="docs-faq-item">
+            <button class="docs-faq-question">
+              <span>Ar galiu prie to paties vaiko prijungti kelis tėvus/globėjus?</span>
+              <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="docs-faq-answer">
+              <p>Taip. Darželio administratorius gali priskirti kelis tėvus/globėjus prie to paties vaiko profilio. Kiekvienas iš jų turės savo asmeninę paskyrą su atskiru el. paštu bei slaptažodžiu, tačiau jie matys tą pačią vaiko pažangą ir kartu galės žymėti veiklų pabaigimą.</p>
+            </div>
+          </div>
+
+          <h2 style="margin-top: 40px;">Klausimai pedagogams ir darželiams</h2>
+
+          <div class="docs-faq-item">
+            <button class="docs-faq-question">
+              <span>Kaip perkelti vaiką į kitą grupę prasidėjus naujiems mokslo metams?</span>
+              <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="docs-faq-answer">
+              <p>Vaikų perkėlimą atlieka darželio administratorius. Valdymo skydelio skiltyje „Vaikai“ (Children) prie konkretaus vaiko reikia paspausti „Redaguoti“ ir pasirinkti naują grupę. Visi vaiko pasiekimai ir istorija išlieka nepakitę.</p>
+            </div>
+          </div>
+
+          <div class="docs-faq-item">
+            <button class="docs-faq-question">
+              <span>Ar galima pritaikyti Laviju individualiai darželio programai?</span>
+              <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="docs-faq-answer">
+              <p>Taip. Nors Laviju bazinė versija naudoja patvirtintą Lietuvos Respublikos programą, darželio administratoriai gali sukurti savo individualias veiklas ir priskirti jas savo pedagogams per admin aplinką. Tai leidžia išlaikyti unikalią darželio ugdymo kryptį (pvz., Valdorfo ar Montessori).</p>
+            </div>
+          </div>
+
+        </article>
+
+        <!-- Docs Footer -->
+        <footer class="docs-footer">
+          <div>&copy; 2026 Laviju. Visos teisės saugomos.</div>
+          <div>
+            Pagalba: <a href="mailto:info@laviju.lt">info@laviju.lt</a>
+          </div>
+        </footer>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Documentation Interactive JS Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // Variables
+      const sidebarLinks = document.querySelectorAll('.docs-sidebar a');
+      const articles = document.querySelectorAll('.docs-sec');
+      const breadcrumbCurrent = document.getElementById('breadcrumb-current');
+      
+      const mobileMenuBtn = document.getElementById('docs-menu-btn');
+      const sidebar = document.getElementById('docs-sidebar');
+      const overlay = document.getElementById('docs-overlay');
+
+      // ---------------------------------------------------------
+      // TAB ROUTING SYSTEM
+      // ---------------------------------------------------------
+      function navigateToSection(hash) {
+        // Clean hash (remove # character)
+        const targetId = hash.replace('#', '') || 'pradzia';
+        const targetArticle = document.getElementById('sec-' + targetId);
+
+        if (!targetArticle) return;
+
+        // Hide all articles
+        articles.forEach(art => {
+          art.style.display = 'none';
+        });
+
+        // Show targeted article
+        targetArticle.style.display = 'block';
+
+        // Update active sidebar link
+        sidebarLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + targetId) {
+            link.classList.add('active');
+          }
+        });
+
+        // Update breadcrumbs
+        let displayName = 'Pradinis puslapis';
+        const activeLink = document.getElementById('link-' + targetId);
+        if (activeLink) {
+          displayName = activeLink.textContent;
+        } else if (targetId === 'pradzia') {
+          displayName = 'Pradinis puslapis';
+        }
+        breadcrumbCurrent.textContent = displayName;
+
+        // Scroll main content to top
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        // Close mobile drawer if open
+        closeMobileSidebar();
+      }
+
+      // Listen for hash changes
+      window.addEventListener('hashchange', () => {
+        navigateToSection(window.location.hash);
+      });
+
+      // Initialize on load
+      navigateToSection(window.location.hash);
+
+
+      // ---------------------------------------------------------
+      // MOBILE SIDEBAR DRAWER
+      // ---------------------------------------------------------
+      function openMobileSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+        mobileMenuBtn.classList.add('active');
+        
+        // Transform hamburger icon
+        const lines = mobileMenuBtn.querySelectorAll('span');
+        if (lines.length === 3) {
+          lines[0].style.transform = 'translateY(7px) rotate(45deg)';
+          lines[1].style.opacity = '0';
+          lines[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+        }
+      }
+
+      function closeMobileSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+        mobileMenuBtn.classList.remove('active');
+        
+        // Reset hamburger icon
+        const lines = mobileMenuBtn.querySelectorAll('span');
+        if (lines.length === 3) {
+          lines[0].style.transform = 'none';
+          lines[1].style.opacity = '1';
+          lines[2].style.transform = 'none';
+        }
+      }
+
+      mobileMenuBtn.addEventListener('click', () => {
+        if (sidebar.classList.contains('open')) {
+          closeMobileSidebar();
+        } else {
+          openMobileSidebar();
+        }
+      });
+
+      overlay.addEventListener('click', closeMobileSidebar);
+
+
+      // ---------------------------------------------------------
+      // FAQ ACCORDION SYSTEM
+      // ---------------------------------------------------------
+      const faqItems = document.querySelectorAll('.docs-faq-item');
+      
+      faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.docs-faq-question');
+        
+        questionBtn.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+          
+          // Close other FAQ items
+          faqItems.forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('open');
+            }
+          });
+          
+          // Toggle current item
+          if (isOpen) {
+            item.classList.remove('open');
+          } else {
+            item.classList.add('open');
+          }
+        });
+      });
+
+    });
+  </script>
+
+</body>
+</html>
