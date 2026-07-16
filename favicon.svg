@@ -1,10 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="310 295 635 565" fill="none">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#3565B0"/>
-      <stop offset="1" stop-color="#8FBAE8"/>
-    </linearGradient>
+    <linearGradient id="u" x1="365" y1="325" x2="885" y2="480" gradientUnits="userSpaceOnUse"><stop stop-color="#3779F6"/><stop offset=".5" stop-color="#2F71F2"/><stop offset="1" stop-color="#3477F5"/></linearGradient>
+    <linearGradient id="m" x1="510" y1="470" x2="745" y2="585" gradientUnits="userSpaceOnUse"><stop stop-color="#87A7F6"/><stop offset=".48" stop-color="#789BF1"/><stop offset="1" stop-color="#A8BCF9"/></linearGradient>
+    <linearGradient id="l" x1="420" y1="590" x2="820" y2="825" gradientUnits="userSpaceOnUse"><stop stop-color="#3476ED"/><stop offset=".5" stop-color="#2D68E4"/><stop offset="1" stop-color="#2A62DF"/></linearGradient>
+    <linearGradient id="i" x1="525" y1="690" x2="735" y2="795" gradientUnits="userSpaceOnUse"><stop stop-color="#A6BCFA"/><stop offset=".52" stop-color="#8FABF5"/><stop offset="1" stop-color="#A7BBF9"/></linearGradient>
   </defs>
-  <circle cx="20" cy="20" r="20" fill="url(#g)"/>
-  <path d="M20 10L12 26h4l4-8 4 8h4L20 10z" fill="white" opacity="0.95"/>
+  <g stroke-linecap="round" stroke-linejoin="round"><path d="M385 364C443 370 498 399 528 438" stroke="url(#u)" stroke-width="67"/><path d="M728 438C767 393 820 370 867 364" stroke="url(#u)" stroke-width="67"/><path d="M496 541C570 498 682 494 759 541" stroke="url(#m)" stroke-width="67"/><path d="M380 787C400 693 475 627 583 612" stroke="url(#l)" stroke-width="70"/><path d="M672 612C779 628 854 694 875 787" stroke="url(#l)" stroke-width="70"/><path d="M502 756C566 701 690 699 753 756" stroke="url(#i)" stroke-width="66"/></g>
 </svg>

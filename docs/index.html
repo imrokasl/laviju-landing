@@ -46,16 +46,7 @@
   <!-- Docs Header -->
   <header class="docs-header">
     <a href="/" class="docs-header__logo">
-      <svg class="docs-header__logo-icon" viewBox="0 0 40 40" fill="none" style="width: 32px; height: 32px;">
-        <defs>
-          <linearGradient id="logoGradDocs" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#3565B0"/>
-            <stop offset="1" stop-color="#8FBAE8"/>
-          </linearGradient>
-        </defs>
-        <circle cx="20" cy="20" r="20" fill="url(#logoGradDocs)"/>
-        <path d="M20 10L12 26h4l4-8 4 8h4L20 10z" fill="white" opacity="0.95"/>
-      </svg>
+      <img class="docs-header__logo-icon" src="/logo.svg" alt="" aria-hidden="true" />
       <span>Laviju</span>
     </a>
     <div class="docs-header__nav">
@@ -84,13 +75,13 @@
 
         <div class="docs-sidebar__section">
           <h4>Naudotojo gidai</h4>
-          <a href="#teveliams" id="link-teveliams">Gidas tėvams (App)</a>
+          <a href="#teveliams" id="link-teveliams">Gidas tėvams (programėlė)</a>
           <a href="#pedagogams" id="link-pedagogams">Gidas pedagogams</a>
         </div>
 
         <div class="docs-sidebar__section">
           <h4>Pagalba</h4>
-          <a href="#duk" id="link-duk">DUK (Klausimai)</a>
+          <a href="#duk" id="link-duk">DUK</a>
         </div>
 
       </nav>
@@ -117,6 +108,7 @@
         <!-- =============================================
              ARTICLE: HUB / INDEX (#pradzia)
              ============================================= -->
+        <span id="pradzia"></span>
         <article id="sec-pradzia" class="docs-sec">
           <h1>Laviju dokumentacijos centras</h1>
           <p class="docs-subtitle">Viskas, ką reikia žinoti apie Laviju platformą – nuo pirmųjų žingsnių iki naudojimosi programėle ir valdymo skydeliu.</p>
@@ -150,7 +142,7 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
               </div>
               <h3 class="docs-card__title">Pedagogų gidas</h3>
-              <p class="docs-card__desc">Grupės pasiekimų vertinimas, savaitinių temų valdymas ir straipsnių publikavimas.</p>
+              <p class="docs-card__desc">Grupės veiklos, lankomumas, dienos ataskaitos, medija, žinutės ir įvykiai.</p>
             </a>
 
             <a href="#duk" class="docs-card">
@@ -167,6 +159,7 @@
         <!-- =============================================
              ARTICLE: ABOUT PLATFORM (#apie)
              ============================================= -->
+        <span id="apie"></span>
         <article id="sec-apie" class="docs-sec" style="display: none;">
           <h1>Apie platformą</h1>
           <p class="docs-subtitle">Laviju ekosistemos supratimas ir pagrindiniai principai.</p>
@@ -176,12 +169,12 @@
           <h2>Platformos dalys</h2>
           <p>Sistemą sudaro trys tarpusavyje glaudžiai integruoti moduliai:</p>
           <ul>
-            <li><strong>Mobilioji programėlė tėvams:</strong> Skirta kasdieniam naudojimui namuose. Tėvai čia mato savo vaiko darželio grupės savaitines temas, specialistų parengtas veiklas ir straipsnius, skirtus suprasti vaiko raidos etapus.</li>
-            <li><strong>Pedagogų ir administracijos valdymo skydelis:</strong> Aplinka, kurioje mokytojai gali stebėti bendrą grupės pažangą (pagal 6 ugdymo sritis), įvertinti vaiko kompetencijų lygį, kurti savaitinius planus bei kviesti tėvus prisijungti prie sistemos.</li>
+            <li><strong>Mobilioji programėlė tėvams ir pedagogams:</strong> Tėvai mato susietus vaikus, veiklas, pasiekimų rodiklius, straipsnius ir darželio informaciją. Pedagogai joje valdo kasdienę grupės veiklą, lankomumą, ataskaitas, mediją, komentarus, žinutes ir įvykius.</li>
+            <li><strong>Administravimo skydelis:</strong> Skirtas darželio administratoriams ir Laviju platformos savininkui. Jame valdomi naudotojai, grupės, vaikai, tėvų ryšiai, pakvietimai, pasiekimų vertinimai ir sistemos priežiūra.</li>
             <li><strong>Debesų kompiuterijos infrastruktūra:</strong> Užtikrina greitą duomenų sinchronizavimą realiu laiku, autorizacijos valdymą ir saugų informacijos saugojimą.</li>
           </ul>
 
-          <h2>6 Ugdymo sritys</h2>
+          <h2>6 ugdymo sritys</h2>
           <p>Visa Laviju platforma yra sukurta remiantis Lietuvos Respublikos Švietimo, mokslo ir sporto ministerijos patvirtinta ikimokyklinio ugdymo programa. Programėlė padeda sekti pasiekimus šiose srityse:</p>
           <div class="docs-table-wrap">
             <table>
@@ -229,13 +222,14 @@
 
           <div class="docs-callout docs-callout--warning">
             <span class="docs-callout__title">Pastaba dėl autorinių teisių</span>
-            <p>Visas sistemoje patalpintas veiklų ir straipsnių turinys priklauso MB „Laviju“ arba licencijuotiems darželiams. Komercinis jo kopijavimas ar platinimas be atskiro sutikimo yra draudžiamas.</p>
+            <p>Visas sistemoje paskelbtas veiklų ir straipsnių turinys priklauso MB „Laviju“ arba turinį pateikusiems darželiams. Komercinis jo kopijavimas ar platinimas be atskiro sutikimo yra draudžiamas.</p>
           </div>
         </article>
 
         <!-- =============================================
              ARTICLE: PARENT GUIDE (#teveliams)
              ============================================= -->
+        <span id="teveliams"></span>
         <article id="sec-teveliams" class="docs-sec" style="display: none;">
           <h1>Gidas tėvams (Mobilioji programėlė)</h1>
           <p class="docs-subtitle">Instrukcija, kaip tėvams naudotis mobiliąja Laviju programėle savo telefone.</p>
@@ -253,32 +247,33 @@
             </li>
             <li>
               <strong>Atsisiųskite programėlę</strong>
-              Atsisiųskite Laviju programėlę iš Google Play arba Apple App Store ir prisijunkite su savo el. paštu bei sukurtu slaptažodžiu.
+              Darželis pateiks nuorodą į jūsų įrenginiui skirtą Laviju programėlės versiją. Viešos Google Play ir Apple App Store nuorodos bus paskelbtos po programėlės išleidimo.
             </li>
           </ol>
 
-          <h2>2. Pagrindinis ekranas (Pradinis)</h2>
-          <p>Prisijungus programėlėje jus pasitiks vaiko vardas ir pagrindinė informacija:</p>
+          <h2>2. Pagrindinis ekranas („Pradinis“)</h2>
+          <p>Prisijungus programėlėje matysite savo vaiko vardą, darželį, grupę, pedagogą ir pagrindines skiltis:</p>
           <ul>
-            <li><strong>Savaitės tema:</strong> Pedagogų nustatyta tema (pvz., „Rudens spalvos“ arba „Kosmoso paslaptys“). Tai parodo, kokį pasaulį vaikas stebi šią savaitę darželyje.</li>
-            <li><strong>Dienos rekomendacijos:</strong> 2–3 trumpos veiklos, kurias pedagogai rekomenduoja atlikti namuose. Kiekviena veikla turi trukmę (dažniausiai 15–30 min.) ir tikslią instrukciją.</li>
+            <li><strong>Veiklos:</strong> Laviju katalogo veiklos ir pedagogo jūsų grupei sukurtos užduotys.</li>
+            <li><strong>Darželio informacija:</strong> lankomumas, dienos ataskaitos, medija, komentarai, žinutės ir įvykių ataskaitos.</li>
+            <li><strong>Straipsniai ir AI forumas:</strong> ugdymo straipsniai bei pasirenkama AI pagalba su atskiru privatumo paaiškinimu.</li>
           </ul>
 
           <h2>3. Veiklų atlikimas</h2>
-          <p>Spustelėję ant rekomenduojamos veiklos, pamatysite:</p>
+          <p>Pasirinkę rekomenduojamą veiklą pamatysite:</p>
           <ul>
             <li><strong>„Kodėl tai naudinga“:</strong> trumpas aprašymas apie veiklos įtaką vaiko smegenims ar fiziniam vystymuisi.</li>
             <li><strong>Reikalingos priemonės:</strong> sąrašas paprastų namų apyvokos daiktų, kurių reikės (pvz., popierius, lapai, plastilinas).</li>
             <li><strong>Eiga žingsnis po žingsnio:</strong> lengvai suprantama instrukcija, kaip atlikti veiklą kartu su vaiku.</li>
           </ul>
-          <p>Atlikę veiklą, ekrano apačioje paspauskite mygtuką <strong>„Atlikta“</strong>. Tai užregistruos veiklą duomenų bazėje. Pedagogai matys, kad veikla buvo atlikta, o vaiko pažangos taškai atitinkamoje ugdymo srityje bus atnaujinti automatiškai.</p>
+          <p>Atlikę veiklą paspauskite <strong>„Atlikta“</strong>. Programėlė užregistruos atlikimą ir, kai taikoma, skirs žaidybinius taškus. Pasiekimų vertinimas dėl vieno atlikimo automatiškai nekeičiamas.</p>
 
           <h2>4. Pažangos stebėjimas (Profilis)</h2>
           <p>Skiltyje „Profilis“ galite matyti vaiko pasiekimus 6 ugdymo srityse. Kiekviena sritis yra vaizduojama spalvota pažangos juosta:</p>
           <ul>
             <li>Kiekvienas pasiekimų lygis susideda iš 6 žingsnių (nuo 1 iki 6).</li>
             <li>Žingsniai parodo, kokius įgūdžius vaikas jau įsisavino. Pavyzdžiui, Matematikos 2 žingsnis gali būti „atpažįsta geometrines formas“, o 5 žingsnis – „skaičiuoja iki 20 ir supranta sudėtį“.</li>
-            <li>Pažanga didėja tėvams žymint atliktas veiklas namuose bei pedagogui atnaujinant vertinimus darželio skydelyje.</li>
+            <li>Pasiekimų vertinimus po pedagoginės peržiūros atnaujina įgaliotas darželio administratorius; veiklų atlikimas ir žaidybiniai taškai rodomi atskirai.</li>
           </ul>
 
           <div class="docs-callout docs-callout--info">
@@ -290,40 +285,34 @@
         <!-- =============================================
              ARTICLE: TEACHER GUIDE (#pedagogams)
              ============================================= -->
+        <span id="pedagogams"></span>
         <article id="sec-pedagogams" class="docs-sec" style="display: none;">
-          <h1>Gidas pedagogams (Valdymo skydelis)</h1>
-          <p class="docs-subtitle">Kaip auklėtojams ir mokytojams administruoti vaikų grupes bei vertinti pasiekimus.</p>
+          <h1>Gidas pedagogams (Mobilioji programėlė)</h1>
+          <p class="docs-subtitle">Kaip pedagogams tvarkyti kasdienę grupės informaciją ir bendrauti su šeimomis.</p>
 
-          <h2>1. Prisijungimas prie valdymo skydelio</h2>
-          <p>Pedagogai jungiasi per kompiuterį arba planšetinį kompiuterį adresu <code>admin.laviju.lt</code>. Prisijungimo duomenis el. paštu atsiunčia jūsų darželio administratorius.</p>
+          <h2>1. Prisijungimas</h2>
+          <p>Pedagogas priima darželio administratoriaus el. paštu atsiųstą kvietimą, nustato slaptažodį ir jungiasi prie Laviju mobiliosios programėlės. Administravimo svetainė skirta administratoriaus arba platformos savininko vaidmenį turintiems naudotojams.</p>
 
-          <h2>2. Grupės apžvalga (Dashboard)</h2>
-          <p>Pradiniame puslapyje matysite bendrą savo grupės (pvz., „Smalsučiai“) pasiekimų grafiką:</p>
+          <h2>2. Grupės kasdienybė</h2>
+          <p>Pedagogas mato tik jam priskirtas grupes ir gali:</p>
           <ul>
-            <li>Stulpeliai vaizduoja vidutinį grupės vaikų lygį kiekvienoje iš 6 ugdymo sričių.</li>
-            <li>Tai leidžia pedagogui pamatyti, kurioje srityje grupė atsilieka (pvz., meninis ugdymas) ir atitinkamai parinkti daugiau veiklų tai sričiai.</li>
+            <li>žymėti vaikų lankomumą ir pildyti dienos ataskaitas;</li>
+            <li>kelti grupės ar konkretaus vaiko mediją pagal turimas prieigos teises;</li>
+            <li>rašyti komentarus, žinutes ir įvykių ataskaitas;</li>
+            <li>kurti savo grupei skirtas veiklas.</li>
           </ul>
 
-          <h2>3. Vaikų pasiekimų vertinimas</h2>
-          <p>Nukeliavę į skiltį <strong>„Vaikai“</strong> ir pasirinkę konkretų vaiką:</p>
-          <ul>
-            <li>Matysite vaiko pasiekimų kortelę su 6 ugdymo sritimis.</li>
-            <li>Norėdami pakeisti vaiko lygį, spustelėkite redagavimo piktogramą ir pakeiskite esamą žingsnį (skalėje nuo 0 iki 6).</li>
-            <li>Šie pakeitimai iškart atsispindi tėvų mobiliojoje programėlėje, todėl tėvai visada mato naujausią informaciją.</li>
-          </ul>
+          <h2>3. Pasiekimų vertinimas</h2>
+          <p>Pedagogas gali peržiūrėti darbui reikalingą vaiko informaciją, tačiau pasiekimų žingsnius administravimo skydelyje keičia įgaliotas administratorius pagal darželio vertinimo procesą.</p>
 
-          <h2>4. Savaitės plano nustatymas</h2>
-          <p>Pedagogas gali valdyti temas, kurias vaikai nagrinėja:</p>
-          <ul>
-            <li>Skiltyje <strong>„Valdymas“</strong> galite įvesti šios savaitės ugdymo temą.</li>
-            <li>Sistemos duomenų bazėje galite parinkti rekomenduojamas veiklas iš bendro Laviju sąrašo arba sukurti savo individualias užduotis.</li>
-            <li>Šios užduotys pirmadienio rytą bus automatiškai išsiųstos tėvams į jų telefonus.</li>
-          </ul>
+          <h2>4. Pranešimai šeimoms</h2>
+          <p>Apie naujas žinutes, lankomumo pakeitimus, medijos įrašus ir įvykių ataskaitas susietiems tėvams gali būti siunčiami tiesioginiai pranešimai pagal jų pasirinktus nustatymus. Savaitės straipsnio priminimą sistema parengia automatiškai.</p>
         </article>
 
         <!-- =============================================
              ARTICLE: FAQ (#duk)
              ============================================= -->
+        <span id="duk"></span>
         <article id="sec-duk" class="docs-sec" style="display: none;">
           <h1>Dažniausiai užduodami klausimai (DUK)</h1>
           <p class="docs-subtitle">Greiti atsakymai į dažniausiai tėvams ir darželių darbuotojams kylančius klausimus.</p>
@@ -346,17 +335,17 @@
               <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="docs-faq-answer">
-              <p>Pirmiausia patikrinkite savo pašto dėžutės „Spam“ (Šlamštas) bei „Promotions“ (Reklamos) skiltis. Jeigu laiško vis tiek nerandate, kreipkitės į savo darželio auklėtoją – administratorius valdymo skydelyje gali sugeneruoti <strong>rankinę registracijos nuorodą</strong> ir atsiųsti ją jums žinute.</p>
+              <p>Pirmiausia patikrinkite pašto dėžutės šlamšto ir reklamų skiltis. Jeigu laiško vis tiek nerandate, kreipkitės į savo darželio pedagogą – administratorius valdymo skydelyje gali sukurti <strong>registracijos nuorodą</strong> ir atsiųsti ją jums žinute.</p>
             </div>
           </div>
 
           <div class="docs-faq-item">
             <button class="docs-faq-question">
-              <span>Ar galiu prie to paties vaiko prijungti kelis tėvus/globėjus?</span>
+              <span>Ar prie to paties vaiko galima prijungti kelis tėvus ar globėjus?</span>
               <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="docs-faq-answer">
-              <p>Taip. Darželio administratorius gali priskirti kelis tėvus/globėjus prie to paties vaiko profilio. Kiekvienas iš jų turės savo asmeninę paskyrą su atskiru el. paštu bei slaptažodžiu, tačiau jie matys tą pačią vaiko pažangą ir kartu galės žymėti veiklų pabaigimą.</p>
+              <p>Taip. Darželio administratorius gali priskirti kelis tėvus ar globėjus prie to paties vaiko profilio. Kiekvienas iš jų turės savo paskyrą su atskiru el. paštu ir slaptažodžiu, tačiau visi matys tą pačią vaiko pažangą ir galės žymėti atliktas veiklas.</p>
             </div>
           </div>
 
@@ -368,7 +357,7 @@
               <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="docs-faq-answer">
-              <p>Vaikų perkėlimą atlieka darželio administratorius. Valdymo skydelio skiltyje „Vaikai“ (Children) prie konkretaus vaiko reikia paspausti „Redaguoti“ ir pasirinkti naują grupę. Visi vaiko pasiekimai ir istorija išlieka nepakitę.</p>
+              <p>Vaikų perkėlimą atlieka darželio administratorius. Valdymo skydelio skiltyje „Vaikai“ prie konkretaus vaiko reikia paspausti „Redaguoti“ ir pasirinkti naują grupę. Visi vaiko pasiekimai ir istorija išlieka nepakitę.</p>
             </div>
           </div>
 
@@ -378,7 +367,7 @@
               <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="docs-faq-answer">
-              <p>Taip. Nors Laviju bazinė versija naudoja patvirtintą Lietuvos Respublikos programą, darželio administratoriai gali sukurti savo individualias veiklas ir priskirti jas savo pedagogams per admin aplinką. Tai leidžia išlaikyti unikalią darželio ugdymo kryptį (pvz., Valdorfo ar Montessori).</p>
+              <p>Taip. Pedagogai mobiliojoje programėlėje gali kurti savo grupei skirtas veiklas. Jos rodomos tik pagal pedagogo grupės ir darželio prieigos teises.</p>
             </div>
           </div>
 

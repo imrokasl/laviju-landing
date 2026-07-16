@@ -73,6 +73,7 @@ a { text-decoration: none; color: inherit; }
 .docs-header__logo-icon {
   width: 32px;
   height: 32px;
+  object-fit: contain;
 }
 
 .docs-header__nav {

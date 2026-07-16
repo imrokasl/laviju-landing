@@ -6,9 +6,26 @@
 (function () {
   'use strict';
 
+  // Supabase Dashboard-generated recovery emails use the project's Site URL
+  // because they cannot receive the admin app's redirectTo option. Forward
+  // those callbacks from the public landing site to the admin reset form while
+  // preserving the one-time recovery fragment.
+  const authParameters = new URLSearchParams(window.location.hash.slice(1));
+  const isRecoveryCallback = authParameters.get('type') === 'recovery';
+  const isExpiredRecoveryCallback =
+    authParameters.get('error') === 'access_denied' &&
+    authParameters.get('error_code') === 'otp_expired';
+
+  if (isRecoveryCallback || isExpiredRecoveryCallback) {
+    const isLocalhost =
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const adminOrigin = isLocalhost ? 'http://localhost:5173' : 'https://admin.laviju.lt';
+    window.location.replace(`${adminOrigin}/reset-password${window.location.hash}`);
+    return;
+  }
+
   // --- Navigation scroll effect ---
   const nav = document.getElementById('nav');
-  let lastScrollY = 0;
 
   function handleNavScroll() {
     const scrollY = window.scrollY;
@@ -17,20 +34,23 @@
     } else {
       nav.classList.remove('nav--scrolled');
     }
-    lastScrollY = scrollY;
   }
 
   window.addEventListener('scroll', handleNavScroll, { passive: true });
+  handleNavScroll();
 
   // --- Mobile menu toggle ---
   const menuBtn = document.getElementById('nav-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
   let menuOpen = false;
 
-  function toggleMenu() {
-    menuOpen = !menuOpen;
+  function setMenuOpen(nextOpen) {
+    menuOpen = nextOpen;
     mobileMenu.classList.toggle('mobile-menu--open', menuOpen);
-    // Animate hamburger icon
+    mobileMenu.setAttribute('aria-hidden', String(!menuOpen));
+    menuBtn.setAttribute('aria-expanded', String(menuOpen));
+    menuBtn.setAttribute('aria-label', menuOpen ? 'Uždaryti meniu' : 'Atidaryti meniu');
+
     const spans = menuBtn.querySelectorAll('span');
     if (menuOpen) {
       spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
@@ -45,19 +65,37 @@
     }
   }
 
+  function toggleMenu() {
+    setMenuOpen(!menuOpen);
+  }
+
   menuBtn.addEventListener('click', toggleMenu);
 
   // Close mobile menu on link click
   mobileMenu.querySelectorAll('.mobile-menu__link').forEach(function (link) {
     link.addEventListener('click', function () {
-      if (menuOpen) toggleMenu();
+      if (menuOpen) setMenuOpen(false);
     });
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && menuOpen) {
+      setMenuOpen(false);
+      menuBtn.focus();
+    }
+  });
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 768 && menuOpen) {
+      setMenuOpen(false);
+    }
   });
 
   // --- Smooth scroll for nav links ---
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
-      const target = document.querySelector(this.getAttribute('href'));
+      const href = this.getAttribute('href');
+      const target = href && href.length > 1 ? document.getElementById(href.slice(1)) : null;
       if (target) {
         e.preventDefault();
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -74,24 +112,30 @@
     el.classList.add('reveal');
   });
 
-  const revealObserver = new IntersectionObserver(
-    function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('reveal--visible');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.1,
-      rootMargin: '0px 0px -40px 0px',
-    }
-  );
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal--visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    );
 
-  revealElements.forEach(function (el) {
-    revealObserver.observe(el);
-  });
+    revealElements.forEach(function (el) {
+      revealObserver.observe(el);
+    });
+  } else {
+    revealElements.forEach(function (el) {
+      el.classList.add('reveal--visible');
+    });
+  }
 
   // --- Active nav link highlight on scroll ---
   var sections = document.querySelectorAll('section[id]');
@@ -107,9 +151,9 @@
 
       if (scrollY >= top && scrollY < top + height) {
         navLinks.forEach(function (link) {
-          link.style.color = '';
+          link.classList.remove('nav__link--active');
           if (link.getAttribute('href') === '#' + id) {
-            link.style.color = 'var(--primary)';
+            link.classList.add('nav__link--active');
           }
         });
       }
@@ -117,4 +161,5 @@
   }
 
   window.addEventListener('scroll', highlightNav, { passive: true });
+  highlightNav();
 })();
