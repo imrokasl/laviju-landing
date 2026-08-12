@@ -7,15 +7,15 @@
 /* --- Design Tokens --- */
 :root {
   /* Primary palette */
-  --primary: #4A7FD4;
-  --primary-light: #8FBAE8;
+  --primary: #3565B0;
+  --primary-light: #5F87BF;
   --primary-ultralight: #E8F0FA;
-  --primary-dark: #3565B0;
-  --primary-darker: #2a528d;
+  --primary-dark: #244B87;
+  --primary-darker: #1D3C6D;
 
   /* Secondary */
-  --secondary: #6B9BD2;
-  --secondary-light: #B3D1ED;
+  --secondary: #466B9F;
+  --secondary-light: #9AB4D6;
 
   /* Accent */
   --teal: #5BA3B5;
@@ -29,8 +29,8 @@
 
   /* Text */
   --text: #1E2A3A;
-  --text-secondary: #6B7D95;
-  --text-tertiary: #9EAEC2;
+  --text-secondary: #52657E;
+  --text-tertiary: #66758A;
   --text-inverse: #FFFFFF;
 
   /* Borders */
@@ -101,7 +101,7 @@ a {
 
 a:focus-visible,
 button:focus-visible {
-  outline: 3px solid rgba(74, 127, 212, 0.3);
+  outline: 3px solid var(--primary-dark);
   outline-offset: 4px;
 }
 
@@ -259,8 +259,8 @@ img {
 }
 
 .nav__logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
@@ -309,7 +309,11 @@ img {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav__menu-btn span {
@@ -353,6 +357,9 @@ img {
   font-weight: 600;
   color: var(--text);
   transition: color 0.2s;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .mobile-menu__link:hover {
@@ -541,19 +548,21 @@ img {
 
 .store-badge--disabled {
   cursor: default;
+  opacity: 0.72;
+  pointer-events: none;
 }
 
-.store-badge:hover {
+.store-badge:not(.store-badge--disabled):hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 36px rgba(30,42,58,0.22);
 }
 
-.store-badge:active {
+.store-badge:not(.store-badge--disabled):active {
   transform: translateY(0);
 }
 
 .store-badge:focus-visible {
-  outline: 3px solid rgba(74,127,212,0.28);
+  outline: 3px solid var(--primary-dark);
   outline-offset: 3px;
 }
 
@@ -1722,14 +1731,10 @@ img {
 }
 
 .footer__logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  transition: background 0.2s ease;
+  filter: brightness(0) invert(1);
 }
 
 .nav__menu-btn:hover {

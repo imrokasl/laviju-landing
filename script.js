@@ -42,6 +42,12 @@
   // --- Mobile menu toggle ---
   const menuBtn = document.getElementById('nav-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
+  const navLogo = document.getElementById('nav-logo');
+  const desktopNavLinks = document.getElementById('nav-links');
+  const mobileMenuLinks = Array.from(mobileMenu.querySelectorAll('.mobile-menu__link'));
+  const pageRegions = Array.from(document.body.children).filter(function (element) {
+    return element !== nav && element !== mobileMenu && element.tagName !== 'SCRIPT';
+  });
   let menuOpen = false;
 
   function setMenuOpen(nextOpen) {
@@ -50,6 +56,11 @@
     mobileMenu.setAttribute('aria-hidden', String(!menuOpen));
     menuBtn.setAttribute('aria-expanded', String(menuOpen));
     menuBtn.setAttribute('aria-label', menuOpen ? 'Uždaryti meniu' : 'Atidaryti meniu');
+    navLogo.inert = menuOpen;
+    desktopNavLinks.inert = menuOpen;
+    pageRegions.forEach(function (element) {
+      element.inert = menuOpen;
+    });
 
     const spans = menuBtn.querySelectorAll('span');
     if (menuOpen) {
@@ -57,6 +68,9 @@
       spans[1].style.opacity = '0';
       spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
       document.body.style.overflow = 'hidden';
+      window.requestAnimationFrame(function () {
+        mobileMenuLinks[0]?.focus();
+      });
     } else {
       spans[0].style.transform = '';
       spans[1].style.opacity = '';
@@ -72,7 +86,7 @@
   menuBtn.addEventListener('click', toggleMenu);
 
   // Close mobile menu on link click
-  mobileMenu.querySelectorAll('.mobile-menu__link').forEach(function (link) {
+  mobileMenuLinks.forEach(function (link) {
     link.addEventListener('click', function () {
       if (menuOpen) setMenuOpen(false);
     });
@@ -82,6 +96,21 @@
     if (event.key === 'Escape' && menuOpen) {
       setMenuOpen(false);
       menuBtn.focus();
+      return;
+    }
+
+    if (event.key === 'Tab' && menuOpen) {
+      const focusableElements = [menuBtn].concat(mobileMenuLinks);
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
     }
   });
 

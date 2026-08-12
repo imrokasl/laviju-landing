@@ -5,15 +5,15 @@
 
 :root {
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --primary: #4A7FD4;
-  --primary-dark: #3565B0;
-  --primary-light: #8FBAE8;
+  --primary: #3565B0;
+  --primary-dark: #244B87;
+  --primary-light: #5F87BF;
   --primary-ultralight: #E8F0FA;
   --bg: #F4F7FC;
   --surface: #FFFFFF;
   --text: #1A2B4A;
   --text-secondary: #4A6285;
-  --text-tertiary: #8A9BB5;
+  --text-tertiary: #66758A;
   --border: #D8E2EF;
   --border-light: #E8EFF8;
   --teal: #5BA3B5;
@@ -37,6 +37,24 @@ body {
 }
 
 a { text-decoration: none; color: inherit; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--primary-dark);
+  outline-offset: 3px;
+}
 
 /* =============================================
    HEADER
@@ -71,8 +89,8 @@ a { text-decoration: none; color: inherit; }
 .docs-header__logo:hover { opacity: 0.8; }
 
 .docs-header__logo-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
 }
 
@@ -104,7 +122,11 @@ a { text-decoration: none; color: inherit; }
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .docs-header__menu-btn span {
@@ -151,6 +173,32 @@ a { text-decoration: none; color: inherit; }
   padding: 0 16px;
 }
 
+.docs-search {
+  margin-bottom: 20px;
+}
+
+.docs-search__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.docs-search__input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.docs-search__input:focus {
+  border-color: var(--primary);
+  outline: 3px solid var(--primary-ultralight);
+  outline-offset: 1px;
+}
+
 .docs-sidebar__section {
   margin-bottom: 28px;
 }
@@ -166,8 +214,10 @@ a { text-decoration: none; color: inherit; }
 }
 
 .docs-sidebar__section a {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 7px 12px;
+  min-height: 44px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);

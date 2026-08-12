@@ -54,7 +54,7 @@
       <a href="/">Grįžti į svetainę</a>
       <a href="/#contact">Kontaktai</a>
     </div>
-    <button class="docs-header__menu-btn" id="docs-menu-btn" aria-label="Meniu">
+    <button class="docs-header__menu-btn" id="docs-menu-btn" aria-label="Atidaryti meniu" aria-controls="docs-sidebar" aria-expanded="false">
       <span></span>
       <span></span>
       <span></span>
@@ -65,8 +65,19 @@
   <div class="docs-layout">
     
     <!-- Sidebar -->
-    <aside class="docs-sidebar" id="docs-sidebar">
+    <aside class="docs-sidebar" id="docs-sidebar" aria-label="Dokumentacijos navigacija">
       <nav class="docs-sidebar__nav">
+        <div class="docs-search">
+          <label class="sr-only" for="docs-search-input">Ieškoti dokumentacijoje</label>
+          <input
+            class="docs-search__input"
+            id="docs-search-input"
+            type="search"
+            placeholder="Ieškoti dokumentacijoje"
+            autocomplete="off"
+          />
+          <p class="sr-only" id="docs-search-status" aria-live="polite"></p>
+        </div>
         
         <div class="docs-sidebar__section">
           <h4>Bendra informacija</h4>
@@ -142,7 +153,7 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
               </div>
               <h3 class="docs-card__title">Pedagogų gidas</h3>
-              <p class="docs-card__desc">Grupės veiklos, lankomumas, dienos ataskaitos, medija, žinutės ir įvykiai.</p>
+              <p class="docs-card__desc">Grupės veiklos, dienos ataskaitos, medija, žinutės ir įvykiai.</p>
             </a>
 
             <a href="#duk" class="docs-card">
@@ -169,7 +180,7 @@
           <h2>Platformos dalys</h2>
           <p>Sistemą sudaro trys tarpusavyje glaudžiai integruoti moduliai:</p>
           <ul>
-            <li><strong>Mobilioji programėlė tėvams ir pedagogams:</strong> Tėvai mato susietus vaikus, veiklas, pasiekimų rodiklius, straipsnius ir darželio informaciją. Pedagogai joje valdo kasdienę grupės veiklą, lankomumą, ataskaitas, mediją, komentarus, žinutes ir įvykius.</li>
+            <li><strong>Mobilioji programėlė tėvams ir pedagogams:</strong> Tėvai mato susietus vaikus, veiklas, pasiekimų rodiklius, straipsnius ir darželio informaciją. Pedagogai joje valdo kasdienę grupės veiklą, ataskaitas, mediją, komentarus, žinutes ir įvykius.</li>
             <li><strong>Administravimo skydelis:</strong> Skirtas darželio administratoriams ir Laviju platformos savininkui. Jame valdomi naudotojai, grupės, vaikai, tėvų ryšiai, pakvietimai, pasiekimų vertinimai ir sistemos priežiūra.</li>
             <li><strong>Debesų kompiuterijos infrastruktūra:</strong> Užtikrina greitą duomenų sinchronizavimą realiu laiku, autorizacijos valdymą ir saugų informacijos saugojimą.</li>
           </ul>
@@ -222,7 +233,7 @@
 
           <div class="docs-callout docs-callout--warning">
             <span class="docs-callout__title">Pastaba dėl autorinių teisių</span>
-            <p>Visas sistemoje paskelbtas veiklų ir straipsnių turinys priklauso MB „Laviju“ arba turinį pateikusiems darželiams. Komercinis jo kopijavimas ar platinimas be atskiro sutikimo yra draudžiamas.</p>
+            <p>Visas sistemoje paskelbtas veiklų ir straipsnių turinys priklauso MB „Koro“ arba turinį pateikusiems darželiams. Komercinis jo kopijavimas ar platinimas be atskiro sutikimo yra draudžiamas.</p>
           </div>
         </article>
 
@@ -255,7 +266,7 @@
           <p>Prisijungus programėlėje matysite savo vaiko vardą, darželį, grupę, pedagogą ir pagrindines skiltis:</p>
           <ul>
             <li><strong>Veiklos:</strong> Laviju katalogo veiklos ir pedagogo jūsų grupei sukurtos užduotys.</li>
-            <li><strong>Darželio informacija:</strong> lankomumas, dienos ataskaitos, medija, komentarai, žinutės ir įvykių ataskaitos.</li>
+            <li><strong>Darželio informacija:</strong> dienos ataskaitos, medija, komentarai, žinutės ir įvykių ataskaitos.</li>
             <li><strong>Straipsniai ir AI forumas:</strong> ugdymo straipsniai bei pasirenkama AI pagalba su atskiru privatumo paaiškinimu.</li>
           </ul>
 
@@ -296,7 +307,7 @@
           <h2>2. Grupės kasdienybė</h2>
           <p>Pedagogas mato tik jam priskirtas grupes ir gali:</p>
           <ul>
-            <li>žymėti vaikų lankomumą ir pildyti dienos ataskaitas;</li>
+            <li>pildyti vaikų dienos ataskaitas;</li>
             <li>kelti grupės ar konkretaus vaiko mediją pagal turimas prieigos teises;</li>
             <li>rašyti komentarus, žinutes ir įvykių ataskaitas;</li>
             <li>kurti savo grupei skirtas veiklas.</li>
@@ -306,7 +317,7 @@
           <p>Pedagogas gali peržiūrėti darbui reikalingą vaiko informaciją, tačiau pasiekimų žingsnius administravimo skydelyje keičia įgaliotas administratorius pagal darželio vertinimo procesą.</p>
 
           <h2>4. Pranešimai šeimoms</h2>
-          <p>Apie naujas žinutes, lankomumo pakeitimus, medijos įrašus ir įvykių ataskaitas susietiems tėvams gali būti siunčiami tiesioginiai pranešimai pagal jų pasirinktus nustatymus. Savaitės straipsnio priminimą sistema parengia automatiškai.</p>
+          <p>Apie naujas žinutes, medijos įrašus ir įvykių ataskaitas susietiems tėvams gali būti siunčiami tiesioginiai pranešimai pagal jų pasirinktus nustatymus. Savaitės straipsnio priminimą sistema parengia automatiškai.</p>
         </article>
 
         <!-- =============================================
@@ -398,6 +409,45 @@
       const mobileMenuBtn = document.getElementById('docs-menu-btn');
       const sidebar = document.getElementById('docs-sidebar');
       const overlay = document.getElementById('docs-overlay');
+      const docsMain = document.querySelector('.docs-main');
+      const headerLogo = document.querySelector('.docs-header__logo');
+      const headerNav = document.querySelector('.docs-header__nav');
+      const docsSearchInput = document.getElementById('docs-search-input');
+      const docsSearchStatus = document.getElementById('docs-search-status');
+      const sidebarSections = document.querySelectorAll('.docs-sidebar__section');
+
+      function getMobileSidebarFocusables() {
+        return [
+          mobileMenuBtn,
+          docsSearchInput,
+          ...Array.from(sidebarLinks).filter(link => (
+            !link.hidden && !link.closest('[hidden]')
+          )),
+        ];
+      }
+
+      docsSearchInput.addEventListener('input', () => {
+        const query = docsSearchInput.value.trim().toLocaleLowerCase('lt');
+        let resultCount = 0;
+
+        sidebarSections.forEach(section => {
+          let sectionHasMatch = false;
+          section.querySelectorAll('a').forEach(link => {
+            const targetId = link.getAttribute('href')?.replace('#', '');
+            const article = targetId ? document.getElementById('sec-' + targetId) : null;
+            const searchableText = `${link.textContent} ${article?.textContent || ''}`.toLocaleLowerCase('lt');
+            const isMatch = !query || searchableText.includes(query);
+            link.hidden = !isMatch;
+            sectionHasMatch = sectionHasMatch || isMatch;
+            if (isMatch) resultCount += 1;
+          });
+          section.hidden = !sectionHasMatch;
+        });
+
+        docsSearchStatus.textContent = query
+          ? `Rasta skilčių: ${resultCount}`
+          : 'Rodomos visos dokumentacijos skiltys';
+      });
 
       // ---------------------------------------------------------
       // TAB ROUTING SYSTEM
@@ -411,17 +461,22 @@
 
         // Hide all articles
         articles.forEach(art => {
-          art.style.display = 'none';
+          const isTarget = art === targetArticle;
+          art.hidden = !isTarget;
+          art.setAttribute('aria-hidden', String(!isTarget));
         });
 
         // Show targeted article
-        targetArticle.style.display = 'block';
+        targetArticle.hidden = false;
+        targetArticle.setAttribute('aria-hidden', 'false');
 
         // Update active sidebar link
         sidebarLinks.forEach(link => {
           link.classList.remove('active');
+          link.removeAttribute('aria-current');
           if (link.getAttribute('href') === '#' + targetId) {
             link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
           }
         });
 
@@ -434,6 +489,7 @@
           displayName = 'Pradinis puslapis';
         }
         breadcrumbCurrent.textContent = displayName;
+        document.title = displayName + ' – Laviju dokumentacija';
 
         // Scroll main content to top
         window.scrollTo({ top: 0, behavior: 'instant' });
@@ -458,6 +514,14 @@
         sidebar.classList.add('open');
         overlay.classList.add('visible');
         mobileMenuBtn.classList.add('active');
+        mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        mobileMenuBtn.setAttribute('aria-label', 'Uždaryti meniu');
+        sidebar.setAttribute('aria-hidden', 'false');
+        sidebar.inert = false;
+        docsMain.inert = true;
+        headerLogo.inert = true;
+        headerNav.inert = true;
+        document.body.style.overflow = 'hidden';
         
         // Transform hamburger icon
         const lines = mobileMenuBtn.querySelectorAll('span');
@@ -466,12 +530,29 @@
           lines[1].style.opacity = '0';
           lines[2].style.transform = 'translateY(-7px) rotate(-45deg)';
         }
+
+        window.requestAnimationFrame(() => docsSearchInput.focus());
       }
 
       function closeMobileSidebar() {
+        const wasOpen = sidebar.classList.contains('open');
         sidebar.classList.remove('open');
         overlay.classList.remove('visible');
         mobileMenuBtn.classList.remove('active');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        mobileMenuBtn.setAttribute('aria-label', 'Atidaryti meniu');
+        docsMain.inert = false;
+        headerLogo.inert = false;
+        headerNav.inert = false;
+        document.body.style.overflow = '';
+
+        if (window.innerWidth <= 768) {
+          sidebar.inert = true;
+          sidebar.setAttribute('aria-hidden', 'true');
+        } else {
+          sidebar.inert = false;
+          sidebar.removeAttribute('aria-hidden');
+        }
         
         // Reset hamburger icon
         const lines = mobileMenuBtn.querySelectorAll('span');
@@ -479,6 +560,10 @@
           lines[0].style.transform = 'none';
           lines[1].style.opacity = '1';
           lines[2].style.transform = 'none';
+        }
+
+        if (wasOpen) {
+          window.requestAnimationFrame(() => mobileMenuBtn.focus());
         }
       }
 
@@ -492,6 +577,46 @@
 
       overlay.addEventListener('click', closeMobileSidebar);
 
+      document.addEventListener('keydown', event => {
+        if (!sidebar.classList.contains('open')) return;
+
+        if (event.key === 'Escape') {
+          closeMobileSidebar();
+          return;
+        }
+
+        if (event.key === 'Tab') {
+          const focusableElements = getMobileSidebarFocusables();
+          const firstElement = focusableElements[0];
+          const lastElement = focusableElements[focusableElements.length - 1];
+
+          if (event.shiftKey && document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus();
+          } else if (!event.shiftKey && document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus();
+          }
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
+          closeMobileSidebar();
+        } else if (window.innerWidth <= 768 && !sidebar.classList.contains('open')) {
+          sidebar.inert = true;
+          sidebar.setAttribute('aria-hidden', 'true');
+        } else if (window.innerWidth > 768) {
+          sidebar.inert = false;
+          sidebar.removeAttribute('aria-hidden');
+        }
+      });
+
+      if (window.innerWidth <= 768) {
+        sidebar.inert = true;
+        sidebar.setAttribute('aria-hidden', 'true');
+      }
+
 
       // ---------------------------------------------------------
       // FAQ ACCORDION SYSTEM
@@ -500,6 +625,9 @@
       
       faqItems.forEach(item => {
         const questionBtn = item.querySelector('.docs-faq-question');
+        const answer = item.querySelector('.docs-faq-answer');
+        questionBtn.setAttribute('aria-expanded', 'false');
+        answer.hidden = true;
         
         questionBtn.addEventListener('click', () => {
           const isOpen = item.classList.contains('open');
@@ -508,14 +636,20 @@
           faqItems.forEach(otherItem => {
             if (otherItem !== item) {
               otherItem.classList.remove('open');
+              otherItem.querySelector('.docs-faq-question').setAttribute('aria-expanded', 'false');
+              otherItem.querySelector('.docs-faq-answer').hidden = true;
             }
           });
           
           // Toggle current item
           if (isOpen) {
             item.classList.remove('open');
+            questionBtn.setAttribute('aria-expanded', 'false');
+            answer.hidden = true;
           } else {
             item.classList.add('open');
+            questionBtn.setAttribute('aria-expanded', 'true');
+            answer.hidden = false;
           }
         });
       });
