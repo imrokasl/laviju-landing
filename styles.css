@@ -1347,6 +1347,69 @@ img {
 }
 
 /* =============================================
+   GUIDING PRINCIPLES
+   ============================================= */
+.principles {
+  padding: var(--space-4xl) 0;
+  background: linear-gradient(180deg, var(--bg) 0%, #EEF4FC 100%);
+}
+
+.principles__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-base);
+}
+
+.principle-card {
+  min-height: 230px;
+  padding: var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: rgba(255,255,255,0.82);
+  box-shadow: var(--shadow-sm);
+}
+
+.principle-card__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: var(--space-lg);
+  border-radius: var(--radius-full);
+  background: var(--primary-ultralight);
+  color: var(--primary-dark);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.principle-card__title {
+  margin-bottom: var(--space-sm);
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.principle-card__desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.framework-source {
+  color: var(--primary-dark);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.framework-source {
+  display: inline-block;
+  margin-top: var(--space-md);
+}
+
+/* =============================================
    HOW IT WORKS
    ============================================= */
 .how-it-works {
@@ -1852,6 +1915,10 @@ img {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .principles__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .domains__grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1965,6 +2032,10 @@ img {
   }
 
   .domains__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .principles__grid {
     grid-template-columns: 1fr;
   }
 

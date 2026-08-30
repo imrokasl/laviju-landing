@@ -134,7 +134,7 @@
 
   // --- Scroll reveal animations ---
   const revealElements = document.querySelectorAll(
-    '.feature-card, .step, .domain-card, .contact__card, .contact__form-wrap, .section__header, .cta__inner'
+    '.feature-card, .principle-card, .step, .domain-card, .contact__card, .contact__form-wrap, .section__header, .cta__inner'
   );
 
   revealElements.forEach(function (el) {
