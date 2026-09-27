@@ -451,18 +451,21 @@
     let dayTop = 0;
     let journey = 1;
     let maxShift = 0;
-    let centers = [];
+    let anchors = [];
     let lastPos = -1;
     let lastNearest = -1;
 
-    function positionFromCenter(center) {
-      if (center <= centers[0]) return 0;
-      for (let i = 0; i < centers.length - 1; i++) {
-        if (center <= centers[i + 1]) {
-          return i + (center - centers[i]) / (centers[i + 1] - centers[i]);
+    // Track shift → fractional panel index. Each panel's anchor is the shift that centres it,
+    // clamped to the journey, so the first panel is "current" at the start and the last at the end.
+    function positionFromShift(shift) {
+      if (shift <= anchors[0]) return 0;
+      for (let i = 0; i < anchors.length - 1; i++) {
+        if (shift <= anchors[i + 1]) {
+          const span = anchors[i + 1] - anchors[i];
+          return span > 0 ? i + (shift - anchors[i]) / span : i + 1;
         }
       }
-      return centers.length - 1;
+      return anchors.length - 1;
     }
 
     function applyDay(pos) {
@@ -520,18 +523,29 @@
       pinned = pinQuery.matches && !reduceMotion;
       day.classList.toggle('is-pinned', pinned);
       track.style.transform = '';
+
+      // Measure the panels, not the track: a max-content flex row can report a much wider box
+      // (Firefox sizes it from the panels' unwrapped text), which left an empty sky at the end.
+      const trackLeft = track.getBoundingClientRect().left;
+      const edges = panels.map((panel) => {
+        const rect = panel.getBoundingClientRect();
+        return [rect.left - trackLeft, rect.right - trackLeft];
+      });
+      const frame = viewport.clientWidth || viewportW;
+      const trackEnd = edges[edges.length - 1][1] + (parseFloat(getComputedStyle(track).paddingRight) || 0);
+      maxShift = Math.max(0, trackEnd - frame);
+      anchors = edges.map(([left, right]) => clamp((left + right) / 2 - frame / 2, 0, maxShift));
+
       if (pinned) {
-        maxShift = Math.max(0, track.scrollWidth - viewportW);
         journey = Math.max(1, maxShift * 0.92);
         day.style.setProperty('--day-h', `${Math.round(journey + viewportH)}px`);
       } else {
         day.style.removeProperty('--day-h');
       }
       dayTop = pageTop(day);
-      centers = panels.map((panel) => panel.offsetLeft + panel.offsetWidth / 2);
       lastPos = -1;
       lastNearest = -1;
-      if (!pinned) applyDay(positionFromCenter(viewport.scrollLeft + viewport.clientWidth / 2));
+      if (!pinned) applyDay(positionFromShift(viewport.scrollLeft));
     }
 
     // measure the journey first: its height moves everything below it
@@ -543,7 +557,7 @@
       const local = clamp(y - dayTop, 0, journey);
       const shift = (local / journey) * maxShift;
       track.style.transform = `translate3d(${(-shift).toFixed(1)}px, 0, 0)`;
-      applyDay(positionFromCenter(shift + viewportW / 2));
+      applyDay(positionFromShift(shift));
     });
 
     // Swipe mode (touch, narrow screens, reduced motion)
@@ -555,16 +569,15 @@
         swipeQueued = true;
         window.requestAnimationFrame(() => {
           swipeQueued = false;
-          applyDay(positionFromCenter(viewport.scrollLeft + viewport.clientWidth / 2));
+          applyDay(positionFromShift(viewport.scrollLeft));
         });
       },
       { passive: true }
     );
 
     function goToPanel(index) {
-      const panel = panels[clamp(index, 0, panels.length - 1)];
       viewport.scrollTo({
-        left: panel.offsetLeft - (viewport.clientWidth - panel.offsetWidth) / 2,
+        left: anchors[clamp(index, 0, panels.length - 1)],
         behavior: reduceMotion ? 'auto' : 'smooth',
       });
     }
@@ -577,9 +590,8 @@
       if (!pinned) return;
       const panel = event.target.closest('.day-panel');
       const index = panels.indexOf(panel);
-      if (index < 0) return;
-      const shift = clamp(centers[index] - viewportW / 2, 0, maxShift);
-      window.scrollTo({ top: dayTop + (shift / maxShift) * journey, behavior: reduceMotion ? 'auto' : 'smooth' });
+      if (index < 0 || !maxShift) return;
+      window.scrollTo({ top: dayTop + (anchors[index] / maxShift) * journey, behavior: reduceMotion ? 'auto' : 'smooth' });
     });
   }
 
