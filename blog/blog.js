@@ -779,6 +779,7 @@
   // Quick-read sheet (native <dialog>)
   // ---------------------------------------------
   const peek = document.getElementById('peek');
+  let closeQuickRead = null;
   if (peek && typeof peek.showModal === 'function') {
     const sheet = peek.querySelector('[data-peek-sheet]');
     const artSlot = peek.querySelector('[data-peek-art]');
@@ -849,6 +850,11 @@
       peek.classList.add('is-closing');
       window.setTimeout(finishClose, 280);
     }
+
+    // Instant close, used when a link inside the sheet points elsewhere on the page
+    closeQuickRead = () => {
+      if (peek.open) finishClose();
+    };
 
     document.addEventListener('click', (event) => {
       const link = event.target.closest('a[data-peek]');
@@ -1352,6 +1358,28 @@
           .catch(() => {});
       });
     }
+  });
+
+  // ---------------------------------------------
+  // Source citations → jump to their entry in the sources list and flash it
+  // ---------------------------------------------
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href^="#saltinis-"]');
+    if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const target = document.getElementById(link.getAttribute('href').slice(1));
+    if (!target) return;
+    event.preventDefault();
+    if (closeQuickRead) closeQuickRead();
+
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+    target.classList.remove('is-flash');
+    void target.offsetWidth;
+    target.classList.add('is-flash');
+    window.clearTimeout(target.flashTimer);
+    target.flashTimer = window.setTimeout(() => target.classList.remove('is-flash'), 2400);
+
+    const sourceLink = target.querySelector('a');
+    if (sourceLink) sourceLink.focus({ preventScroll: true });
   });
 
   // ---------------------------------------------
