@@ -1923,9 +1923,14 @@ img {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .nav__links {
+    gap: var(--space-lg);
+  }
+
 }
 
-@media (max-width: 768px) {
+/* Seven nav links stop fitting beside the logo below ~980px: switch to the menu button */
+@media (max-width: 980px) {
   .nav__links {
     display: none;
   }
@@ -1933,6 +1938,9 @@ img {
   .nav__menu-btn {
     display: flex;
   }
+}
+
+@media (max-width: 768px) {
 
   .hero__visual {
     display: flex;
