@@ -24,11 +24,29 @@
         <li>Vaiko ir ugdymo duomenis: vardą, gimimo datą, grupę, globėjų ryšius, pažangą, veiklas, dienos ataskaitas ir pedagogų pastabas.</li>
         <li>Bendravimo ir turinio duomenis: žinutes, komentarus, nuotraukas, vaizdo įrašus, dokumentus, įvykių ataskaitas, AI forumo pokalbius, žinučių saugos pranešimus ir naudotojų blokavimo pasirinkimus.</li>
         <li>Techninius duomenis: prisijungimo sesijas, pranešimų žetonus ir pasirinkimus, saugumo audito įrašus bei klaidų diagnostiką.</li>
+        <li>Svetainės laviju.lt lankomumo duomenis, aprašytus skiltyje <a href="#statistika">„Svetainės lankomumo statistika“</a>.</li>
       </ul>
 
       <h2>Kam ir kodėl naudojame</h2>
       <p>Duomenys naudojami paskyroms ir prieigai valdyti, darželio ir šeimos komunikacijai, ugdymo funkcijoms, pranešimams, pagalbai, saugumui ir teisės aktų pareigoms. Duomenų neparduodame ir nenaudojame reklamai.</p>
       <p>Skrajutės QR nuorodos atidarymus skaičiuojame bendrais dienos skaičiais. QR statistikos lentelėje nesaugome lankytojo IP adreso ar įrenginio identifikatoriaus, o skaičiavimui nenaudojame slapukų.</p>
+
+      <h2 id="statistika">Svetainės lankomumo statistika</h2>
+      <p>Kad žinotume, kurie laviju.lt puslapiai ir tinklaraščio tekstai yra naudingi, lankomumą matuojame savo sukurtu įrankiu. Nenaudojame slapukų, reklamos tinklų ar trečiųjų šalių analitikos, o statistiką mato tik Laviju platformos savininkas. Skaičiuojame:</p>
+      <ul>
+        <li>atidarytą puslapį, jo pavadinimą ir apsilankymo laiką;</li>
+        <li>iš kokios svetainės atėjote (tik jos adresą, pvz., google.com) ir nuorodos kampanijos žymas, pvz., <code>utm_source</code> ar skrajutės QR kodo <code>src=flyer</code>;</li>
+        <li>apibendrintą įrenginio tipą, naršyklę, operacinę sistemą, ekrano pločio grupę, naršyklės kalbą ir šalį, nustatytą pagal įrenginio laiko juostą;</li>
+        <li>kiek laiko puslapis buvo aktyviai skaitomas, kiek jo peržiūrėta slenkant ir kurios jo dalys pasirodė ekrane;</li>
+        <li>paspaudimus ant nuorodų, el. pašto adresų ir puslapio elementų, pvz., tinklaraščio filtrų ar mygtukų, bet ne jūsų įvestą tekstą;</li>
+        <li>puslapio įkėlimo spartą, pvz., per kiek laiko parodomas pagrindinis turinys.</li>
+      </ul>
+      <p>IP adresas ir naršyklės identifikavimo eilutė naudojami tik akimirkai: iš jų su kasdien keičiamu atsitiktiniu raktu apskaičiuojamas tos dienos lankytojo numeris. IP adreso ir identifikavimo eilutės nesaugome, o praėjusios dienos raktą ištriname, todėl vėliau duomenų nebeįmanoma susieti nei su jumis, nei su kitomis dienomis. Duomenys laikomi „Supabase“ duomenų bazėje 25 mėnesius. Juos tvarkome remdamiesi teisėtu interesu tobulinti svetainę.</p>
+      <p>Jei nenorite, kad jūsų apsilankymai būtų skaičiuojami, pasirinkite tai žemiau. Pasirinkimas įrašomas tik šioje naršyklėje.</p>
+      <div class="legal-optout">
+        <button type="button" class="legal-button" data-insights-optout hidden>Neįtraukti mano apsilankymų</button>
+        <p class="legal-optout__status" data-insights-status aria-live="polite">Jei naršyklė neleidžia vykdyti skriptų, lankomumas neskaičiuojamas.</p>
+      </div>
 
       <h2>Paslaugų teikėjai</h2>
       <p>Paslaugai teikti naudojame „Supabase“ (duomenų bazė, autentifikavimas, failų saugykla ir serverio funkcijos), „Expo“ bei „Google Firebase“ (mobiliųjų pranešimų perdavimas) ir, tik naudojant AI forumą, „OpenRouter“ bei jo parinktą AI modelio teikėją. AI teikėjui gali būti siunčiamas klausimas, naujausia pokalbio istorija, apytikslė amžiaus grupė, pažangos, ataskaitų ir pedagogų pastabų santrauka; vaiko vardas ir tiksli gimimo data nesiunčiami.</p>
@@ -44,5 +62,6 @@
     </article>
     <p class="legal-footer">© 2026 MB „Koro“ · <a href="/terms/">Naudojimo sąlygos</a></p>
   </main>
+  <script src="/insights.js?v=20260928-1"></script>
 </body>
 </html>

@@ -14,4 +14,10 @@ h2 { font-size: 1.25rem; margin-top: 32px; }
 .legal-note { background: #e8f0fa; border-radius: 10px; padding: 14px 16px; }
 li { margin-bottom: 7px; }
 .legal-footer { margin-top: 32px; color: #64748b; font-size: .9rem; }
+code { background: #eef3fa; border-radius: 5px; padding: 1px 5px; font-size: .92em; }
+.legal-optout { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 18px; padding: 16px; border: 1px solid #d8e2ef; border-radius: 12px; background: #f8fbff; }
+.legal-button { font: inherit; font-weight: 600; color: #fff; background: #3565b0; border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; }
+.legal-button:hover { background: #244b87; }
+.legal-button:focus-visible { outline: 3px solid #8fbae8; outline-offset: 2px; }
+.legal-optout__status { margin: 0; color: #475569; font-size: .95rem; }
 @media (max-width: 600px) { .legal-main { margin-top: 20px; } .legal-nav__inner { padding: 14px 18px; } }
