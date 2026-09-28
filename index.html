@@ -8,7 +8,7 @@
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#3565B0" />
   <link rel="canonical" href="https://laviju.lt/" />
-  
+
   <!-- Open Graph -->
   <meta property="og:title" content="Laviju – Ugdymo kompanionas" />
   <meta property="og:description" content="Padedame 0–6 metų vaikų šeimoms ir darželiams suprasti vaiko ugdymosi pasiekimus ir pažangą." />
@@ -16,20 +16,25 @@
   <meta property="og:url" content="https://laviju.lt/" />
   <meta property="og:site_name" content="Laviju" />
   <meta property="og:locale" content="lt_LT" />
-  <meta property="og:image" content="https://laviju.lt/logo.svg" />
-  <meta property="og:image:alt" content="Laviju logotipas" />
+  <meta property="og:image" content="https://laviju.lt/og-home.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Laviju programėlės ekranas tarp akvarelės stiliaus žaislų ir užrašas „Vaiko ugdymas, kuris jungia darželį ir namus“" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Laviju – Ugdymo kompanionas" />
   <meta name="twitter:description" content="Padedame 0–6 metų vaikų šeimoms ir darželiams suprasti vaiko ugdymosi pasiekimus ir pažangą." />
-  <meta name="twitter:image" content="https://laviju.lt/logo.svg" />
+  <meta name="twitter:image" content="https://laviju.lt/og-home.jpg" />
 
   <title>Laviju – Ugdymo kompanionas tėvams</title>
 
   <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260927-2" />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,72,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20260928-1" />
+  <link rel="stylesheet" href="/blog/blog.css?v=20260927-4" />
+  <link rel="stylesheet" href="/home.css?v=20260927-1" />
+  <script>document.documentElement.classList.add('js');</script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -65,7 +70,9 @@
     }
   </script>
 </head>
-<body>
+<body class="home">
+  <div class="tone-canvas" aria-hidden="true"></div>
+
   <!-- Navigation -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
@@ -101,441 +108,901 @@
     <a href="https://admin.laviju.lt" class="mobile-menu__link">Administravimas</a>
   </div>
 
-  <!-- Hero Section -->
-  <section class="hero" id="hero">
-    <div class="hero__bg">
-      <div class="hero__orb hero__orb--1"></div>
-      <div class="hero__orb hero__orb--2"></div>
-      <div class="hero__orb hero__orb--3"></div>
-      <div class="hero__grid"></div>
-    </div>
-    <div class="hero__content">
-      <div class="hero__text">
-        <div class="hero__badge" id="hero-badge">
-          <span class="hero__badge-dot"></span>
-          0–6 metų vaikų šeimoms ir darželiams
-        </div>
-        <h1 class="hero__title" id="hero-title">
-          Vaiko ugdymo <span class="hero__title-accent">programėlė</span> tėvams ir darželiams
-        </h1>
-        <p class="hero__subtitle" id="hero-subtitle">
-          Laviju padeda šeimai ir darželiui suprasti vaiko ugdymosi pasiekimus bei pažangą,
-          glaudžiai bendradarbiaujant su pedagogais.
-        </p>
-        <div class="hero__actions" id="hero-actions">
-          <a href="mailto:info@laviju.lt?subject=Laviju%20demonstracija" class="btn btn--primary" id="hero-cta">
-            <span>Užsakyti demonstraciją</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-          <a href="#features" class="btn btn--ghost" id="hero-secondary">Sužinoti daugiau</a>
-        </div>
-        <div class="store-links" aria-label="Programėlės parduotuvės">
-          <a href="https://play.google.com/store/apps/details?id=com.laviju.app" class="store-badge" target="_blank" rel="noopener noreferrer" aria-label="Atsisiųsti Laviju iš Google Play">
-            <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#34A853" d="M3.2 2.6c-.3.3-.5.8-.5 1.4v16c0 .6.2 1.1.5 1.4l8.6-9.4-8.6-9.4z"/>
-              <path fill="#FBBC04" d="m14.5 9.1-2.7 2.9 2.7 2.9 3.6-2c1.2-.7 1.2-1.1 0-1.8l-3.6-2z"/>
-              <path fill="#4285F4" d="M3.2 2.6 14.5 9.1 11.8 12 3.2 2.6z"/>
-              <path fill="#EA4335" d="m3.2 21.4 8.6-9.4 2.7 2.9L3.2 21.4z"/>
-            </svg>
-            <span>
-              <small>Atsisiųsti dabar</small>
-              Google Play
-            </span>
-          </a>
-          <div class="store-badge store-badge--disabled" aria-disabled="true">
-            <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M16.4 12.6c0-2.7 2.2-4 2.3-4.1-1.3-1.9-3.2-2.1-3.9-2.2-1.7-.2-3.2 1-4.1 1-.8 0-2.1-1-3.5-.9-1.8 0-3.4 1-4.3 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.3 2.5 1.3-.1 1.8-.8 3.4-.8s2.1.8 3.5.8c1.4 0 2.4-1.2 3.2-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.6-1-2.6-3.7zM13.7 4.6c.7-.9 1.2-2.1 1.1-3.3-1.1 0-2.4.7-3.1 1.6-.7.8-1.3 2-1.1 3.2 1.2.1 2.4-.6 3.1-1.5z"/>
-            </svg>
-            <span>
-              <small>Jau greitai</small>
-              App Store
-            </span>
-          </div>
-        </div>
+  <main id="main">
+
+    <!-- ============ HERO ============ -->
+    <header class="b-hero h-hero" id="hero" data-tone="base" data-chapter="Pradžia">
+      <div class="b-hero__bg" aria-hidden="true">
+        <span class="b-hero__wash b-hero__wash--sky"></span>
+        <span class="b-hero__wash b-hero__wash--peach"></span>
+        <span class="b-hero__wash b-hero__wash--sage"></span>
+        <span class="hero__grid"></span>
       </div>
-      <div class="hero__visual" id="hero-visual" aria-hidden="true">
-        <div class="phone-mockup">
-          <div class="phone-mockup__button phone-mockup__button--action"></div>
-          <div class="phone-mockup__button phone-mockup__button--volume-up"></div>
-          <div class="phone-mockup__button phone-mockup__button--volume-down"></div>
-          <div class="phone-mockup__button phone-mockup__button--power"></div>
-          <div class="phone-mockup__frame">
-            <div class="phone-mockup__screen">
-              <div class="mockup-status-bar">
-                <span>9:41</span>
-                <div class="mockup-status-icons">
-                  <svg viewBox="0 0 18 12" fill="currentColor"><path d="M1 9h2v2H1V9Zm4-3h2v5H5V6Zm4-3h2v8H9V3Zm4-2h2v10h-2V1Z"/></svg>
-                  <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 4.5a9.5 9.5 0 0 1 13 0M4 7a6 6 0 0 1 8 0M6.7 9.5a2 2 0 0 1 2.6 0"/></svg>
-                  <span class="mockup-battery"><i></i></span>
-                </div>
-              </div>
-              <div class="phone-mockup__island"><span></span></div>
 
-              <div class="mockup-app-header">
-                <div class="mockup-header-copy">
-                  <div class="mockup-date">Ketvirtadienis, liepos 16 d.</div>
-                  <div class="mockup-greeting">Labas, Emilija!</div>
-                </div>
-                <div class="mockup-avatar">E<span></span></div>
-              </div>
+      <div class="b-hero__inner">
+        <div class="b-hero__copy">
+          <p class="hero__badge b-hero__badge" id="hero-badge">
+            <span class="hero__badge-dot"></span>
+            0–6 metų vaikų šeimoms ir darželiams
+          </p>
 
-              <div class="mockup-hero-card">
-                <div class="mockup-hero-topline">
-                  <div class="mockup-child">
-                    <div class="mockup-child-avatar">E</div>
-                    <div>
-                      <div class="mockup-hero-label">Jūsų vaikas</div>
-                      <div class="mockup-hero-title">Emilija</div>
+          <h1 class="b-hero__title" id="hero-title">
+            <span class="b-line" data-hero-line="-1"><span class="b-line__inner">Vaiko ugdymas,</span></span>
+            <span class="b-line" data-hero-line="0.7"><span class="b-line__inner">kuris jungia</span></span>
+            <span class="b-line" data-hero-line="1.2"><span class="b-line__inner"><em class="serif-accent">darželį ir namus.<svg class="scribble" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 16 C 60 6, 120 20, 180 10 S 270 8, 296 14" /></svg></em></span></span>
+          </h1>
+
+          <p class="b-hero__lede" id="hero-subtitle">
+            <strong>Laviju</strong> – vaiko ugdymo programėlė tėvams ir darželiams. Ji padeda šeimai ir darželiui suprasti
+            vaiko ugdymosi pasiekimus bei pažangą, glaudžiai bendradarbiaujant su pedagogais.
+          </p>
+
+          <div class="b-hero__actions" id="hero-actions">
+            <a href="mailto:info@laviju.lt?subject=Laviju%20demonstracija" class="btn btn--primary magnetic" id="hero-cta">
+              <span>Užsakyti demonstraciją</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <a href="#how-it-works" class="btn btn--ghost" id="hero-secondary">Kaip veikia Laviju?</a>
+          </div>
+
+          <div class="store-links h-store" aria-label="Programėlės parduotuvės">
+            <a href="https://play.google.com/store/apps/details?id=com.laviju.app" class="store-badge" target="_blank" rel="noopener noreferrer" aria-label="Atsisiųsti Laviju iš Google Play">
+              <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#34A853" d="M3.2 2.6c-.3.3-.5.8-.5 1.4v16c0 .6.2 1.1.5 1.4l8.6-9.4-8.6-9.4z"/>
+                <path fill="#FBBC04" d="m14.5 9.1-2.7 2.9 2.7 2.9 3.6-2c1.2-.7 1.2-1.1 0-1.8l-3.6-2z"/>
+                <path fill="#4285F4" d="M3.2 2.6 14.5 9.1 11.8 12 3.2 2.6z"/>
+                <path fill="#EA4335" d="m3.2 21.4 8.6-9.4 2.7 2.9L3.2 21.4z"/>
+              </svg>
+              <span>
+                <small>Atsisiųsti dabar</small>
+                Google Play
+              </span>
+            </a>
+            <div class="store-badge store-badge--disabled" aria-disabled="true">
+              <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M16.4 12.6c0-2.7 2.2-4 2.3-4.1-1.3-1.9-3.2-2.1-3.9-2.2-1.7-.2-3.2 1-4.1 1-.8 0-2.1-1-3.5-.9-1.8 0-3.4 1-4.3 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.3 2.5 1.3-.1 1.8-.8 3.4-.8s2.1.8 3.5.8c1.4 0 2.4-1.2 3.2-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.6-1-2.6-3.7zM13.7 4.6c.7-.9 1.2-2.1 1.1-3.3-1.1 0-2.4.7-3.1 1.6-.7.8-1.3 2-1.1 3.2 1.2.1 2.4-.6 3.1-1.5z"/>
+              </svg>
+              <span>
+                <small>Jau greitai</small>
+                App Store
+              </span>
+            </div>
+          </div>
+
+          <ul class="h-trust" aria-label="Svarbiausia apie Laviju">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Nemokama darželių šeimoms</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Be reklamų</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pagal ugdymo gaires</li>
+          </ul>
+        </div>
+
+        <div class="b-hero__visual" aria-hidden="true">
+          <div class="hero-stage h-stage" data-parallax-stage="center">
+            <div class="hero-stage__arch">
+              <span class="hero-stage__glow"></span>
+              <span class="hero-stage__table"></span>
+            </div>
+
+            <span class="layer" data-depth="0.25" style="--x:0%;--y:16%;--w:19%;--i:0"><img class="stk stk--spin" src="/blog/assets/stickers/sun.webp" width="480" height="475" alt="" decoding="async" fetchpriority="high" /></span>
+            <span class="layer" data-depth="0.35" style="--x:89%;--y:52%;--w:11%;--r:12deg;--i:1"><img class="stk" src="/blog/assets/stickers/sprig-b.webp" width="223" height="294" alt="" decoding="async" /></span>
+
+            <div class="layer layer--phone" data-depth="0.45" style="--x:28%;--y:8%;--w:43%;--i:2">
+              <div class="h-phone">
+                <div class="phone-mockup">
+                  <div class="phone-mockup__button phone-mockup__button--action"></div>
+                  <div class="phone-mockup__button phone-mockup__button--volume-up"></div>
+                  <div class="phone-mockup__button phone-mockup__button--volume-down"></div>
+                  <div class="phone-mockup__button phone-mockup__button--power"></div>
+                  <div class="phone-mockup__frame">
+                    <div class="phone-mockup__screen">
+                      <div class="mockup-status-bar">
+                        <span>9:41</span>
+                        <div class="mockup-status-icons">
+                          <svg viewBox="0 0 18 12" fill="currentColor"><path d="M1 9h2v2H1V9Zm4-3h2v5H5V6Zm4-3h2v8H9V3Zm4-2h2v10h-2V1Z"/></svg>
+                          <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.5 4.5a9.5 9.5 0 0 1 13 0M4 7a6 6 0 0 1 8 0M6.7 9.5a2 2 0 0 1 2.6 0"/></svg>
+                          <span class="mockup-battery"><i></i></span>
+                        </div>
+                      </div>
+                      <div class="phone-mockup__island"><span></span></div>
+
+                      <div class="mockup-app-header">
+                        <div class="mockup-header-copy">
+                          <div class="mockup-date">Labas, Rūta</div>
+                          <div class="mockup-greeting">Šiandien su Emilija</div>
+                          <div class="mockup-tagline">Maži žingsniai kuria didelę pažangą.</div>
+                        </div>
+                        <div class="mockup-avatar">E<span></span></div>
+                      </div>
+
+                      <div class="mockup-hero-card mockup-daily">
+                        <div class="mockup-daily__pill">
+                          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5 13.9 9l6.6 1.9-6.6 1.9L12 19.5l-1.9-6.7L3.5 10.9 10.1 9 12 2.5Z"/></svg>
+                          Dienos įkvėpimas
+                        </div>
+                        <div class="mockup-daily__title">Laikas vienai smagiai veiklai</div>
+                        <div class="mockup-daily__sub">4 metai · Smalsučių grupė</div>
+                        <div class="mockup-daily__btn">Rinktis veiklą <span>›</span></div>
+                        <svg class="mockup-daily__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg>
+                      </div>
+
+                      <div class="mockup-card-row">
+                        <div class="mockup-card-row__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+                        </div>
+                        <div class="mockup-card-row__copy">
+                          <div class="mockup-card-row__line"><b>Taškų kelionė</b><span>3 lygis</span></div>
+                          <div class="mockup-card-row__line mockup-card-row__line--sub"><span>120 taškų</span><span class="mockup-streak"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-9-1.5 2-2 3.5-2 5-1-1-2-2.5-2-4-2.5 2-6 5.5-6 8a7 7 0 0 0 7 7Z"/></svg>4 d. serija</span></div>
+                          <div class="mockup-progress mockup-progress--level"><span></span></div>
+                        </div>
+                      </div>
+
+                      <div class="mockup-section-heading">
+                        <div class="mockup-section-title">Veiklos jums</div>
+                        <div class="mockup-section-count">Visos ›</div>
+                      </div>
+                      <div class="mockup-activity">
+                        <div class="mockup-activity-icon mockup-activity-icon--teal">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 1 8-1.3 5-5 7.8-9 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></svg>
+                        </div>
+                        <div class="mockup-activity-copy">
+                          <div class="mockup-activity-title">Spalvų medžioklė</div>
+                          <div class="mockup-activity-sub">Iš pedagogo · 20 min</div>
+                        </div>
+                        <div class="mockup-activity-done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+                      </div>
+                      <div class="mockup-activity">
+                        <div class="mockup-activity-icon mockup-activity-icon--blue">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16ZM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg>
+                        </div>
+                        <div class="mockup-activity-copy">
+                          <div class="mockup-activity-title">Pasakų vakaras</div>
+                          <div class="mockup-activity-sub">Aš kalbų pasaulyje · 25 min</div>
+                        </div>
+                        <div class="mockup-activity-arrow">›</div>
+                      </div>
+
+                      <div class="mockup-card-row">
+                        <div class="mockup-card-row__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+                        </div>
+                        <div class="mockup-card-row__copy">
+                          <div class="mockup-card-row__line"><b>Vaiko pažanga</b><strong>72%</strong></div>
+                          <div class="mockup-progress mockup-progress--child"><span></span></div>
+                        </div>
+                      </div>
+
+                      <div class="mockup-tabbar mockup-tabbar--five">
+                        <div class="mockup-tab mockup-tab--active">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z"/></svg>
+                          <span>Pradžia</span>
+                        </div>
+                        <div class="mockup-tab">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+                          <span>Veiklos</span>
+                        </div>
+                        <div class="mockup-tab">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"/></svg>
+                          <span>Žinutės</span>
+                        </div>
+                        <div class="mockup-tab">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/></svg>
+                          <span>Taškai</span>
+                        </div>
+                        <div class="mockup-tab">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                          <span>Daugiau</span>
+                        </div>
+                        <i class="mockup-home-indicator"></i>
+                      </div>
                     </div>
                   </div>
-                  <div class="mockup-live"><span></span> Ryšys aktyvus</div>
                 </div>
-                <div class="mockup-hero-sub">Smalsučių grupė · Saulės darželis</div>
-                <div class="mockup-progress-row">
-                  <span>Savaitės ritmas</span>
-                  <strong>72%</strong>
-                </div>
-                <div class="mockup-progress"><span></span></div>
-              </div>
-
-              <div class="mockup-section-heading">
-                <div class="mockup-section-title">Veiklos šeimai</div>
-                <div class="mockup-section-count">2 naujos</div>
-              </div>
-              <div class="mockup-activity">
-                <div class="mockup-activity-icon mockup-activity-icon--blue">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 2.3 4.7 5.2.8-3.8 3.7.9 5.2L12 15l-4.6 2.4.9-5.2-3.8-3.7 5.2-.8L12 3Z"/></svg>
-                </div>
-                <div class="mockup-activity-copy">
-                  <div class="mockup-activity-title">Spalvų medžioklė</div>
-                  <div class="mockup-activity-sub">Kūrybiškumas · 15 min</div>
-                </div>
-                <div class="mockup-activity-arrow">›</div>
-              </div>
-              <div class="mockup-activity">
-                <div class="mockup-activity-icon mockup-activity-icon--teal">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16ZM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg>
-                </div>
-                <div class="mockup-activity-copy">
-                  <div class="mockup-activity-title">Pasakų vakaras</div>
-              <div class="mockup-activity-sub">Aš kalbų pasaulyje · 20 min</div>
-                </div>
-                <div class="mockup-activity-arrow">›</div>
-              </div>
-
-              <div class="mockup-insight">
-                <div class="mockup-insight-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M8.2 14.5A7 7 0 1 1 15.8 14.5c-.8.6-1.3 1.5-1.3 2.5h-5c0-1-.5-1.9-1.3-2.5Z"/></svg>
-                </div>
-                <div><span>Šiandienos įžvalga</span><strong>Emilija atranda per žaidimą</strong></div>
-              </div>
-
-              <div class="mockup-tabbar">
-                <div class="mockup-tab mockup-tab--active">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9Z"/></svg>
-                  <span>Pradžia</span>
-                </div>
-                <div class="mockup-tab">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"/></svg>
-                  <span>Žinutės</span>
-                </div>
-                <div class="mockup-tab">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg>
-                  <span>Pažanga</span>
-                </div>
-                <div class="mockup-tab">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                  <span>Profilis</span>
-                </div>
-                <i class="mockup-home-indicator"></i>
               </div>
             </div>
+
+            <span class="layer" data-depth="0.6" style="--x:57%;--y:-1%;--w:33%;--i:3"><img class="stk stk--hop" src="/blog/assets/stickers/bird.webp" width="480" height="354" alt="" decoding="async" fetchpriority="high" /></span>
+            <span class="layer" data-depth="0.55" style="--x:91%;--y:17%;--w:7%;--r:10deg;--i:4"><img class="stk stk--beat" src="/blog/assets/stickers/heart.webp" width="382" height="362" alt="" decoding="async" /></span>
+            <span class="layer" data-depth="0.9" style="--x:-4%;--y:60%;--w:30%;--r:-5deg;--i:5"><img class="stk" src="/blog/assets/stickers/blocks.webp" width="435" height="480" alt="" decoding="async" /></span>
+            <span class="layer" data-depth="0.8" style="--x:73%;--y:63%;--w:25%;--r:8deg;--i:6"><img class="stk" src="/blog/assets/stickers/crayons.webp" width="475" height="480" alt="" decoding="async" /></span>
+            <span class="layer" data-depth="0.7" style="--x:24%;--y:82%;--w:12%;--r:-6deg;--i:7"><img class="stk" src="/blog/assets/stickers/apple.webp" width="366" height="451" alt="" decoding="async" /></span>
+            <span class="layer" data-depth="0.3" style="--x:4%;--y:86%;--w:9%;--r:-24deg;--i:8"><img class="stk" src="/blog/assets/stickers/sprig-a.webp" width="173" height="275" alt="" decoding="async" /></span>
+
+            <span class="layer layer--bubble" data-depth="1" style="--x:2%;--y:-2%;--i:9"><span class="talk-bubble talk-bubble--butter">Ką šiandien atradai?</span></span>
+
+            <span class="layer layer--float h-float-task" data-depth="0.65" style="--x:-12%;--y:47%;--i:10">
+              <span class="float-card">
+                <span class="float-card__icon float-card__icon--blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 14.5 8l5.5.8-4 3.9.9 5.5L12 15.6l-4.9 2.6.9-5.5-4-3.9L9.5 8 12 3Z"/></svg>
+                </span>
+                <span class="float-card__text"><small>Nauja veikla</small><strong>Pedagogė pridėjo užduotį</strong></span>
+              </span>
+            </span>
+            <span class="layer layer--float h-float-note" data-depth="0.75" style="--x:64%;--y:31%;--i:11">
+              <span class="float-card">
+                <span class="float-card__avatar">RS</span>
+                <span class="float-card__text"><small>Pedagogė Rasa</small><strong>Šiandien viskas puikiai!</strong></span>
+              </span>
+            </span>
+            <span class="layer layer--float h-float-week" data-depth="0.4" style="--x:36%;--y:93%;--i:12">
+              <span class="float-chip"><span class="float-chip__dot"></span>3 veiklos šią savaitę</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <a class="scroll-cue" href="#features">
+        <span class="scroll-cue__line" aria-hidden="true"></span>
+        <span>Slinkite žemyn</span>
+      </a>
+    </header>
+
+    <!-- ============ FEATURES ============ -->
+    <section class="b-section h-features" id="features" data-tone="white" data-chapter="Funkcijos" aria-labelledby="features-title">
+      <div class="section__inner">
+        <div class="b-head b-head--split">
+          <div>
+            <span class="section__tag" data-reveal="up">Funkcijos</span>
+            <h2 class="b-title" id="features-title" data-reveal="up">Viskas, ko reikia vaiko ugdymui <em class="serif-accent">namuose</em></h2>
+          </div>
+          <p class="b-head__aside" data-reveal="up">
+            Laviju sujungia darželio pedagogų žinias su kasdiene šeimos rutina: veiklos, straipsniai, pažanga ir darželio žinios – vienoje vietoje.
+          </p>
+        </div>
+
+        <div class="feat-grid">
+          <article class="feat feat--wide" id="feature-1" data-reveal="left">
+            <div class="feat__card">
+              <div class="feat__media art art--butter" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk" style="--x:2%;--y:56%;--w:36%;--r:-4deg" src="/blog/assets/stickers/basket.webp" width="387" height="395" alt="" loading="lazy" decoding="async" />
+                  <img class="art__stk" style="--x:70%;--y:58%;--w:30%;--r:10deg" src="/blog/assets/stickers/crayons.webp" width="475" height="480" alt="" loading="lazy" decoding="async" />
+                  <img class="art__stk" style="--x:74%;--y:4%;--w:18%;--r:12deg" src="/blog/assets/stickers/sprig-c.webp" width="174" height="175" alt="" loading="lazy" decoding="async" />
+                  <span class="mini-act" style="--x:10%;--y:12%;--d:0">
+                    <span class="mini-act__icon mini-act__icon--teal"><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 1 8-1.3 5-5 7.8-9 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></svg></span>
+                    <span class="mini-act__copy"><small>Iš pedagogo · 20 min</small><b>Spalvų medžioklė</b></span>
+                    <span class="mini-act__done"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  </span>
+                  <span class="mini-act mini-act--second" style="--x:22%;--y:36%;--d:1">
+                    <span class="mini-act__icon"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16ZM20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg></span>
+                    <span class="mini-act__copy"><small>Aš kalbų pasaulyje · 25 min</small><b>Pasakų vakaras</b></span>
+                  </span>
+                </div>
+              </div>
+              <div class="feat__body">
+                <p class="meta"><span class="pill pill--butter">Tėvams ir pedagogams</span></p>
+                <h3 class="feat__title">Veiklos šeimai</h3>
+                <p class="feat__text">Rinkitės iš Laviju veiklų katalogo ir matykite pedagogo jūsų grupei sukurtas veiklas.</p>
+                <ul class="feat__list">
+                  <li>Kodėl veikla naudinga vaikui</li>
+                  <li>Kokių namų priemonių reikės</li>
+                  <li>Eiga žingsnis po žingsnio</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat" id="feature-2" data-reveal="right">
+            <a class="feat__card" href="/blog/">
+              <div class="feat__media art art--sky" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk" style="--x:6%;--y:38%;--w:60%;--r:-5deg" src="/blog/assets/stickers/book-open.webp" width="480" height="346" alt="" loading="lazy" decoding="async" />
+                  <img class="art__stk stk--sway" style="--x:62%;--y:20%;--w:30%" src="/blog/assets/stickers/teddy.webp" width="352" height="443" alt="" loading="lazy" decoding="async" />
+                  <span class="talk-bubble talk-bubble--sm" style="--x:12%;--y:14%">5 min skaitymo</span>
+                </div>
+              </div>
+              <div class="feat__body">
+                <p class="meta"><span class="pill pill--sky">Tėvams</span></p>
+                <h3 class="feat__title"><span class="u-line">Atrinkti straipsniai</span></h3>
+                <p class="feat__text">Praktiški straipsniai lietuvių kalba padeda geriau suprasti vaiko raidą ir kasdienes situacijas.</p>
+                <span class="read-more">Skaityti tinklaraštį <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+              </div>
+            </a>
+          </article>
+
+          <article class="feat" id="feature-3" data-reveal="up">
+            <a class="feat__card" href="#domains">
+              <div class="feat__media art art--sage" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk stk--sway" style="--x:4%;--y:30%;--w:30%" src="/blog/assets/stickers/seedling.webp" width="320" height="480" alt="" loading="lazy" decoding="async" />
+                  <span class="mini-steps" style="--x:38%;--y:22%">
+                    <span class="mini-steps__row" style="--v:4;--c:#2F5F9F;--d:0"><b>Kalbinė raiška</b><i></i></span>
+                    <span class="mini-steps__row" style="--v:5;--c:#72508D;--d:1"><b>Fizinis aktyvumas</b><i></i></span>
+                    <span class="mini-steps__row" style="--v:3;--c:#8A3D62;--d:2"><b>Kūrybiškumas</b><i></i></span>
+                  </span>
+                </div>
+              </div>
+              <div class="feat__body">
+                <p class="meta"><span class="pill pill--sage">Tėvams ir darželiams</span></p>
+                <h3 class="feat__title"><span class="u-line">Pažangos stebėjimas</span></h3>
+                <p class="feat__text">Stebėkite vaiko ugdymosi pažangą per penkias ugdymosi sritis ir 18 pasiekimų sričių, aprašomų 1–6 pasiekimų žingsniais.</p>
+                <span class="read-more">Ugdymosi sritys <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+              </div>
+            </a>
+          </article>
+
+          <article class="feat" id="feature-4" data-reveal="up">
+            <div class="feat__card">
+              <div class="feat__media art art--peach" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk" style="--x:6%;--y:36%;--w:44%" src="/blog/assets/stickers/house.webp" width="448" height="480" alt="" loading="lazy" decoding="async" />
+                  <span class="mini-msg" style="--x:40%;--y:14%;--d:0"><span class="mini-msg__ava">RS</span>Šiandien viskas puikiai!</span>
+                  <span class="mini-media" style="--x:52%;--y:44%;--d:1">
+                    <img src="/blog/assets/stickers/palette.webp" width="461" height="480" alt="" loading="lazy" decoding="async" />
+                    <b>Nauja medija</b>
+                  </span>
+                </div>
+              </div>
+              <div class="feat__body">
+                <p class="meta"><span class="pill pill--peach">Pedagogams</span></p>
+                <h3 class="feat__title">Darželio integracija</h3>
+                <p class="feat__text">Pedagogai dalijasi grupės veiklomis, medija, dienos informacija ir žinutėmis.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat" id="feature-5" data-reveal="up">
+            <a class="feat__card" href="/privacy/">
+              <div class="feat__media art art--lilac" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk" style="--x:26%;--y:30%;--w:48%" src="/blog/assets/stickers/raincoat.webp" width="480" height="470" alt="" loading="lazy" decoding="async" />
+                  <span class="mini-chip" style="--x:4%;--y:12%;--d:0">Be reklamų</span>
+                  <span class="mini-chip" style="--x:58%;--y:22%;--d:1">Privati medija</span>
+                  <span class="mini-chip" style="--x:8%;--y:78%;--d:2">Aiškios teisės</span>
+                </div>
+              </div>
+              <div class="feat__body">
+                <p class="meta"><span class="pill pill--lilac">Visiems</span></p>
+                <h3 class="feat__title"><span class="u-line">Saugi aplinka</span></h3>
+                <p class="feat__text">Be reklamų, su vaidmenimis pagrįsta prieiga, privačia medijos saugykla ir aiškiomis duomenų teisėmis.</p>
+                <span class="read-more">Privatumo politika <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+              </div>
+            </a>
+          </article>
+
+          <article class="feat feat--banner" id="feature-6" data-reveal="scale">
+            <a class="feat__card" href="https://e-seimas.lrs.lt/portal/legalAct/lt/TAD/76bb8f404b5911ee8185e4f3ad07094a/asr" target="_blank" rel="noopener noreferrer">
+              <div class="feat__media feat__media--banner" aria-hidden="true">
+                <span class="art__blob"></span>
+                <img class="feat__stork stk--sway" src="/blog/assets/stickers/stork.webp" width="327" height="480" alt="" loading="lazy" decoding="async" />
+                <img class="feat__oak" src="/blog/assets/stickers/oak-leaf.webp" width="235" height="329" alt="" loading="lazy" decoding="async" />
+                <img class="feat__heart stk--beat" src="/blog/assets/stickers/heart.webp" width="382" height="362" alt="" loading="lazy" decoding="async" />
+              </div>
+              <div class="feat__body">
+                <p class="meta"><span class="pill pill--butter">Darželiams</span></p>
+                <h3 class="feat__title"><span class="u-line">Su meile Lietuvai</span></h3>
+                <p class="feat__text">Veiklos ir pažangos stebėsena siejamos su Ikimokyklinio ugdymo programos gairėmis.</p>
+                <span class="read-more">Oficialios gairės <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+              </div>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRINCIPLES (fridge notes) ============ -->
+    <section class="b-section notes h-principles" id="principles" data-tone="lilac" data-chapter="Principai" aria-labelledby="principles-title">
+      <div class="section__inner">
+        <div class="b-head b-head--split">
+          <div>
+            <span class="section__tag" data-reveal="up">Ugdymosi principai</span>
+            <h2 class="b-title" id="principles-title" data-reveal="up">Vaikas mokosi žaisdamas, rinkdamasis ir <em class="serif-accent">reflektuodamas</em></h2>
+          </div>
+          <p class="b-head__aside" data-reveal="up">Laviju padeda suaugusiajam kurti vaikui prasmingas patirtis realioje aplinkoje. Naudojimo principai grindžiami Ikimokyklinio ugdymo programos gairėmis.</p>
+        </div>
+
+        <ol class="notes__deck">
+          <li class="note note--sky" data-reveal="down" style="--rot:-3deg">
+            <span class="note__magnet" aria-hidden="true"></span>
+            <span class="note__num" aria-hidden="true">01</span>
+            <img class="note__stk" src="/blog/assets/stickers/blocks.webp" width="435" height="480" alt="" loading="lazy" decoding="async" />
+            <h3 class="note__title">Žaidimas ir patirtis</h3>
+            <p>Programėlė pasiūlo idėją suaugusiajam, o vaikas žaidžia, tyrinėja ir kuria realioje aplinkoje.</p>
+          </li>
+          <li class="note note--butter" data-reveal="up" style="--rot:2deg">
+            <span class="note__magnet" aria-hidden="true"></span>
+            <span class="note__num" aria-hidden="true">02</span>
+            <img class="note__stk" src="/blog/assets/stickers/crayons.webp" width="475" height="480" alt="" loading="lazy" decoding="async" />
+            <h3 class="note__title">Vaiko iniciatyva</h3>
+            <p>Vaikas gali rinktis priemones, veikimo būdą ir plėtoti veiklą pagal savo interesus bei sumanymus.</p>
+          </li>
+          <li class="note note--sage" data-reveal="down" style="--rot:-1.5deg">
+            <span class="note__magnet" aria-hidden="true"></span>
+            <span class="note__num" aria-hidden="true">03</span>
+            <img class="note__stk" src="/blog/assets/stickers/sneakers.webp" width="435" height="288" alt="" loading="lazy" decoding="async" />
+            <h3 class="note__title">Įtrauktis</h3>
+            <p>Veiklos būdas, priemonės ir tempas pritaikomi prie skirtingų vaiko poreikių ir raiškos galimybių.</p>
+          </li>
+          <li class="note note--peach" data-reveal="up" style="--rot:3deg">
+            <span class="note__magnet" aria-hidden="true"></span>
+            <span class="note__num" aria-hidden="true">04</span>
+            <img class="note__stk" src="/blog/assets/stickers/moon.webp" width="392" height="480" alt="" loading="lazy" decoding="async" />
+            <h3 class="note__title">Refleksija</h3>
+            <p>Po veiklos su vaiku aptariama, kas jį sudomino, ką jis atrado ir ką norėtų išbandyti toliau.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS (sticky scrollytelling) ============ -->
+    <section class="b-section why h-how" id="how-it-works" data-tone="sky" data-chapter="Kaip veikia" aria-labelledby="how-title">
+      <div class="section__inner">
+        <div class="b-head">
+          <span class="section__tag" data-reveal="up">Procesas</span>
+          <h2 class="b-title" id="how-title" data-reveal="up">Kaip veikia <em class="serif-accent">Laviju?</em></h2>
+          <p class="b-lede" data-reveal="up">Trys paprasti žingsniai iki prasmingo ugdymo namuose.</p>
+        </div>
+
+        <div class="why__layout">
+          <div class="why__stage-wrap">
+            <div class="why__stage" aria-hidden="true">
+              <!-- Scene 1: the kindergarten links the family -->
+              <div class="why-scene h-scene h-scene--invite is-active" data-scene="0">
+                <img class="h-scene__stk h-scene__stk--house" src="/blog/assets/stickers/house.webp" width="448" height="480" alt="" loading="lazy" decoding="async" />
+                <span class="h-scene__label">Saulės darželis<small>Smalsučių grupė</small></span>
+                <div class="h-panel h-invite">
+                  <div class="h-panel__head">
+                    <img src="/blog/assets/stickers/envelope.webp" width="480" height="351" alt="" loading="lazy" decoding="async" />
+                    <span><small>Pakvietimai</small><b>Prisijunkite prie Laviju</b></span>
+                  </div>
+                  <ul class="h-invite__list">
+                    <li style="--d:0"><span class="h-ava h-ava--teal">RS</span><span class="h-invite__who"><b>Rasa S.</b><small>Pedagogė</small></span><span class="h-status"><span>Pakviesta</span><span>Prisijungė</span></span></li>
+                    <li style="--d:1"><span class="h-ava">RL</span><span class="h-invite__who"><b>Rūta L.</b><small>Emilijos mama</small></span><span class="h-status"><span>Pakviesta</span><span>Prisijungė</span></span></li>
+                    <li style="--d:2"><span class="h-ava h-ava--peach">TL</span><span class="h-invite__who"><b>Tomas L.</b><small>Emilijos tėtis</small></span><span class="h-status"><span>Pakviestas</span><span>Prisijungė</span></span></li>
+                  </ul>
+                </div>
+                <span class="h-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Kiekvienas mato tik savo grupę</span>
+              </div>
+
+              <!-- Scene 2: act and talk -->
+              <div class="why-scene h-scene h-scene--act" data-scene="1">
+                <div class="h-panel h-act">
+                  <div class="h-panel__head">
+                    <span class="h-act__icon"><svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 1 8-1.3 5-5 7.8-9 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/></svg></span>
+                    <span><small>Iš pedagogo · 20 min · 3–5 m.</small><b>Spalvų medžioklė</b></span>
+                  </div>
+                  <ul class="h-act__rows">
+                    <li style="--d:0"><b>Kodėl naudinga</b>Ugdo dėmesį, spalvų suvokimą ir džiaugsmą būti gamtoje.</li>
+                    <li style="--d:1"><b>Priemonės</b>Krepšelis radiniams, kreidelės, popieriaus lapas.</li>
+                    <li style="--d:2"><b>Eiga</b>5 žingsniai: nuo spalvų kortelės iki koliažo.</li>
+                  </ul>
+                  <span class="h-done"><span class="h-done__box"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>Atlikta</span>
+                </div>
+                <img class="h-scene__stk h-scene__stk--basket" src="/blog/assets/stickers/basket.webp" width="387" height="395" alt="" loading="lazy" decoding="async" />
+                <p class="h-bubble"><span class="h-ava h-ava--teal">RS</span>Šiandien viskas puikiai!</p>
+                <p class="h-news"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h12v14H6a2 2 0 0 1-2-2V5Z"/><path d="M16 9h4v8a2 2 0 0 1-2 2h-2M8 9h4M8 13h4"/></svg>Darželio naujiena</p>
+              </div>
+
+              <!-- Scene 3: watch progress grow -->
+              <div class="why-scene h-scene h-scene--grow" data-scene="2">
+                <div class="h-panel h-grow">
+                  <div class="h-panel__head h-panel__head--plain">
+                    <span><small>Pasiekimų žingsniai</small><b>Emilijos pažanga</b></span>
+                  </div>
+                  <ul class="h-grow__list">
+                    <li style="--v:4;--c:#2F5F9F;--d:0"><b>Kalbinė raiška</b><span class="h-steps"><i></i><i></i><i></i><i></i><i></i><i></i></span></li>
+                    <li style="--v:5;--c:#72508D;--d:1"><b>Fizinis aktyvumas</b><span class="h-steps"><i></i><i></i><i></i><i></i><i></i><i></i></span></li>
+                    <li style="--v:3;--c:#2D6F5B;--d:2"><b>Tyrinėjimas</b><span class="h-steps"><i></i><i></i><i></i><i></i><i></i><i></i></span></li>
+                    <li style="--v:4;--c:#8A5A2B;--d:3"><b>Emocijų suvokimas</b><span class="h-steps"><i></i><i></i><i></i><i></i><i></i><i></i></span></li>
+                  </ul>
+                </div>
+                <img class="h-scene__stk h-scene__stk--seedling" src="/blog/assets/stickers/seedling.webp" width="320" height="480" alt="" loading="lazy" decoding="async" />
+                <img class="h-scene__stk h-scene__stk--heart" src="/blog/assets/stickers/heart.webp" width="382" height="362" alt="" loading="lazy" decoding="async" />
+                <span class="h-cheer">Švęskite kartu!</span>
+              </div>
+            </div>
           </div>
 
-          <div class="phone-float phone-float--1">
-            <div class="phone-float__icon phone-float__icon--blue">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 14.5 8l5.5.8-4 3.9.9 5.5L12 15.6l-4.9 2.6.9-5.5-4-3.9L9.5 8 12 3Z"/></svg>
-            </div>
-            <div><span>Nauja veikla</span><strong>Pedagogė pridėjo užduotį</strong></div>
-          </div>
-          <div class="phone-float phone-float--2">
-            <div class="phone-float__icon phone-float__icon--teal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-            </div>
-            <div><span>Puikus ritmas</span><strong>3 veiklos šią savaitę</strong></div>
-          </div>
-          <div class="phone-float phone-float--3">
-            <div class="phone-float__avatar">RS</div>
-            <div><span>Pedagogė Rasa</span><strong>Šiandien viskas puikiai!</strong></div>
-          </div>
+          <ol class="why__steps">
+            <li class="why-step is-active" id="step-1" data-step="0">
+              <span class="why-step__num">01</span>
+              <h3 class="why-step__title">Darželis susieja šeimą</h3>
+              <p>Administratorius <mark>pakviečia tėvus ir pedagogus</mark>, priskiria grupes bei užtikrina, kad kiekvienas matytų <mark>tik jam skirtą informaciją</mark>.</p>
+              <p class="why-step__hint">Tėvai neužsiregistruoja patys – pakvietimą el. paštu atsiunčia darželis. Taip saugomas vaikų duomenų privatumas.</p>
+            </li>
+            <li class="why-step" id="step-2" data-step="1">
+              <span class="why-step__num">02</span>
+              <h3 class="why-step__title">Bendraukite ir veikite</h3>
+              <p>Tėvai mato <mark>veiklų katalogą</mark> bei grupės veiklas, <mark>žymi atlikimą</mark>, skaito straipsnius ir gauna darželio naujienas.</p>
+              <p class="why-step__hint">Kiekvienoje veikloje rasite, kodėl ji naudinga, kokių priemonių reikės ir kaip ją atlikti žingsnis po žingsnio.</p>
+            </li>
+            <li class="why-step" id="step-3" data-step="2">
+              <span class="why-step__num">03</span>
+              <h3 class="why-step__title">Stebėkite pažangą</h3>
+              <p>Stebėkite vaiko augimą per <mark>penkias ugdymosi sritis</mark> ir <mark>18 pasiekimų sričių</mark>, švęskite jį kartu su visa šeima.</p>
+              <p class="why-step__hint">Kiekviena pasiekimų sritis turi 6 žingsnius. Pasiekimų vertinimus po pedagoginės peržiūros atnaujina darželis.</p>
+            </li>
+          </ol>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Features Section -->
-  <section class="features" id="features">
-    <div class="section__inner">
-      <div class="section__header">
-        <span class="section__tag">Funkcijos</span>
-        <h2 class="section__title">Viskas, ko reikia vaiko ugdymui namuose</h2>
-        <p class="section__subtitle">Laviju sujungia darželio pedagogų žinias su kasdiene šeimos rutina</p>
-      </div>
-      <div class="features__grid">
-        <div class="feature-card" id="feature-1">
-          <div class="feature-card__icon feature-card__icon--blue">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26z"/></svg>
-          </div>
-          <h3 class="feature-card__title">Veiklos šeimai</h3>
-          <p class="feature-card__desc">Rinkitės iš Laviju veiklų katalogo ir matykite pedagogo jūsų grupei sukurtas veiklas.</p>
+    <!-- ============ QUOTE ============ -->
+    <section class="b-section quote h-quote" data-tone="white" aria-label="Mintis">
+      <figure class="quote__figure">
+        <div class="h-quote__stk" aria-hidden="true">
+          <img class="stk--sway" src="/blog/assets/stickers/seedling.webp" width="320" height="480" alt="" loading="lazy" decoding="async" />
         </div>
-        <div class="feature-card" id="feature-2">
-          <div class="feature-card__icon feature-card__icon--teal">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          </div>
-          <h3 class="feature-card__title">Atrinkti straipsniai</h3>
-          <p class="feature-card__desc">Praktiški straipsniai lietuvių kalba padeda geriau suprasti vaiko raidą ir kasdienes situacijas.</p>
-        </div>
-        <div class="feature-card" id="feature-3">
-          <div class="feature-card__icon feature-card__icon--purple">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          </div>
-          <h3 class="feature-card__title">Pažangos stebėjimas</h3>
-          <p class="feature-card__desc">Stebėkite vaiko ugdymosi pažangą per penkias ugdymosi sritis ir 18 pasiekimų sričių, aprašomų 1–6 pasiekimų žingsniais.</p>
-        </div>
-        <div class="feature-card" id="feature-4">
-          <div class="feature-card__icon feature-card__icon--green">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3 class="feature-card__title">Darželio integracija</h3>
-          <p class="feature-card__desc">Pedagogai dalijasi grupės veiklomis, medija, dienos informacija ir žinutėmis.</p>
-        </div>
-        <div class="feature-card" id="feature-5">
-          <div class="feature-card__icon feature-card__icon--orange">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h3 class="feature-card__title">Saugi aplinka</h3>
-          <p class="feature-card__desc">Be reklamų, su vaidmenimis pagrįsta prieiga, privačia medijos saugykla ir aiškiomis duomenų teisėmis.</p>
-        </div>
-        <div class="feature-card" id="feature-6">
-          <div class="feature-card__icon feature-card__icon--pink">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <h3 class="feature-card__title">Su meile Lietuvai</h3>
-          <p class="feature-card__desc">Veiklos ir pažangos stebėsena siejamos su Ikimokyklinio ugdymo programos gairėmis.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <blockquote class="quote__text" data-ink data-ink-accent="didelę pažangą">Maži žingsniai kuria didelę pažangą.</blockquote>
+      </figure>
+    </section>
 
-  <!-- Guiding Principles Section -->
-  <section class="principles" id="principles">
-    <div class="section__inner">
-      <div class="section__header">
-        <span class="section__tag">Ugdymosi principai</span>
-        <h2 class="section__title">Vaikas mokosi žaisdamas, rinkdamasis ir reflektuodamas</h2>
-        <p class="section__subtitle">Laviju padeda suaugusiajam kurti vaikui prasmingas patirtis realioje aplinkoje</p>
+    <!-- ============ NUMBERS ============ -->
+    <section class="b-section numbers h-numbers" id="skaiciai" data-tone="white" aria-labelledby="skaiciai-title">
+      <div class="section__inner">
+        <div class="numbers__card" data-reveal="scale">
+          <div class="numbers__orb numbers__orb--1" aria-hidden="true"></div>
+          <div class="numbers__orb numbers__orb--2" aria-hidden="true"></div>
+          <div class="numbers__head">
+            <span class="section__tag section__tag--on-dark">Pagal gaires</span>
+            <h2 class="numbers__title" id="skaiciai-title">Aiški sistema, paremta <em class="serif-accent">oficialiomis gairėmis</em></h2>
+          </div>
+          <ul class="numbers__grid">
+            <li class="stat">
+              <span class="stat__value">0–<span data-count="6">6</span><small>m.</small></span>
+              <span class="stat__label">Gairės apima vaikų ugdymąsi nuo gimimo iki 6 metų.</span>
+              <span class="stat__viz stat__viz--age" aria-hidden="true"><i></i><b>0</b><b>6</b></span>
+            </li>
+            <li class="stat">
+              <span class="stat__value"><span data-count="5">5</span></span>
+              <span class="stat__label">ugdymosi sritys, kuriomis remiasi Laviju</span>
+              <span class="stat__viz stat__viz--dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            </li>
+            <li class="stat">
+              <span class="stat__value"><span data-count="18">18</span></span>
+              <span class="stat__label">pasiekimų sričių – kiekviena ugdymosi sritis gali plėtoti jas visas</span>
+              <span class="stat__viz stat__viz--grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            </li>
+            <li class="stat">
+              <span class="stat__value"><span data-count="6">6</span></span>
+              <span class="stat__label">pasiekimų žingsniai kiekvienoje pasiekimų srityje</span>
+              <span class="stat__viz stat__viz--stairs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            </li>
+          </ul>
+          <a class="stat__source h-numbers__source" href="https://e-seimas.lrs.lt/portal/legalAct/lt/TAD/76bb8f404b5911ee8185e4f3ad07094a/asr" target="_blank" rel="noopener noreferrer">Šaltinis: Ikimokyklinio ugdymo programos gairės (V-1142)</a>
+        </div>
       </div>
-      <div class="principles__grid">
-        <article class="principle-card">
-          <span class="principle-card__number">01</span>
-          <h3 class="principle-card__title">Žaidimas ir patirtis</h3>
-          <p class="principle-card__desc">Programėlė pasiūlo idėją suaugusiajam, o vaikas žaidžia, tyrinėja ir kuria realioje aplinkoje.</p>
-        </article>
-        <article class="principle-card">
-          <span class="principle-card__number">02</span>
-          <h3 class="principle-card__title">Vaiko iniciatyva</h3>
-          <p class="principle-card__desc">Vaikas gali rinktis priemones, veikimo būdą ir plėtoti veiklą pagal savo interesus bei sumanymus.</p>
-        </article>
-        <article class="principle-card">
-          <span class="principle-card__number">03</span>
-          <h3 class="principle-card__title">Įtrauktis</h3>
-          <p class="principle-card__desc">Veiklos būdas, priemonės ir tempas pritaikomi prie skirtingų vaiko poreikių ir raiškos galimybių.</p>
-        </article>
-        <article class="principle-card">
-          <span class="principle-card__number">04</span>
-          <h3 class="principle-card__title">Refleksija</h3>
-          <p class="principle-card__desc">Po veiklos su vaiku aptariama, kas jį sudomino, ką jis atrado ir ką norėtų išbandyti toliau.</p>
-        </article>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- How It Works Section -->
-  <section class="how-it-works" id="how-it-works">
-    <div class="section__inner">
-      <div class="section__header">
-        <span class="section__tag">Procesas</span>
-        <h2 class="section__title">Kaip veikia Laviju?</h2>
-        <p class="section__subtitle">Trys paprasti žingsniai iki prasmingo ugdymo namuose</p>
-      </div>
-      <div class="steps">
-        <div class="step" id="step-1">
-          <div class="step__number">01</div>
-          <div class="step__content">
-            <h3 class="step__title">Darželis susieja šeimą</h3>
-            <p class="step__desc">Administratorius pakviečia tėvus ir pedagogus, priskiria grupes bei užtikrina, kad kiekvienas matytų tik jam skirtą informaciją.</p>
+    <!-- ============ DOMAINS ============ -->
+    <section class="b-section h-domains" id="domains" data-tone="butter" data-chapter="Ugdymosi sritys" aria-labelledby="domains-title">
+      <div class="section__inner">
+        <div class="b-head b-head--split">
+          <div>
+            <span class="section__tag" data-reveal="up">Ugdymosi sritys</span>
+            <h2 class="b-title" id="domains-title" data-reveal="up"><em class="serif-accent">18</em> pasiekimų sričių</h2>
           </div>
-          <div class="step__visual">
-            <div class="step__icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4A7FD4" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
+          <div class="b-head__aside" data-reveal="up">
+            <p>Kiekviena ugdymosi sritis gali plėtoti visas 18 pasiekimų sričių. Kortelėse – Laviju navigacinės sąsajos: taip pasiekimų sritys sugrupuotos programėlėje, tai nėra oficialus Gairių klasifikavimas.</p>
+            <a class="framework-source" href="https://e-seimas.lrs.lt/portal/legalAct/lt/TAD/76bb8f404b5911ee8185e4f3ad07094a/asr" target="_blank" rel="noopener noreferrer">Oficialus šaltinis: Ikimokyklinio ugdymo programos gairės</a>
           </div>
         </div>
-        <div class="step__connector">
-          <svg width="24" height="60" viewBox="0 0 24 60"><path d="M12 0 L12 60" stroke="#D8E2EF" stroke-width="2" stroke-dasharray="4 4"/></svg>
-        </div>
-        <div class="step" id="step-2">
-          <div class="step__number">02</div>
-          <div class="step__content">
-            <h3 class="step__title">Bendraukite ir veikite</h3>
-            <p class="step__desc">Tėvai mato veiklų katalogą bei grupės veiklas, žymi atlikimą, skaito straipsnius ir gauna darželio naujienas.</p>
-          </div>
-          <div class="step__visual">
-            <div class="step__icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5BA3B5" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-          </div>
-        </div>
-        <div class="step__connector">
-          <svg width="24" height="60" viewBox="0 0 24 60"><path d="M12 0 L12 60" stroke="#D8E2EF" stroke-width="2" stroke-dasharray="4 4"/></svg>
-        </div>
-        <div class="step" id="step-3">
-          <div class="step__number">03</div>
-          <div class="step__content">
-            <h3 class="step__title">Stebėkite pažangą</h3>
-            <p class="step__desc">Stebėkite vaiko augimą per penkias ugdymosi sritis ir 18 pasiekimų sričių, švęskite jį kartu su visa šeima.</p>
-          </div>
-          <div class="step__visual">
-            <div class="step__icon-wrap">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6B9BD2" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Domains / Areas Section -->
-  <section class="domains" id="domains">
-    <div class="section__inner">
-      <div class="section__header">
-        <span class="section__tag">Ugdymosi sritys</span>
-        <h2 class="section__title">18 pasiekimų sričių</h2>
-        <p class="section__subtitle">Kiekviena ugdymosi sritis gali plėtoti visas 18 pasiekimų sričių. Kortelėse pateikiamos pavyzdinės Laviju navigacinės sąsajos.</p>
-        <a class="framework-source" href="https://e-seimas.lrs.lt/portal/legalAct/lt/TAD/76bb8f404b5911ee8185e4f3ad07094a/asr" target="_blank" rel="noopener noreferrer">Oficialus šaltinis: Ikimokyklinio ugdymo programos gairės</a>
-      </div>
-      <div class="domains__grid">
-        <div class="domain-card" id="domain-kalbu-pasaulyje" style="--domain-color: #3D6EB8;">
-          <div class="domain-card__icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </div>
-          <h3 class="domain-card__title">Aš kalbų pasaulyje</h3>
-          <p class="domain-card__desc">Pavyzdinės sąsajos: kalbų supratimas ir kalbinė raiška</p>
-        </div>
-        <div class="domain-card" id="domain-tyrineju-ir-pazistu-aplinka" style="--domain-color: #4E85C0;">
-          <div class="domain-card__icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66L12 14l5 5 2-2-5-5 1-1c3-3 5-5 5-8 0-4.5-5-4.5-8-2z"/><path d="M2 22l10-10"/></svg>
-          </div>
-          <h3 class="domain-card__title">Tyrinėju ir pažįstu aplinką</h3>
-          <p class="domain-card__desc">Pavyzdinės sąsajos: aplinkos pažinimas, matematinis mąstymas, skaitmeninis sumanumas ir tyrinėjimas</p>
-        </div>
-        <div class="domain-card" id="domain-musu-sveikata-ir-gerove" style="--domain-color: #6B9BD2;">
-          <div class="domain-card__icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <h3 class="domain-card__title">Mūsų sveikata ir gerovė</h3>
-          <p class="domain-card__desc">Pavyzdinės sąsajos: kasdieniai gyvenimo įgūdžiai ir fizinis aktyvumas</p>
-        </div>
-        <div class="domain-card" id="domain-as-ir-bendruomene" style="--domain-color: #7AACE0;">
-          <div class="domain-card__icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3 class="domain-card__title">Aš ir bendruomenė</h3>
-          <p class="domain-card__desc">Pavyzdinės sąsajos: emocijų suvokimas ir raiška, savireguliacija ir savikontrolė, savivoka ir savigarba, santykiai su suaugusiaisiais ir bendraamžiais</p>
-        </div>
-        <div class="domain-card" id="domain-kuriu-ir-isreiskiu" style="--domain-color: #3565B0;">
-          <div class="domain-card__icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
-          </div>
-          <h3 class="domain-card__title">Kuriu ir išreiškiu</h3>
-          <p class="domain-card__desc">Pavyzdinės sąsajos: estetinis suvokimas, meninė raiška, kūrybiškumas ir gebėjimas žaisti</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <ul class="areas">
+          <li class="area area--lilac" id="domain-musu-sveikata-ir-gerove" style="--area:#72508D" data-reveal="up">
+            <div class="area__art art art--lilac" aria-hidden="true">
+              <div class="art__stage">
+                <span class="art__blob"></span>
+                <img class="art__stk" style="--x:6%;--y:28%;--w:50%" src="/blog/assets/stickers/ball.webp" width="476" height="480" alt="" loading="lazy" decoding="async" />
+                <img class="art__stk" style="--x:58%;--y:36%;--w:34%;--r:6deg" src="/blog/assets/stickers/apple.webp" width="366" height="451" alt="" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="area__body">
+              <h3 class="area__title">Mūsų sveikata ir gerovė</h3>
+              <p class="area__count">2 pasiekimų sritys</p>
+              <ul class="area__chips">
+                <li><b>A</b>Kasdieniai gyvenimo įgūdžiai</li>
+                <li><b>B</b>Fizinis aktyvumas</li>
+              </ul>
+            </div>
+          </li>
+          <li class="area area--butter" id="domain-as-ir-bendruomene" style="--area:#8A5A2B" data-reveal="up">
+            <div class="area__art art art--butter" aria-hidden="true">
+              <div class="art__stage">
+                <span class="art__blob"></span>
+                <img class="art__stk stk--sway" style="--x:8%;--y:22%;--w:44%" src="/blog/assets/stickers/teddy.webp" width="352" height="443" alt="" loading="lazy" decoding="async" />
+                <img class="art__stk stk--beat" style="--x:58%;--y:30%;--w:30%;--r:8deg" src="/blog/assets/stickers/heart.webp" width="382" height="362" alt="" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="area__body">
+              <h3 class="area__title">Aš ir bendruomenė</h3>
+              <p class="area__count">4 pasiekimų sritys</p>
+              <ul class="area__chips">
+                <li><b>C</b>Emocijų suvokimas ir raiška</li>
+                <li><b>D</b>Savireguliacija ir savikontrolė</li>
+                <li><b>E</b>Savivoka ir savigarba</li>
+                <li><b>F</b>Santykiai su suaugusiaisiais ir bendraamžiais</li>
+              </ul>
+            </div>
+          </li>
+          <li class="area area--sky" id="domain-kalbu-pasaulyje" style="--area:#2F5F9F" data-reveal="up">
+            <div class="area__art art art--sky" aria-hidden="true">
+              <div class="art__stage">
+                <span class="art__blob"></span>
+                <img class="art__stk" style="--x:4%;--y:42%;--w:58%;--r:-4deg" src="/blog/assets/stickers/book-open.webp" width="480" height="346" alt="" loading="lazy" decoding="async" />
+                <img class="art__stk stk--hop" style="--x:46%;--y:10%;--w:50%" src="/blog/assets/stickers/bird.webp" width="480" height="354" alt="" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="area__body">
+              <h3 class="area__title">Aš kalbų pasaulyje</h3>
+              <p class="area__count">2 pasiekimų sritys</p>
+              <ul class="area__chips">
+                <li><b>K</b>Kalbų supratimas</li>
+                <li><b>L</b>Kalbinė raiška</li>
+              </ul>
+            </div>
+          </li>
+          <li class="area area--sage" id="domain-tyrineju-ir-pazistu-aplinka" style="--area:#2D6F5B" data-reveal="up">
+            <div class="area__art art art--sage" aria-hidden="true">
+              <div class="art__stage">
+                <span class="art__blob"></span>
+                <img class="art__stk" style="--x:6%;--y:16%;--w:46%;--r:-8deg" src="/blog/assets/stickers/magnifier.webp" width="419" height="480" alt="" loading="lazy" decoding="async" />
+                <img class="art__stk stk--sway" style="--x:56%;--y:40%;--w:26%;--r:14deg" src="/blog/assets/stickers/oak-leaf.webp" width="235" height="329" alt="" loading="lazy" decoding="async" />
+                <img class="art__stk" style="--x:40%;--y:60%;--w:24%" src="/blog/assets/stickers/frog.webp" width="470" height="480" alt="" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="area__body">
+              <h3 class="area__title">Tyrinėju ir pažįstu aplinką</h3>
+              <p class="area__count">5 pasiekimų sritys</p>
+              <ul class="area__chips">
+                <li><b>G</b>Aplinkos pažinimas</li>
+                <li><b>H</b>Matematinis mąstymas</li>
+                <li><b>J</b>Skaitmeninis sumanumas</li>
+                <li><b>P</b>Tyrinėjimas</li>
+                <li><b>R</b>Problemų sprendimas</li>
+              </ul>
+            </div>
+          </li>
+          <li class="area area--peach" id="domain-kuriu-ir-isreiskiu" style="--area:#8A3D62" data-reveal="up">
+            <div class="area__art art art--peach" aria-hidden="true">
+              <div class="art__stage">
+                <span class="art__blob"></span>
+                <img class="art__stk" style="--x:4%;--y:24%;--w:54%;--r:-6deg" src="/blog/assets/stickers/palette.webp" width="461" height="480" alt="" loading="lazy" decoding="async" />
+                <img class="art__stk" style="--x:56%;--y:34%;--w:38%;--r:8deg" src="/blog/assets/stickers/crayons.webp" width="475" height="480" alt="" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div class="area__body">
+              <h3 class="area__title">Kuriu ir išreiškiu</h3>
+              <p class="area__count">5 pasiekimų sritys</p>
+              <ul class="area__chips">
+                <li><b>M</b>Estetinis suvokimas</li>
+                <li><b>N</b>Meninė raiška</li>
+                <li><b>O</b>Kūrybiškumas</li>
+                <li><b>S</b>Gebėjimas žaisti</li>
+                <li><b>U</b>Mokėjimas mokytis</li>
+              </ul>
+            </div>
+          </li>
+        </ul>
 
-  <!-- CTA Section -->
-  <section class="cta" id="cta">
-    <div class="cta__inner">
-      <div class="cta__bg">
-        <div class="cta__orb cta__orb--1"></div>
-        <div class="cta__orb cta__orb--2"></div>
-      </div>
-      <div class="cta__content">
-        <h2 class="cta__title">Pradėkite ugdyti prasmingai</h2>
-        <p class="cta__subtitle">Laviju yra visiškai nemokama darželių šeimoms. Pasiteiraukite savo darželyje!</p>
-        <a href="#contact" class="btn btn--white" id="cta-btn">
-          <span>Susisiekite su mumis</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
-      </div>
-    </div>
-  </section>
+        <!-- The six steps, one staircase at a time -->
+        <div class="stairs" data-stairs data-reveal="up" style="--area:#2F5F9F">
+          <div class="stairs__copy">
+            <span class="section__tag">Pasiekimų žingsniai</span>
+            <h3 class="stairs__title">Ką reiškia <em class="serif-accent">6 žingsniai?</em></h3>
+            <p class="stairs__lede">Kiekviena pasiekimų sritis aprašoma šešiais žingsniais – nuo pirmųjų bandymų iki savarankiško gebėjimo. Pasirinkite sritį ir paspauskite laiptelį.</p>
+            <div class="seg" role="group" aria-label="Pasiekimų sritis">
+              <button class="seg__btn is-active" type="button" aria-pressed="true" data-stairs-set="kalbine-raiska">Kalbinė raiška</button>
+              <button class="seg__btn" type="button" aria-pressed="false" data-stairs-set="fizinis-aktyvumas">Fizinis aktyvumas</button>
+              <button class="seg__btn" type="button" aria-pressed="false" data-stairs-set="tyrinejimas">Tyrinėjimas</button>
+            </div>
+          </div>
 
-  <!-- Contact / Kontaktai Section -->
-  <section class="contact" id="contact">
-    <div class="section__inner">
-      <div class="section__header">
-        <span class="section__tag">Kontaktai</span>
-        <h2 class="section__title">Susisiekime</h2>
-        <p class="section__subtitle">Turite klausimų? Mielai atsakysime!</p>
-      </div>
-      <div class="contact__grid">
-        <div class="contact__info">
-          <div class="contact__card" id="contact-general">
-            <div class="contact__card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B9BD2" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div class="stairs__stage">
+            <div class="stairs__flight" style="--at:3">
+              <ol class="stairs__steps" aria-label="Pasiekimų žingsniai">
+                <li><button class="stairs__step" type="button" style="--n:1" data-step="1" aria-pressed="false"><span class="visually-hidden">Žingsnis </span>1</button></li>
+                <li><button class="stairs__step" type="button" style="--n:2" data-step="2" aria-pressed="false"><span class="visually-hidden">Žingsnis </span>2</button></li>
+                <li><button class="stairs__step is-active" type="button" style="--n:3" data-step="3" aria-pressed="true"><span class="visually-hidden">Žingsnis </span>3</button></li>
+                <li><button class="stairs__step" type="button" style="--n:4" data-step="4" aria-pressed="false"><span class="visually-hidden">Žingsnis </span>4</button></li>
+                <li><button class="stairs__step" type="button" style="--n:5" data-step="5" aria-pressed="false"><span class="visually-hidden">Žingsnis </span>5</button></li>
+                <li><button class="stairs__step" type="button" style="--n:6" data-step="6" aria-pressed="false"><span class="visually-hidden">Žingsnis </span>6</button></li>
+              </ol>
+              <img class="stairs__climber" data-stairs-climber src="/blog/assets/stickers/teddy.webp" width="352" height="443" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
-            <div class="contact__card-content">
-              <span class="contact__card-role">Bendri klausimai</span>
-              <h3 class="contact__card-name">Laviju administracija</h3>
-              <a href="mailto:info@laviju.lt" class="contact__card-email" id="contact-email-general">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                info@laviju.lt
-              </a>
+
+            <div class="stairs__panel" aria-live="polite">
+              <p class="stairs__kicker"><span class="stairs__code" data-stairs-code>L</span><span data-stairs-name>Kalbinė raiška</span><span aria-hidden="true">·</span><span><b data-stairs-num>3</b> žingsnis iš 6</span></p>
+              <p class="stairs__desc" data-stairs-desc>2–3 žodžių sakiniais kalba ir klausinėja, inicijuoja pokalbį, vartoja paprastas mandagumo frazes.</p>
+              <p class="stairs__home"><b>Namuose:</b> <span data-stairs-home>Kalbėkitės be skubėjimo, plėskite vaiko mintis klausimais, kurkite istorijas, žaiskite garsais, raidėmis ir simboliais.</span></p>
             </div>
           </div>
-          <div class="contact__card" id="contact-director">
-            <div class="contact__card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A7FD4" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </div>
-            <div class="contact__card-content">
-              <span class="contact__card-role">Direktorė</span>
-              <h3 class="contact__card-name">Kotryna Ašakaitė</h3>
-              <a href="mailto:kotryna@laviju.lt" class="contact__card-email" id="contact-email-director">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                kotryna@laviju.lt
-              </a>
-            </div>
-          </div>
-          <div class="contact__card" id="contact-developer">
-            <div class="contact__card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5BA3B5" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            </div>
-            <div class="contact__card-content">
-              <span class="contact__card-role">DevOps inžinierius</span>
-              <h3 class="contact__card-name">Rokas Liukenskas</h3>
-              <a href="mailto:rokas@laviju.lt" class="contact__card-email" id="contact-email-dev">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                rokas@laviju.lt
-              </a>
-            </div>
+
+          <!-- Step descriptions for the explorer (Laviju app content) -->
+          <div hidden>
+            <template data-stairs-data="kalbine-raiska" data-color="#2F5F9F" data-code="L" data-name="Kalbinė raiška" data-climber="/blog/assets/stickers/teddy.webp" data-climber-size="352x443" data-home="Kalbėkitės be skubėjimo, plėskite vaiko mintis klausimais, kurkite istorijas, žaiskite garsais, raidėmis ir simboliais.">
+              <li>Garsais, gestais ir mimika reiškia poreikius bei emocijas, čiauška, mėgdžioja garsus ir skiemenis.</li>
+              <li>Kartoja garsus, žodžius ir gestus, pavadina kai kuriuos objektus bei trumpais žodžiais išsako norus.</li>
+              <li>2–3 žodžių sakiniais kalba ir klausinėja, inicijuoja pokalbį, vartoja paprastas mandagumo frazes.</li>
+              <li>3–5 žodžių sakiniais pasakoja apie patirtį ir jausmus, kreipiasi, tariasi ir laikosi pagrindinių bendravimo normų.</li>
+              <li>Kalba sudėtiniais sakiniais, pasakoja detaliau, paaiškina nesupratusiam, bando susikalbėti su kitakalbiu.</li>
+              <li>Nuosekliai pasakoja ir kuria istorijas, atpasakoja tekstus, taiko nežodinę raišką, kopijuoja žodžius ir parašo savo vardą.</li>
+            </template>
+            <template data-stairs-data="fizinis-aktyvumas" data-color="#72508D" data-code="B" data-name="Fizinis aktyvumas" data-climber="/blog/assets/stickers/ball.webp" data-climber-size="476x480" data-home="Kasdien siūlykite saugiai ropoti, bėgti, šokinėti, mesti, gaudyti, lipti, šokti ir veikti su įvairiomis priemonėmis.">
+              <li>Vartosi, sėdasi, ropoja, stojasi, eina ir tyrinėja judesį bei kūno padėtis.</li>
+              <li>Eina, bėga, lipa, ridena ir meta kamuolį, pradeda išlaikyti pusiausvyrą ir naudoti rankas tikslingai.</li>
+              <li>Derina pagrindinius judesius, šokinėja, lipa laiptais, gaudo kamuolį, manipuliuoja smulkiais daiktais.</li>
+              <li>Juda įvairiais būdais, apeina kliūtis, mėto ir gaudo, trumpai išlaiko pusiausvyrą, įsitraukia į judriuosius žaidimus.</li>
+              <li>Tiksliau koordinuoja judesius, derina juos poroje ar grupėje, naudoja priemones ir laikosi judėjimo bei poilsio ritmo.</li>
+              <li>Tikslingai derina sudėtingesnius judesius, reguliuoja jėgą ir tempą, koordinuotai juda šokdamas, žaisdamas ir sportuodamas.</li>
+            </template>
+            <template data-stairs-data="tyrinejimas" data-color="#2D6F5B" data-code="P" data-name="Tyrinėjimas" data-climber="/blog/assets/stickers/magnifier.webp" data-climber-size="419x480" data-home="Stebėkite kartu, klauskite vaiko spėjimo, suteikite saugių priemonių bandyti, fiksuoti ir pasakoti, ką pavyko atrasti.">
+              <li>Aktyviai stebi, liečia, klausosi ir tyrinėja artimos aplinkos objektus pojūčiais.</li>
+              <li>Veikdamas kartoja veiksmus, ieško naujų įspūdžių ir pastebi paprastą priežasties bei pasekmės ryšį.</li>
+              <li>Stebi, bando, klausinėja, lygina ir su suaugusiojo pagalba aiškinasi, kaip kas nors veikia.</li>
+              <li>Kelia paprastus klausimus, spėja, kas nutiks, pasirenka priemonę ir fiksuoja vieną kitą pastebėjimą.</li>
+              <li>Planuoja nesudėtingą tyrimą, taiko kelis būdus, lygina rezultatus, pastebi pokyčius ir koreguoja bandymą.</li>
+              <li>Savarankiškai kelia klausimus, numato, pasirenka metodus, pagrindžia atradimus, aptaria tyrimo procesą ir išvadas.</li>
+            </template>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- ============ FROM THE BLOG ============ -->
+    <section class="b-section featured h-blog" id="tinklarastis" data-tone="peach" data-chapter="Tinklaraštis" aria-labelledby="tinklarastis-title">
+      <div class="section__inner">
+        <div class="b-head b-head--split">
+          <div>
+            <span class="section__tag" data-reveal="up">Tinklaraštis</span>
+            <h2 class="b-title" id="tinklarastis-title" data-reveal="up">Idėjos, kurios telpa <em class="serif-accent">tarp pusryčių ir miego</em></h2>
+          </div>
+          <div class="b-head__aside" data-reveal="up">
+            <p>Trumpi, praktiški tekstai tėvams ir pedagogams apie vaiko kalbą, žaidimą ir kasdienę rutiną.</p>
+            <a class="h-blog__all" href="/blog/">Visi straipsniai <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+
+        <div class="featured__grid">
+          <article class="story story--lead" data-reveal="left">
+            <a class="story__link" href="/blog/maziau-veiklu-daugiau-kalbejimosi/">
+              <div class="story__media story__media--lead">
+                <img class="story__still" src="/blog/assets/still-life-880.webp" srcset="/blog/assets/still-life-880.webp 880w, /blog/assets/still-life-1440.webp 1440w" sizes="(max-width: 900px) 92vw, 700px" width="1440" height="804" alt="Akvarelės daiktai iš vaiko dienos: obuolys, dubenėlis, kepurė, lietpaltis, ąžuolo lapas, knyga ir mėnulis" loading="lazy" decoding="async" />
+                <div class="ticker" data-ticker>
+                  <span class="ticker__label">5 situacijos</span>
+                  <span class="ticker__window">
+                    <span class="ticker__item is-active">01 · Gaminant</span>
+                    <span class="ticker__item">02 · Rengiantis</span>
+                    <span class="ticker__item">03 · Vaikštant lauke</span>
+                    <span class="ticker__item">04 · Vartant knygą</span>
+                    <span class="ticker__item">05 · Prieš miegą</span>
+                  </span>
+                </div>
+              </div>
+              <div class="story__body">
+                <p class="meta"><span class="pill pill--kalba">Kalba</span><span>Straipsnis</span><span aria-hidden="true">·</span><span>5 min</span></p>
+                <h3 class="story__title"><span class="u-line">Mažiau veiklų&nbsp;– daugiau kalbėjimosi</span></h3>
+                <p class="story__excerpt">Nebūtina daryti daug skirtingų veiklų. Svarbiausia – kartoti tuos pačius žodžius, kalbėti apie tai, ką vaikas mato ir daro, ir duoti jam laiko atsakyti.</p>
+                <span class="read-more">Skaityti straipsnį <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+              </div>
+            </a>
+          </article>
+
+          <article class="story story--side" data-reveal="right">
+            <a class="story__link" href="/blog/maziau-veiklu-daugiau-kalbejimosi/#garsazodziai">
+              <div class="story__media art art--butter" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk" style="--x:4%;--y:34%;--w:50%" src="/blog/assets/stickers/cow.webp" width="480" height="403" alt="" loading="lazy" decoding="async" />
+                  <img class="art__stk" style="--x:54%;--y:22%;--w:38%" src="/blog/assets/stickers/dog.webp" width="409" height="480" alt="" loading="lazy" decoding="async" />
+                  <span class="talk-bubble talk-bubble--sm" style="--x:24%;--y:12%">Mūū!</span>
+                </div>
+              </div>
+              <div class="story__body">
+                <p class="meta"><span class="pill pill--zaidimai">Žaidimai</span><span>Trumpai</span><span aria-hidden="true">·</span><span>2 min</span></p>
+                <h3 class="story__title"><span class="u-line">Garsažodžių galia</span></h3>
+                <p class="story__excerpt">„Mūū!“, „Au au!“, „Brrr!“ – mėgdžiodamas garsus vaikas klausosi skirtumų ir drąsiau bando kalbėti.</p>
+              </div>
+            </a>
+          </article>
+
+          <article class="story story--side" data-reveal="up">
+            <a class="story__link" href="/blog/maziau-veiklu-daugiau-kalbejimosi/#be-spaudimo">
+              <div class="story__media art art--peach" aria-hidden="true">
+                <div class="art__stage">
+                  <span class="art__blob"></span>
+                  <img class="art__stk" style="--x:12%;--y:28%;--w:44%" src="/blog/assets/stickers/jug.webp" width="378" height="358" alt="" loading="lazy" decoding="async" />
+                  <img class="art__stk" style="--x:60%;--y:30%;--w:26%" src="/blog/assets/stickers/glass.webp" width="242" height="332" alt="" loading="lazy" decoding="async" />
+                  <span class="talk-bubble talk-bubble--sm" style="--x:30%;--y:8%">Nori vandens?</span>
+                </div>
+              </div>
+              <div class="story__body">
+                <p class="meta"><span class="pill pill--tevams">Tėvams</span><span>Trumpai</span><span aria-hidden="true">·</span><span>2 min</span></p>
+                <h3 class="story__title"><span class="u-line">Be spaudimo</span></h3>
+                <p class="story__excerpt">Kaip kalbinti vaiką neverčiant kartoti – ir kodėl ramiai pasakytas žodis veikia geriau nei „Pasakyk!“.</p>
+              </div>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section class="cta b-cta h-cta" id="cta" data-tone="base">
+      <div class="cta__inner b-cta__inner" data-reveal="scale">
+        <div class="cta__bg">
+          <div class="cta__orb cta__orb--1"></div>
+          <div class="cta__orb cta__orb--2"></div>
+        </div>
+        <img class="b-cta__stk h-cta__stork" src="/blog/assets/stickers/stork.webp" width="327" height="480" alt="" loading="lazy" decoding="async" />
+        <img class="b-cta__stk b-cta__stk--sun" src="/blog/assets/stickers/sun.webp" width="480" height="475" alt="" loading="lazy" decoding="async" />
+        <div class="cta__content">
+          <h2 class="cta__title">Pradėkite ugdyti <em class="serif-accent">prasmingai</em></h2>
+          <p class="cta__subtitle">Laviju yra visiškai nemokama darželių šeimoms. Pasiteiraukite savo darželyje!</p>
+          <div class="b-cta__actions">
+            <a href="https://play.google.com/store/apps/details?id=com.laviju.app" class="store-badge b-cta__store magnetic" target="_blank" rel="noopener noreferrer" aria-label="Atsisiųsti Laviju iš Google Play">
+              <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#34A853" d="M3.2 2.6c-.3.3-.5.8-.5 1.4v16c0 .6.2 1.1.5 1.4l8.6-9.4-8.6-9.4z"/>
+                <path fill="#FBBC04" d="m14.5 9.1-2.7 2.9 2.7 2.9 3.6-2c1.2-.7 1.2-1.1 0-1.8l-3.6-2z"/>
+                <path fill="#4285F4" d="M3.2 2.6 14.5 9.1 11.8 12 3.2 2.6z"/>
+                <path fill="#EA4335" d="m3.2 21.4 8.6-9.4 2.7 2.9L3.2 21.4z"/>
+              </svg>
+              <span>
+                <small>Atsisiųsti dabar</small>
+                Google Play
+              </span>
+            </a>
+            <a href="mailto:info@laviju.lt?subject=Laviju%20demonstracija" class="btn btn--white magnetic" id="cta-btn">
+              <span>Darželiams: demonstracija</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="b-section h-contact" id="contact" data-tone="base" data-chapter="Kontaktai" aria-labelledby="contact-title">
+      <div class="section__inner h-contact__grid">
+        <div class="h-contact__copy">
+          <span class="section__tag" data-reveal="up">Kontaktai</span>
+          <h2 class="b-title b-title--sm" id="contact-title" data-reveal="up">Turite klausimų? <em class="serif-accent">Mielai atsakysime!</em></h2>
+          <p class="b-lede" data-reveal="up">Parašykite mums el. paštu. Darželiams mielai parodysime, kaip Laviju veikia jūsų grupėse.</p>
+          <div class="h-contact__art" aria-hidden="true">
+            <img class="h-contact__envelope" src="/blog/assets/stickers/envelope.webp" width="480" height="351" alt="" loading="lazy" decoding="async" />
+            <span class="h-contact__mug">
+              <span class="steam"><i></i><i></i><i></i></span>
+              <img src="/blog/assets/stickers/mug.webp" width="408" height="379" alt="" loading="lazy" decoding="async" />
+            </span>
+          </div>
+        </div>
+
+        <ul class="h-contact__list">
+          <li data-reveal="right">
+            <a class="person" href="mailto:info@laviju.lt" id="contact-email-general">
+              <span class="person__icon person__icon--sky" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <span class="person__who"><small>Bendri klausimai</small><b>Laviju administracija</b></span>
+              <span class="person__mail">info@laviju.lt</span>
+              <svg class="person__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+          </li>
+          <li data-reveal="right">
+            <a class="person" href="mailto:kotryna@laviju.lt" id="contact-email-director">
+              <span class="person__icon person__icon--peach" aria-hidden="true">KA</span>
+              <span class="person__who"><small>Direktorė</small><b>Kotryna Ašakaitė</b></span>
+              <span class="person__mail">kotryna@laviju.lt</span>
+              <svg class="person__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+          </li>
+          <li data-reveal="right">
+            <a class="person" href="mailto:rokas@laviju.lt" id="contact-email-dev">
+              <span class="person__icon person__icon--sage" aria-hidden="true">RL</span>
+              <span class="person__who"><small>DevOps inžinierius</small><b>Rokas Liukenskas</b></span>
+              <span class="person__mail">rokas@laviju.lt</span>
+              <svg class="person__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Chapter rail (desktop) -->
+  <nav class="rail" aria-label="Puslapio skyriai" data-rail hidden></nav>
 
   <!-- Footer -->
   <footer class="footer" id="footer">
@@ -572,6 +1039,8 @@
     </div>
   </footer>
 
-  <script src="/script.js?v=20260830-1"></script>
+  <script src="/script.js?v=20260927-1"></script>
+  <script src="/blog/blog.js?v=20260927-4"></script>
+  <script src="/home.js?v=20260927-1"></script>
 </body>
 </html>

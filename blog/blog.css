@@ -3,9 +3,11 @@
    Builds on /styles.css tokens (blue, Inter, radii,
    buttons, nav, footer) and adds a pastel palette,
    scroll storytelling and micro-interactions.
+   Shared with the landing page (body.home, /home.css).
    ============================================= */
 
-.blog {
+.blog,
+.home {
   --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -37,13 +39,15 @@
   font-size: 17px;
 }
 
-.blog main {
+.blog main,
+.home main {
   position: relative;
   z-index: 1;
   overflow-x: clip;
 }
 
-.blog .footer {
+.blog .footer,
+.home .footer {
   position: relative;
   z-index: 1;
 }
@@ -4042,7 +4046,8 @@ a:hover .art__stk:nth-of-type(even) { translate: 0 -3px; scale: 1.06; }
 }
 
 @media (max-width: 768px) {
-  .blog {
+  .blog,
+  .home {
     --nav-h: 72px;
   }
 

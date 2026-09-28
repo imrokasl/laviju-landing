@@ -159,8 +159,10 @@
       el,
       depth: parseFloat(el.dataset.depth) || 0,
     }));
+    const centeredStage = hero.querySelector('[data-parallax-stage="center"]');
     let heroHeight = 1;
     let heroScroll = 0;
+    let liftOrigin = 0;
     let pointerX = 0;
     let pointerY = 0;
     let targetX = 0;
@@ -169,7 +171,7 @@
     let heroVisible = true;
 
     function applyLayers() {
-      const scrollLift = heroScroll;
+      const scrollLift = heroScroll - liftOrigin;
       for (const layer of layers) {
         const x = pointerX * layer.depth * 22;
         const y = pointerY * layer.depth * 16 - scrollLift * layer.depth * 0.22;
@@ -179,6 +181,14 @@
 
     measureHandlers.push(() => {
       heroHeight = Math.max(1, hero.offsetHeight);
+      // Opt-in: when the stage is stacked below the text (phones, tablets),
+      // the layers settle into their drawn positions as the stage reaches the
+      // middle of the screen, not at the very top of the page
+      liftOrigin = 0;
+      if (centeredStage) {
+        const top = pageTop(centeredStage);
+        if (top > viewportH * 0.5) liftOrigin = top + centeredStage.offsetHeight / 2 - viewportH / 2;
+      }
     });
 
     scrollHandlers.push((y) => {
@@ -1124,7 +1134,7 @@
   // ---------------------------------------------
   const quote = document.querySelector('[data-ink]');
   if (quote) {
-    const accentWords = ['ramiai', 'pavyzdys'];
+    const accentWords = (quote.dataset.inkAccent || '').toLowerCase().split(/\s+/).filter(Boolean);
     const words = quote.textContent.trim().split(/\s+/);
     quote.textContent = '';
     const spans = words.map((word, index) => {
