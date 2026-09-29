@@ -1,8 +1,10 @@
 // =============================================
 // LAVIJU — first-party visit statistics
-// No cookies, no stored identifiers and no third parties. Page, reading and
-// click events go to Laviju's own Supabase Edge Function and are visible only
-// to the platform owner. Details: /privacy/#statistika
+// No cookies, no identifiers and no third parties. Page, reading and click
+// events go to Laviju's own Supabase Edge Function and are visible only to the
+// platform owner. To tell new visitors from returning ones, the browser keeps
+// only the time of its last visit and a visit count; just coarse groups of
+// those are sent. Details: /privacy/#statistika
 // =============================================
 
 (function () {
@@ -11,15 +13,23 @@
   const ENDPOINT = 'https://hfmwcmgoduvhmmjiyteh.supabase.co/functions/v1/site-insights';
   const PRODUCTION_HOSTS = ['laviju.lt', 'www.laviju.lt'];
   const OPT_OUT_KEY = 'laviju:statistics-opt-out';
-  const CAMPAIGN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'src', 'ref'];
+  const VISIT_KEY = 'laviju:statistics-visits';
+  const CAMPAIGN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'ref'];
+  const VISIT_GAP_MS = 1800000;
+  const VISIT_MEMORY_MS = 34214400000;
   const IDLE_AFTER_MS = 90000;
   const MAX_ENGAGED_MS = 3600000;
   const MAX_INTERACTIONS = 60;
   const MAX_SECTIONS = 40;
   const nav = window.navigator || {};
+  // A keepalive fetch outlives the page just like a beacon. Beacons are only the
+  // fallback for browsers without keepalive: privacy filter lists drop every
+  // beacon sent to another domain (EasyPrivacy's *$ping,third-party), and the
+  // collector runs on Supabase's domain.
+  const KEEPALIVE = typeof Request === 'function' && 'keepalive' in Request.prototype;
 
   // ---------------------------------------------
-  // Opt-out: the visitor's own choice is the only thing ever stored.
+  // Opt-out: the visitor's own choice, which also forgets past visits.
   // It works on every host so /privacy/ can offer it anywhere.
   // ---------------------------------------------
   function isOptedOut() {
@@ -32,8 +42,12 @@
 
   function setOptedOut(value) {
     try {
-      if (value) window.localStorage.setItem(OPT_OUT_KEY, '1');
-      else window.localStorage.removeItem(OPT_OUT_KEY);
+      if (value) {
+        window.localStorage.setItem(OPT_OUT_KEY, '1');
+        window.localStorage.removeItem(VISIT_KEY);
+      } else {
+        window.localStorage.removeItem(OPT_OUT_KEY);
+      }
       return true;
     } catch (error) {
       return false;
@@ -104,14 +118,16 @@
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
   }
 
-  function send(payload, beacon) {
+  function send(payload, leaving) {
     if (isOptedOut()) return;
+    // A text/plain body keeps this a simple request (no CORS preflight).
     const body = JSON.stringify(payload);
-    try {
-      // A text/plain body keeps this a simple request (no CORS preflight).
-      if (beacon && typeof nav.sendBeacon === 'function' && nav.sendBeacon(ENDPOINT, body)) return;
-    } catch (error) {
-      // Fall back to fetch below.
+    if (leaving && !KEEPALIVE) {
+      try {
+        if (typeof nav.sendBeacon === 'function' && nav.sendBeacon(ENDPOINT, body)) return;
+      } catch (error) {
+        // Fall back to fetch below.
+      }
     }
     try {
       fetch(ENDPOINT, { method: 'POST', body, keepalive: true, credentials: 'omit', mode: 'cors' }).catch(() => {});
@@ -177,6 +193,83 @@
   }
 
   // ---------------------------------------------
+  // New or returning. The browser remembers when it was last active here,
+  // how many visits it has made and the gap in days before the current one.
+  // A visit ends after 30 minutes without activity, as on the server, and the
+  // memory lapses after 13 months. Only coarse groups leave the browser.
+  // ---------------------------------------------
+  let visit = null;
+  let visitSavedAt = 0;
+
+  function localDay(time) {
+    const date = new Date(time);
+    return Math.round(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
+  }
+
+  function readVisitMemory() {
+    const raw = window.localStorage.getItem(VISIT_KEY);
+    if (!raw) return null;
+    try {
+      const memory = JSON.parse(raw);
+      if (memory && Number.isFinite(memory.t) && Number.isInteger(memory.n) && memory.n >= 1) {
+        return { t: memory.t, n: memory.n, g: Number.isInteger(memory.g) && memory.g >= 0 ? memory.g : null };
+      }
+    } catch (error) {
+      // An unreadable memory starts over.
+    }
+    return null;
+  }
+
+  function saveVisit(time) {
+    try {
+      window.localStorage.setItem(VISIT_KEY, JSON.stringify({ t: time, n: visit.n, g: visit.g }));
+      visitSavedAt = time;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function beginVisit() {
+    const time = Date.now();
+    let memory = null;
+    try {
+      memory = readVisitMemory();
+    } catch (error) {
+      // Storage is blocked, so new and returning cannot be told apart.
+      visit = null;
+      return;
+    }
+    const elapsed = memory ? time - memory.t : Infinity;
+    if (memory && elapsed >= 0 && elapsed < VISIT_GAP_MS) {
+      visit = { n: memory.n, g: memory.g };
+    } else if (memory && elapsed < VISIT_MEMORY_MS) {
+      visit = { n: Math.min(memory.n + 1, 999), g: Math.max(0, localDay(time) - localDay(memory.t)) };
+    } else {
+      visit = { n: 1, g: null };
+    }
+    // Without a saved memory every visit would look new; send nothing then.
+    if (!saveVisit(time)) visit = null;
+  }
+
+  function visitGroups() {
+    if (!visit) return null;
+    const number = visit.n >= 6 ? 6 : visit.n >= 3 ? 3 : visit.n;
+    if (number === 1) return { n: 1 };
+    const gap = visit.g;
+    if (gap === null) return { n: number };
+    return { n: number, d: gap >= 31 ? 31 : gap >= 8 ? 8 : gap >= 2 ? 2 : gap };
+  }
+
+  // Activity keeps the visit open; saved at most once a minute unless leaving.
+  function touchVisit(force) {
+    if (!visit) return;
+    const time = Date.now();
+    if (!force && time - visitSavedAt < 60000) return;
+    if (!isOptedOut()) saveVisit(time);
+  }
+
+  // ---------------------------------------------
   // Page view state
   // ---------------------------------------------
   let pageviewId = null;
@@ -215,6 +308,7 @@
     if (!stretchStart) stretchStart = time;
     window.clearTimeout(idleTimer);
     idleTimer = window.setTimeout(stopStretch, IDLE_AFTER_MS);
+    touchVisit(false);
   }
 
   // ---------------------------------------------
@@ -339,7 +433,7 @@
   // ---------------------------------------------
   // Sending
   // ---------------------------------------------
-  function flush(beacon) {
+  function flush(leaving) {
     if (!pageviewId) return;
     measure();
     const engaged = currentEngaged();
@@ -358,7 +452,7 @@
       scrollDepth: maxScroll,
       sections,
       vitals,
-    }, beacon);
+    }, leaving);
   }
 
   function startPageview(restored) {
@@ -372,6 +466,7 @@
     nextMilestone = 15000;
     collectSections();
     measure();
+    beginVisit();
 
     send({
       v: 1,
@@ -387,6 +482,7 @@
       touchPoints: Math.min(20, nav.maxTouchPoints || 0),
       language: nav.language || null,
       timeZone: timeZone(),
+      visit: visitGroups(),
     }, false);
 
     onActivity();
@@ -536,6 +632,7 @@
     if (isHidden()) {
       stopStretch();
       flush(true);
+      touchVisit(true);
     } else {
       onActivity();
     }
@@ -543,12 +640,13 @@
   window.addEventListener('pagehide', () => {
     stopStretch();
     flush(true);
+    touchVisit(true);
   });
   window.addEventListener('pageshow', (event) => {
     if (event.persisted) startPageview(true);
   });
 
-  // Periodic totals make short visits count even if the final beacon is lost.
+  // Periodic totals make short visits count even if the final update is lost.
   window.setInterval(() => {
     if (!pageviewId || currentEngaged() < nextMilestone) return;
     nextMilestone = nextMilestone < 60000 ? 60000 : nextMilestone + 120000;
