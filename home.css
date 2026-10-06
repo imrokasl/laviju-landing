@@ -516,8 +516,7 @@
   color: #438f9f;
 }
 
-.mini-act__icon svg,
-.h-act__icon svg {
+.mini-act__icon svg {
   width: 55%;
   height: 55%;
   fill: none;
@@ -823,14 +822,27 @@
 /* =============================================
    HOW IT WORKS — the blog's sticky story, sky-toned
    ============================================= */
-.h-how .why__stage {
-  container-type: size;
+.h-how .why__stage,
+.h-step-shot {
   background:
     radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.92), transparent 58%),
     linear-gradient(165deg, #F5F9FE, #D6E6F9);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.9),
     0 50px 90px -50px rgba(53, 101, 176, 0.5);
+}
+
+/* Beside the steps: a sticky stage, tall enough for the whole phone (2.117 = the phone's height / width) */
+.h-how .why__stage-wrap {
+  top: max(88px, calc(50vh - 330px));
+}
+
+.h-how .why__stage {
+  --dev-w: min(52cqw, calc((100cqh - 40px) / 2.117));
+  --dev-top: calc((100cqh - var(--dev-w) * 2.117) / 2);
+  container-type: size;
+  aspect-ratio: auto;
+  height: clamp(460px, calc(100vh - 130px), 660px);
 }
 
 .h-how .why__steps::before {
@@ -853,571 +865,409 @@
   border-left-color: var(--sky-3);
 }
 
-.h-scene {
+/* A phone showing a real parent-app screen; --dev-w sets its size */
+.h-device {
+  position: relative;
+  z-index: 1;
+  width: var(--dev-w);
+  padding: calc(var(--dev-w) * 0.022);
+  border-radius: 17.5% / 8.27%;
+  background:
+    linear-gradient(100deg, #182434 0%, #6d7b8c 8%, #182433 15%, #0f1927 48%, #536172 86%, #142131 94%),
+    #172434;
+  box-shadow:
+    0 34px 60px -30px rgba(23, 39, 62, 0.55),
+    0 10px 26px -14px rgba(23, 39, 62, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.36),
+    inset 0 0 0 2px rgba(6, 12, 20, 0.88);
+}
+
+/* On the stage one phone stays put and cross-fades to each step's screen */
+.why__stage .h-device {
+  position: absolute;
+  left: 50%;
+  top: var(--dev-top);
+  translate: -50% 0;
+}
+
+.h-device__screen {
+  position: relative;
+  aspect-ratio: 393 / 852;
+  overflow: hidden;
+  border-radius: 15.6% / 7.2%;
+  background: var(--bg);
+  container-type: inline-size;
+}
+
+/* a faint glass sheen over the screen */
+.h-device__screen::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  background: linear-gradient(112deg, rgba(255, 255, 255, 0.16), transparent 34%);
+  pointer-events: none;
+}
+
+/* The outgoing screen waits underneath until the next one has faded in */
+.h-how .h-shot {
+  margin: 0;
+  transition: opacity 0s linear 0.5s, visibility 0s linear 0.5s;
+}
+
+.h-how .h-shot.is-active {
+  z-index: 1;
+  transition: opacity 0.5s ease, visibility 0s;
+}
+
+.h-shot img,
+.h-device__shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+/* The screens are captured without the system bar: the clock, the island and the icons are drawn here */
+.h-device__status {
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 15cqw;
+  padding: 0.6cqw 8.2cqw 0 12.6cqw;
+  color: #111c2a;
+  font-size: 4.1cqw;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.h-device__status::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 2.8cqw;
+  width: 31.6cqw;
+  height: 9.3cqw;
+  border-radius: var(--radius-full);
+  background: #05080d;
+  translate: -50% 0;
+}
+
+.h-device__status::after {
+  content: '';
+  width: 17.5cqw;
+  height: 3.1cqw;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 12.4'%3E%3Cg fill='%23111c2a'%3E%3Cpath d='M1 9.2h2v2H1zM5 6.2h2v5H5zM9 3.2h2v8H9zM13 1.2h2v10h-2z'/%3E%3Crect x='47.8' y='2.6' width='16' height='7.2' rx='1.8'/%3E%3C/g%3E%3Cg fill='none' stroke='%23111c2a'%3E%3Cpath stroke-width='1.5' stroke-linecap='round' d='M25.1 4.7a9.5 9.5 0 0 1 13 0M27.6 7.2a6 6 0 0 1 8 0M30.3 9.7a2 2 0 0 1 2.6 0'/%3E%3Crect x='45.8' y='.6' width='23.6' height='11.2' rx='3.4' stroke-width='1.2' stroke-opacity='.45'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Stickers and captions around the phone, one set per step */
+.h-floats {
   font-size: clamp(11px, 2.6cqw, 15px);
 }
 
-.h-scene__stk {
+.h-float {
   position: absolute;
+  opacity: 0;
+  translate: var(--tx, 0) 12px;
+  transition: opacity 0.5s var(--ease-out), translate 0.7s var(--ease-spring), scale 0.7s var(--ease-spring);
+}
+
+img.h-float {
   height: auto;
   filter: drop-shadow(0 16px 18px rgba(30, 42, 58, 0.16));
-  opacity: 0;
-  transition: opacity 0.5s ease, transform 0.9s var(--ease-spring);
+  scale: 0.88;
 }
 
-.why-scene.is-active .h-scene__stk {
+.h-how .why__stage:has([data-scene="0"].is-active) [data-for="0"],
+.h-how .why__stage:has([data-scene="1"].is-active) [data-for="1"],
+.h-how .why__stage:has([data-scene="2"].is-active) [data-for="2"] {
   opacity: 1;
-}
-
-.h-ava {
-  display: grid;
-  place-items: center;
-  width: 2.6em;
-  height: 2.6em;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #d5e6fa, #8fbae8);
-  color: var(--primary-darker);
-  font-size: 0.82em;
-  font-weight: 800;
-}
-
-.h-ava--teal {
-  background: linear-gradient(145deg, #6f9ed8, #4a7fd4);
-  color: #fff;
-}
-
-.h-ava--peach {
-  background: linear-gradient(145deg, #FCE3D8, #F6C4AE);
-  color: var(--peach-ink);
-}
-
-.h-panel {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 76%;
-  padding: 4.4cqw;
-  border-radius: 6cqw;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 30px 60px -34px rgba(30, 42, 58, 0.45);
-  translate: -50% -50%;
-  opacity: 0;
-  scale: 0.94;
-  transition: opacity 0.5s var(--ease-out), scale 0.7s var(--ease-spring);
-}
-
-.why-scene.is-active .h-panel {
-  opacity: 1;
+  translate: var(--tx, 0) 0;
   scale: 1;
-  transition-delay: 0.12s;
+  transition-delay: var(--delay, 0.25s);
 }
 
-.h-panel__head {
-  display: flex;
-  align-items: center;
-  gap: 0.9em;
-  margin-bottom: 0.9em;
-  padding-bottom: 0.9em;
-  border-bottom: 1px solid var(--border-light);
+/* Step 1 — the kindergarten links the family */
+.h-float--house {
+  left: 2.5%;
+  top: 8cqh;
+  width: 21%;
+  rotate: -5deg;
 }
 
-.h-panel__head img {
-  width: 3.6em;
-  height: auto;
-  flex-shrink: 0;
-}
-
-.h-panel__head > span:last-child {
+.h-float--label {
+  --delay: 0.45s;
+  left: 2.5%;
+  top: calc(8cqh + 22.5cqw + 0.7em);
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  line-height: 1.25;
-}
-
-.h-panel__head small {
-  color: var(--text-tertiary);
-  font-size: 0.74em;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.h-panel__head b {
-  color: var(--text);
-  font-size: 1.12em;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-/* Scene 1 — invitations */
-.h-scene__stk--house {
-  left: 5%;
-  top: 4%;
-  width: 20%;
-  transform: translateY(12px) scale(0.9) rotate(-4deg);
-}
-
-.why-scene.is-active .h-scene__stk--house {
-  transform: rotate(-4deg);
-  transition-delay: 0.1s;
-}
-
-.h-scene__label {
-  position: absolute;
-  left: 27%;
-  top: 8%;
-  display: flex;
-  flex-direction: column;
-  padding: 0.6em 1em;
-  border-radius: 1.2em 1.2em 1.2em 0.4em;
+  padding: 0.55em 0.85em;
+  border-radius: 1.1em 1.1em 1.1em 0.35em;
   background: #fff;
   color: var(--text);
-  font-size: 1.02em;
+  font-size: 0.9em;
   font-weight: 800;
   line-height: 1.25;
   box-shadow: 0 14px 30px -16px rgba(30, 42, 58, 0.35);
-  opacity: 0;
-  translate: 0 10px;
-  transition: opacity 0.5s var(--ease-out), translate 0.6s var(--ease-spring);
 }
 
-.h-scene__label small {
+.h-float--label small {
   color: var(--text-tertiary);
-  font-size: 0.8em;
+  font-size: 0.86em;
   font-weight: 700;
 }
 
-.why-scene.is-active .h-scene__label {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: 0.3s;
+.h-float--envelope {
+  --delay: 0.6s;
+  right: 3%;
+  bottom: 22cqh;
+  width: 18%;
+  rotate: 8deg;
 }
 
-.h-invite {
-  top: 55%;
+/* Step 2 — activities, done together */
+.h-float--leaf {
+  left: 6%;
+  top: 11cqh;
+  width: 12.5%;
+  rotate: -16deg;
 }
 
-.h-invite__list {
-  display: grid;
-  gap: 0.55em;
-  list-style: none;
+.h-float--basket {
+  --delay: 0.45s;
+  right: 2.5%;
+  bottom: 10cqh;
+  width: 21%;
+  rotate: 6deg;
 }
 
-.h-invite__list li {
-  display: flex;
-  align-items: center;
-  gap: 0.75em;
-  padding: 0.55em 0.7em;
-  border-radius: 1.1em;
-  background: var(--bg);
-  opacity: 0;
-  translate: 0 10px;
-  transition: opacity 0.45s var(--ease-out), translate 0.6s var(--ease-spring);
+/* Step 3 — progress grows */
+.h-float--seedling {
+  left: 5%;
+  bottom: 9cqh;
+  width: 15%;
+  scale: 0.55;
+  transform-origin: 50% 100%;
+  transition: opacity 0.5s ease, scale 1.4s var(--ease-spring);
 }
 
-.why-scene.is-active .h-invite__list li {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: calc(0.45s + var(--d) * 0.3s);
+.h-float--heart {
+  --delay: 0.5s;
+  right: 7%;
+  top: 11cqh;
+  width: 11%;
 }
 
-.h-invite__who {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.2;
+.h-how .why__stage:has([data-scene="2"].is-active) .h-float--heart {
+  animation: stkBeat 2.8s ease-in-out 1.6s infinite;
 }
 
-.h-invite__who b {
-  color: var(--text);
-  font-size: 1em;
-  font-weight: 800;
+.is-idle .h-float--heart {
+  animation-play-state: paused;
 }
 
-.h-invite__who small {
-  color: var(--text-tertiary);
-  font-size: 0.82em;
-  font-weight: 600;
-}
-
-/* "Pakviesta" turns into "Prisijungė" */
-.h-status {
-  display: grid;
-  margin-left: auto;
-  font-size: 0.78em;
-  font-weight: 800;
-}
-
-.h-status > span {
-  grid-area: 1 / 1;
-  justify-self: end;
-  padding: 0.35em 0.75em;
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-  transition: opacity 0.35s ease, scale 0.5s var(--ease-spring);
-}
-
-.h-status > span:first-child {
-  background: rgba(30, 42, 58, 0.07);
-  color: var(--text-tertiary);
-}
-
-.h-status > span:last-child {
-  background: var(--sage-2);
-  color: var(--sage-ink);
-  opacity: 0;
-  scale: 0.8;
-}
-
-.why-scene.is-active .h-status > span:first-child {
-  opacity: 0;
-  transition-delay: calc(1.4s + var(--d) * 0.45s);
-}
-
-.why-scene.is-active .h-status > span:last-child {
-  opacity: 1;
-  scale: 1;
-  transition-delay: calc(1.4s + var(--d) * 0.45s);
-}
-
-.h-lock {
-  position: absolute;
+/* Captions sit on the phone's bottom edge, over the empty strip below the tab bar */
+.h-chip {
+  --tx: -50%;
+  --delay: 0.9s;
+  z-index: 2;
   left: 50%;
-  bottom: 5.5%;
+  top: calc(var(--dev-top) + var(--dev-w) * 2.117 - 1.55em);
   display: inline-flex;
   align-items: center;
-  gap: 0.6em;
-  padding: 0.65em 1.1em;
+  gap: 0.55em;
+  padding: 0.62em 1.1em;
   border-radius: var(--radius-full);
-  background: var(--text);
-  color: #fff;
-  font-size: 0.9em;
+  font-size: 0.92em;
   font-weight: 800;
+  line-height: 1.2;
   white-space: nowrap;
-  opacity: 0;
-  translate: -50% 12px;
-  transition: opacity 0.5s var(--ease-out), translate 0.6s var(--ease-spring);
+  box-shadow: 0 14px 30px -14px rgba(30, 42, 58, 0.5);
 }
 
-.h-lock svg {
-  width: 1.2em;
-  height: 1.2em;
+.h-chip svg {
   fill: none;
-  stroke: #aaf2cb;
-  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.why-scene.is-active .h-lock {
-  opacity: 1;
-  translate: -50% 0;
-  transition-delay: 2.5s;
+.h-chip--lock {
+  background: var(--text);
+  color: #fff;
 }
 
-/* Scene 2 — an activity, done together */
-.h-act {
-  left: 45%;
-  top: 50%;
-  width: 70%;
+.h-chip--lock svg {
+  width: 1.2em;
+  height: 1.2em;
+  stroke: #aaf2cb;
+  stroke-width: 2;
 }
 
-.h-act__icon {
-  display: grid;
-  place-items: center;
-  width: 3em;
-  height: 3em;
-  flex-shrink: 0;
-  border-radius: 0.95em;
-  background: #e5f3f5;
-  color: #438f9f;
+.h-chip--done {
+  padding-left: 0.55em;
+  background: var(--sage-2);
+  color: var(--sage-ink);
 }
 
-.h-act__rows {
-  display: grid;
-  gap: 0.5em;
-  list-style: none;
-}
-
-.h-act__rows li {
-  display: grid;
-  gap: 0.1em;
-  padding: 0.55em 0.8em;
-  border-radius: 0.95em;
-  background: var(--bg);
-  color: var(--text-secondary);
-  font-size: 0.9em;
-  line-height: 1.4;
-  opacity: 0;
-  translate: 0 10px;
-  transition: opacity 0.45s var(--ease-out), translate 0.6s var(--ease-spring);
-}
-
-.h-act__rows b {
-  color: var(--text);
-  font-weight: 800;
-}
-
-.why-scene.is-active .h-act__rows li {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: calc(0.4s + var(--d) * 0.22s);
-}
-
-.h-done {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6em;
-  margin-top: 0.85em;
-  padding: 0.5em 1em 0.5em 0.5em;
-  border-radius: var(--radius-full);
-  background: var(--primary-ultralight);
-  color: var(--primary-dark);
-  font-size: 0.92em;
-  font-weight: 800;
-  transition: background 0.4s ease, color 0.4s ease;
-}
-
-.h-done__box {
+.h-chip__check {
   display: grid;
   place-items: center;
   width: 1.6em;
   height: 1.6em;
-  border: 2px solid var(--primary);
   border-radius: 50%;
-  background: #fff;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  background: #18794E;
 }
 
-.h-done__box svg {
+.h-chip__check svg {
   width: 62%;
   height: 62%;
-  fill: none;
   stroke: #fff;
   stroke-width: 3.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
   transition: stroke-dashoffset 0.5s var(--ease-out);
 }
 
-.why-scene.is-active .h-done {
-  background: var(--sage-2);
-  color: var(--sage-ink);
-  transition-delay: 1.5s;
-}
-
-.why-scene.is-active .h-done__box {
-  border-color: #18794E;
-  background: #18794E;
-  transition-delay: 1.5s;
-}
-
-.why-scene.is-active .h-done__box svg {
+.h-how .why__stage:has([data-scene="1"].is-active) .h-chip__check svg {
   stroke-dashoffset: 0;
-  transition-delay: 1.6s;
+  transition-delay: 1.3s;
 }
 
-.h-scene__stk--basket {
-  right: 3%;
-  bottom: 4%;
-  width: 22%;
-  transform: translateY(14px) rotate(6deg);
-}
-
-.why-scene.is-active .h-scene__stk--basket {
-  transform: rotate(6deg);
-  transition-delay: 0.3s;
-}
-
-.h-bubble {
-  position: absolute;
-  right: 5%;
-  top: 5%;
-  display: flex;
-  align-items: center;
-  gap: 0.6em;
-  padding: 0.5em 1em 0.5em 0.5em;
-  border-radius: 1.4em 1.4em 0.4em 1.4em;
-  background: #fff;
-  color: var(--text);
-  font-weight: 800;
-  box-shadow: 0 14px 30px -16px rgba(30, 42, 58, 0.35);
-  opacity: 0;
-  translate: 0 12px;
-  transition: opacity 0.5s var(--ease-out), translate 0.6s var(--ease-spring);
-}
-
-.why-scene.is-active .h-bubble {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: 2.1s;
-}
-
-.h-news {
-  position: absolute;
-  left: 5%;
-  bottom: 6%;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.55em 1em;
-  border-radius: var(--radius-full);
-  background: var(--butter-2);
-  color: var(--butter-ink);
-  font-size: 0.9em;
-  font-weight: 800;
-  opacity: 0;
-  translate: 0 12px;
-  transition: opacity 0.5s var(--ease-out), translate 0.6s var(--ease-spring);
-}
-
-.h-news svg {
-  width: 1.2em;
-  height: 1.2em;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.why-scene.is-active .h-news {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: 2.6s;
-}
-
-/* Scene 3 — achievement steps fill in */
-.h-grow {
-  top: 48%;
-}
-
-.h-grow__list {
-  display: grid;
-  gap: 0.8em;
-  list-style: none;
-}
-
-.h-grow__list li {
-  display: grid;
-  gap: 0.4em;
-  counter-reset: v var(--v);
-  opacity: 0;
-  translate: 0 10px;
-  transition: opacity 0.45s var(--ease-out), translate 0.6s var(--ease-spring);
-}
-
-.why-scene.is-active .h-grow__list li {
-  opacity: 1;
-  translate: 0 0;
-  transition-delay: calc(0.3s + var(--d) * 0.15s);
-}
-
-.h-grow__list b {
-  display: flex;
-  justify-content: space-between;
-  gap: 1em;
-  color: var(--text);
-  font-size: 0.95em;
-  font-weight: 800;
-}
-
-.h-grow__list b::after {
-  content: counter(v) ' / 6';
-  color: var(--c);
-  font-variant-numeric: tabular-nums;
-}
-
-.h-steps {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 4px;
-}
-
-.h-steps i {
-  position: relative;
-  height: 0.62em;
-  overflow: hidden;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--c) 14%, #fff);
-}
-
-.h-steps i::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--c);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  transition: transform 0.35s var(--ease-out);
-}
-
-.h-steps i:nth-child(1) { --k: 1; }
-.h-steps i:nth-child(2) { --k: 2; }
-.h-steps i:nth-child(3) { --k: 3; }
-.h-steps i:nth-child(4) { --k: 4; }
-.h-steps i:nth-child(5) { --k: 5; }
-.h-steps i:nth-child(6) { --k: 6; }
-
-/* filled when k <= v */
-.why-scene.is-active .h-steps i::after {
-  transform: scaleX(clamp(0, var(--v) - var(--k) + 1, 1));
-  transition-delay: calc(0.6s + var(--d) * 0.15s + var(--k) * 0.12s);
-}
-
-.h-scene__stk--seedling {
-  left: 4%;
-  bottom: 3%;
-  width: 15%;
-  transform: scale(0.55);
-  transform-origin: 50% 100%;
-  transition: opacity 0.5s ease, transform 1.4s var(--ease-spring);
-}
-
-.why-scene.is-active .h-scene__stk--seedling {
-  transform: scale(1);
-  transition-delay: 0.5s;
-}
-
-.h-scene__stk--heart {
-  right: 7%;
-  top: 6%;
-  width: 10%;
-}
-
-.why-scene.is-active .h-scene__stk--heart {
-  animation: stkBeat 2.8s ease-in-out 1.6s infinite;
-}
-
-.h-cheer {
-  position: absolute;
-  right: 6%;
-  bottom: 6%;
-  padding: 0.6em 1.1em;
+.h-chip--cheer {
   border-radius: 1.2em 1.2em 0.4em 1.2em;
   background: #FFE9A8;
   color: var(--text);
-  font-size: 1.05em;
-  font-weight: 800;
-  box-shadow: 0 14px 30px -16px rgba(30, 42, 58, 0.35);
-  opacity: 0;
-  scale: 0.7;
-  rotate: -4deg;
-  transition: opacity 0.4s ease, scale 0.6s var(--ease-spring);
+  rotate: -3deg;
 }
 
-.why-scene.is-active .h-cheer {
-  opacity: 1;
-  scale: 1;
-  transition-delay: 1.9s;
+/* Where the steps stack there is no room for a stage: each step shows its screen on a whole phone of its own */
+.h-how .why-step__text {
+  display: flex;
+  flex-direction: column;
 }
 
-.is-idle .h-scene__stk--heart {
-  animation-play-state: paused;
+.h-step-shot {
+  /* as wide as the page allows, but short enough to be seen whole on a phone held upright */
+  --dev-w: min(68vw, 280px, max(200px, calc((100vh - var(--nav-h) - 56px) / 2.117)));
+  --pad-top: calc(var(--dev-w) * 0.2 + 16px);
+  position: relative;
+  display: none;
+  justify-items: center;
+  margin: 28px 0 0;
+  padding: var(--pad-top) 0 34px;
+  border-radius: 30px;
+}
+
+/* two stickers per step, standing behind the phone and looking over its top edge (--show = the part in view) */
+.h-step-shot::before,
+.h-step-shot::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--pad-top) - var(--dev-w) * var(--show));
+  background: center / contain no-repeat;
+  filter: drop-shadow(0 12px 14px rgba(30, 42, 58, 0.16));
+}
+
+.h-step-shot::before {
+  left: calc(50% - var(--dev-w) * 0.37);
+}
+
+.h-step-shot::after {
+  right: calc(50% - var(--dev-w) * 0.37);
+}
+
+.h-step-shot--family::before {
+  --show: 0.2;
+  width: calc(var(--dev-w) * 0.27);
+  aspect-ratio: 448 / 480;
+  background-image: url('/blog/assets/stickers/house.webp');
+  rotate: -5deg;
+}
+
+.h-step-shot--family::after {
+  --show: 0.15;
+  width: calc(var(--dev-w) * 0.27);
+  aspect-ratio: 480 / 351;
+  background-image: url('/blog/assets/stickers/envelope.webp');
+  rotate: 9deg;
+}
+
+.h-step-shot--activities::before {
+  --show: 0.19;
+  width: calc(var(--dev-w) * 0.18);
+  aspect-ratio: 235 / 329;
+  background-image: url('/blog/assets/stickers/oak-leaf.webp');
+  rotate: -16deg;
+}
+
+.h-step-shot--activities::after {
+  --show: 0.19;
+  width: calc(var(--dev-w) * 0.27);
+  aspect-ratio: 387 / 395;
+  background-image: url('/blog/assets/stickers/basket.webp');
+  rotate: 5deg;
+}
+
+.h-step-shot--progress::before {
+  --show: 0.2;
+  width: calc(var(--dev-w) * 0.2);
+  aspect-ratio: 320 / 480;
+  background-image: url('/blog/assets/stickers/seedling.webp');
+}
+
+.h-step-shot--progress::after {
+  --show: 0.15;
+  width: calc(var(--dev-w) * 0.2);
+  aspect-ratio: 382 / 362;
+  background-image: url('/blog/assets/stickers/heart.webp');
+  rotate: 8deg;
+}
+
+@media (max-width: 1024px) {
+  .h-how .why__stage-wrap {
+    display: none;
+  }
+
+  .h-how .why-step {
+    min-height: 0;
+    padding-bottom: clamp(52px, 9vh, 84px);
+    opacity: 1;
+  }
+
+  .h-how .why-step:last-child {
+    padding-bottom: 0;
+  }
+
+  .h-step-shot {
+    display: grid;
+  }
+}
+
+/* wide enough for the text and the phone side by side */
+@media (min-width: 760px) and (max-width: 1024px) {
+  .h-how .why-step {
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(28px, 5vw, 60px);
+  }
+
+  .h-how .why-step__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .h-step-shot {
+    --dev-w: min(30vw, 264px, max(200px, calc((100vh - var(--nav-h) - 56px) / 2.117)));
+    flex: none;
+    width: calc(var(--dev-w) * 1.44);
+    margin-top: 0;
+  }
 }
 
 /* =============================================
@@ -2093,61 +1943,8 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .h-how .why__stage-wrap {
-    background: linear-gradient(180deg, var(--sky-1) 82%, transparent);
-  }
-
-  /* the stacked stage is shorter: give the scenes a little more height */
-  .h-how .why__stage {
-    aspect-ratio: 1.12 / 1;
-    max-height: 44vh;
-  }
-
   .h-contact__art {
     display: none;
-  }
-}
-
-/* Short stages (stacked layout, small phones): compact scenes */
-@container (max-height: 380px) {
-  .h-scene {
-    font-size: clamp(10px, 3.1cqh, 13px);
-  }
-
-  .h-scene__label,
-  .h-lock,
-  .h-news {
-    display: none;
-  }
-
-  .h-invite {
-    top: 57%;
-    width: 72%;
-  }
-
-  .h-panel {
-    padding: 3.4cqh 4cqw;
-  }
-
-  .h-panel__head {
-    margin-bottom: 0.6em;
-    padding-bottom: 0.6em;
-  }
-
-  .h-act__rows li:nth-child(3) {
-    display: none;
-  }
-
-  .h-grow__list {
-    gap: 0.55em;
-  }
-
-  .h-grow__list li:nth-child(4) {
-    display: none;
-  }
-
-  .h-scene__stk--house {
-    width: 16%;
   }
 }
 
@@ -2330,14 +2127,14 @@
   .h-cta__stork,
   .stairs__climber,
   .stairs__climber.is-hopping,
-  .why-scene.is-active .h-scene__stk--heart {
+  .h-how .h-float--heart {
     animation: none !important;
   }
 
-  /* Story scenes: each scene shows its end state at once */
-  .h-scene *,
-  .h-scene *::before,
-  .h-scene *::after {
+  /* Story stage: each step shows its end state at once */
+  .h-how .why__stage *,
+  .h-how .why__stage *::before,
+  .h-how .why__stage *::after {
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
