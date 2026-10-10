@@ -3,8 +3,9 @@
 // No cookies, no identifiers and no third parties. Page, reading and click
 // events go to Laviju's own Supabase Edge Function and are visible only to the
 // platform owner. To tell new visitors from returning ones, the browser keeps
-// only the time of its last visit and a visit count; just coarse groups of
-// those are sent. Details: /privacy/#statistika
+// only the time of its last visit, a visit count and the kind of source its
+// first visit came from; just coarse groups of those are sent.
+// Details: /privacy/#statistika
 // =============================================
 
 (function () {
@@ -14,13 +15,31 @@
   const PRODUCTION_HOSTS = ['laviju.lt', 'www.laviju.lt'];
   const OPT_OUT_KEY = 'laviju:statistics-opt-out';
   const VISIT_KEY = 'laviju:statistics-visits';
-  const CAMPAIGN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'ref'];
+  const CAMPAIGN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'ref'];
+  // Click identifiers that social networks, ad systems and newsletters add to
+  // links. Only which kind of service added one is sent, never its value.
+  const CLICK_MARKERS = [
+    ['fbclid', 'facebook'], ['igshid', 'instagram'], ['gclid', 'google'], ['gbraid', 'google'],
+    ['wbraid', 'google'], ['msclkid', 'bing'], ['ttclid', 'tiktok'], ['twclid', 'x'],
+    ['li_fat_id', 'linkedin'], ['mc_cid', 'email'], ['mc_eid', 'email'],
+  ];
+  const FIRST_CHANNELS = ['direct', 'qr', 'search', 'ai', 'social', 'email', 'referral', 'campaign'];
+  // The same host rules as supabase/functions/_shared/siteInsights.ts.
+  const AI_HOSTS = /(^|\.)(chatgpt\.com|chat\.openai\.com|perplexity\.ai|claude\.ai|gemini\.google\.com|copilot\.microsoft\.com|you\.com|phind\.com)$/;
+  const EMAIL_HOSTS = /^(mail\.google\.com|outlook\.live\.com|outlook\.office\.com|outlook\.office365\.com|mail\.yahoo\.com|mail\.proton\.me|(?:web)?mail\.[a-z0-9-]+\.[a-z.]{2,6}|com\.google\.android\.gm|com\.microsoft\.office\.outlook)$/;
+  const SEARCH_HOSTS = /^(google\.[a-z.]{2,6}|bing\.com|duckduckgo\.com|(?:search\.)?yahoo\.com|yandex\.[a-z]{2,3}|ecosia\.org|search\.brave\.com|startpage\.com|qwant\.com|baidu\.com|seznam\.cz|(?:search\.)?naver\.com|com\.google\.android\.googlequicksearchbox)$/;
+  const SOCIAL_HOSTS = /(^|\.)(facebook\.com|fb\.com|fb\.me|messenger\.com|instagram\.com|threads\.net|linkedin\.com|lnkd\.in|t\.co|twitter\.com|x\.com|pinterest\.[a-z.]{2,6}|pin\.it|tiktok\.com|youtube\.com|youtu\.be|reddit\.com|whatsapp\.com|wa\.me|telegram\.org|t\.me|vk\.com|snapchat\.com|bsky\.app|mastodon\.social|com\.facebook\.katana|com\.facebook\.orca|com\.instagram\.android|com\.linkedin\.android|com\.whatsapp|org\.telegram\.messenger|com\.zhiliaoapp\.musically)$/;
+  const SECTION_SELECTOR = 'section[id], article[id], header[id], footer[id]';
+  const SECTION_ID = /^[a-z0-9_-]{1,60}$/;
   const VISIT_GAP_MS = 1800000;
   const VISIT_MEMORY_MS = 34214400000;
   const IDLE_AFTER_MS = 90000;
   const MAX_ENGAGED_MS = 3600000;
   const MAX_INTERACTIONS = 60;
   const MAX_SECTIONS = 40;
+  const MAX_ERRORS = 99;
+  // The collector refuses bodies over 4096 bytes.
+  const MAX_BODY = 3500;
   const nav = window.navigator || {};
   // A keepalive fetch outlives the page just like a beacon. Beacons are only the
   // fallback for browsers without keepalive: privacy filter lists drop every
@@ -121,7 +140,11 @@
   function send(payload, leaving) {
     if (isOptedOut()) return;
     // A text/plain body keeps this a simple request (no CORS preflight).
-    const body = JSON.stringify(payload);
+    let body = JSON.stringify(payload);
+    if (body.length > MAX_BODY && payload.sectionSeconds) {
+      // Reading time per section is the one part that can be left out.
+      body = JSON.stringify(Object.assign({}, payload, { sectionSeconds: {} }));
+    }
     if (leaving && !KEEPALIVE) {
       try {
         if (typeof nav.sendBeacon === 'function' && nav.sendBeacon(ENDPOINT, body)) return;
@@ -180,6 +203,61 @@
     return query;
   }
 
+  function clickSource() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      for (const [name, service] of CLICK_MARKERS) {
+        if (params.has(name)) return service;
+      }
+    } catch (error) {
+      // No click identifier.
+    }
+    return null;
+  }
+
+  // Reloads and back/forward moves repeat a page the visitor has already seen.
+  function loadType(restored) {
+    if (restored) return 'back_forward';
+    try {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      const type = navigation && navigation.type;
+      if (type === 'reload' || type === 'back_forward') return type;
+    } catch (error) {
+      // No navigation timing.
+    }
+    return 'navigate';
+  }
+
+  // The kind of source this page was reached from, by the server's rules.
+  // A browser's first visit remembers this one word, never the address.
+  function touchChannel() {
+    const query = campaign();
+    if (query.utm_source || query.ref || query.utm_medium || query.utm_campaign) return 'campaign';
+    let host = '';
+    try {
+      const url = new URL(document.referrer);
+      if (PRODUCTION_HOSTS.indexOf(url.hostname) === -1 && /^(https?|android-app):$/.test(url.protocol)) {
+        host = url.hostname.toLowerCase().replace(/^(?:www\d?|m|l|lm|mobile)\./, '');
+      }
+    } catch (error) {
+      // No referrer.
+    }
+    if (host) {
+      if (AI_HOSTS.test(host)) return 'ai';
+      if (EMAIL_HOSTS.test(host)) return 'email';
+      if (SEARCH_HOSTS.test(host)) return 'search';
+      return SOCIAL_HOSTS.test(host) ? 'social' : 'referral';
+    }
+    const click = clickSource();
+    if (click) return click === 'email' ? 'email' : click === 'google' || click === 'bing' ? 'search' : 'social';
+    const agent = nav.userAgent || '';
+    if (/FBAN|FBAV|FB_IAB|Instagram/.test(agent)) return 'social';
+    const handheld = /Mobi|Android|iPhone|iPad|iPod|Tablet|Silk|Kindle/.test(agent)
+      || (/Macintosh/.test(agent) && nav.maxTouchPoints > 1);
+    // The flyer QR code opens the blog without any source.
+    return handheld && pagePath() === '/blog/' ? 'qr' : 'direct';
+  }
+
   function timeZone() {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
@@ -194,9 +272,10 @@
 
   // ---------------------------------------------
   // New or returning. The browser remembers when it was last active here,
-  // how many visits it has made and the gap in days before the current one.
-  // A visit ends after 30 minutes without activity, as on the server, and the
-  // memory lapses after 13 months. Only coarse groups leave the browser.
+  // how many visits it has made, the gap in days before the current one and
+  // the kind of source its first visit came from. A visit ends after 30
+  // minutes without activity, as on the server, and the memory lapses after
+  // 13 months. Only coarse groups leave the browser.
   // ---------------------------------------------
   let visit = null;
   let visitSavedAt = 0;
@@ -212,7 +291,12 @@
     try {
       const memory = JSON.parse(raw);
       if (memory && Number.isFinite(memory.t) && Number.isInteger(memory.n) && memory.n >= 1) {
-        return { t: memory.t, n: memory.n, g: Number.isInteger(memory.g) && memory.g >= 0 ? memory.g : null };
+        return {
+          t: memory.t,
+          n: memory.n,
+          g: Number.isInteger(memory.g) && memory.g >= 0 ? memory.g : null,
+          f: FIRST_CHANNELS.indexOf(memory.f) !== -1 ? memory.f : null,
+        };
       }
     } catch (error) {
       // An unreadable memory starts over.
@@ -222,7 +306,9 @@
 
   function saveVisit(time) {
     try {
-      window.localStorage.setItem(VISIT_KEY, JSON.stringify({ t: time, n: visit.n, g: visit.g }));
+      // A memory from before first sources were kept has none to save.
+      const memory = { t: time, n: visit.n, g: visit.g, f: visit.f || undefined };
+      window.localStorage.setItem(VISIT_KEY, JSON.stringify(memory));
       visitSavedAt = time;
       return true;
     } catch (error) {
@@ -242,23 +328,27 @@
     }
     const elapsed = memory ? time - memory.t : Infinity;
     if (memory && elapsed >= 0 && elapsed < VISIT_GAP_MS) {
-      visit = { n: memory.n, g: memory.g };
+      visit = { n: memory.n, g: memory.g, f: memory.f };
     } else if (memory && elapsed < VISIT_MEMORY_MS) {
-      visit = { n: Math.min(memory.n + 1, 999), g: Math.max(0, localDay(time) - localDay(memory.t)) };
+      visit = { n: Math.min(memory.n + 1, 999), g: Math.max(0, localDay(time) - localDay(memory.t)), f: memory.f };
     } else {
-      visit = { n: 1, g: null };
+      visit = { n: 1, g: null, f: touchChannel() };
     }
     // Without a saved memory every visit would look new; send nothing then.
     if (!saveVisit(time)) visit = null;
   }
 
+  // A first visit's own page view already says where it came from, so the
+  // remembered first source only travels with later visits.
   function visitGroups() {
     if (!visit) return null;
     const number = visit.n >= 6 ? 6 : visit.n >= 3 ? 3 : visit.n;
     if (number === 1) return { n: 1 };
+    const groups = { n: number };
     const gap = visit.g;
-    if (gap === null) return { n: number };
-    return { n: number, d: gap >= 31 ? 31 : gap >= 8 ? 8 : gap >= 2 ? 2 : gap };
+    if (gap !== null) groups.d = gap >= 31 ? 31 : gap >= 8 ? 8 : gap >= 2 ? 2 : gap;
+    if (visit.f) groups.f = visit.f;
+    return groups;
   }
 
   // Activity keeps the visit open; saved at most once a minute unless leaving.
@@ -280,6 +370,11 @@
   let maxScroll = 0;
   let sections = {};
   let sectionElements = [];
+  let sectionMs = {};
+  let focusId = null;
+  let focusAt = 0;
+  let errorCount = 0;
+  let firstError = null;
   let interactionCount = 0;
   let lastInteraction = '';
   let lastInteractionAt = 0;
@@ -290,8 +385,20 @@
   // ---------------------------------------------
   // Active reading time: visible and used within the last 90 seconds.
   // ---------------------------------------------
+  // Reading time belongs to the section in the middle of the screen. Time is
+  // settled whenever that section changes or reading stops.
+  function settleFocus(next) {
+    const time = now();
+    if (focusId && stretchStart) {
+      sectionMs[focusId] = (sectionMs[focusId] || 0) + Math.max(0, time - Math.max(focusAt, stretchStart));
+    }
+    focusId = next;
+    focusAt = time;
+  }
+
   function stopStretch() {
     if (!stretchStart) return;
+    settleFocus(focusId);
     engagedMs = Math.min(MAX_ENGAGED_MS, engagedMs + (now() - stretchStart));
     stretchStart = 0;
   }
@@ -315,9 +422,15 @@
   // Scroll depth and the page sections that were actually seen
   // ---------------------------------------------
   function collectSections() {
-    sectionElements = Array.from(document.querySelectorAll('section[id], article[id], header[id], footer[id]'))
-      .filter((element) => /^[a-z0-9_-]{1,60}$/.test(element.id) && !element.closest('nav, dialog, template'))
+    sectionElements = Array.from(document.querySelectorAll(SECTION_SELECTOR))
+      .filter((element) => SECTION_ID.test(element.id) && !element.closest('nav, dialog, template'))
       .slice(0, MAX_SECTIONS);
+  }
+
+  function sectionOf(node) {
+    const element = node && typeof node.closest === 'function' ? node : node && node.parentElement;
+    const section = element && typeof element.closest === 'function' ? element.closest(SECTION_SELECTOR) : null;
+    return section && SECTION_ID.test(section.id) ? section.id : null;
   }
 
   function measure() {
@@ -333,17 +446,23 @@
     }
 
     // Seen: the section crossed the middle of the screen, or most of a short
-    // section (such as the footer) was on screen.
+    // section (such as the footer) was on screen. Being read: the smallest
+    // section across the middle, so a card inside a wider section wins.
     const middle = viewport / 2;
+    let focus = null;
+    let focusHeight = Infinity;
     sectionElements.forEach((element, index) => {
-      if (Object.prototype.hasOwnProperty.call(sections, element.id)) return;
       const rect = element.getBoundingClientRect();
       if (!rect.height) return;
+      const centred = rect.top <= middle && rect.bottom >= middle;
       const visible = Math.min(rect.bottom, viewport) - Math.max(rect.top, 0);
-      if ((rect.top <= middle && rect.bottom >= middle) || visible >= rect.height * 0.6) {
-        sections[element.id] = index;
+      if (centred || visible >= rect.height * 0.6) sections[element.id] = index;
+      if (centred && rect.height < focusHeight) {
+        focus = element.id;
+        focusHeight = rect.height;
       }
     });
+    if (focus !== focusId) settleFocus(focus);
   }
 
   let measureTimer = 0;
@@ -436,14 +555,20 @@
   function flush(leaving) {
     if (!pageviewId) return;
     measure();
+    settleFocus(focusId);
     const engaged = currentEngaged();
     // Running totals: a lost update loses nothing, so unchanged state is skipped.
     const snapshot = JSON.stringify([
       Math.round(engaged / 1000), maxScroll, Object.keys(sections).length,
-      vitals.ttfb, vitals.lcp, vitals.inp, vitals.cls,
+      vitals.ttfb, vitals.lcp, vitals.inp, vitals.cls, errorCount,
     ]);
     if (snapshot === lastSnapshot) return;
     lastSnapshot = snapshot;
+    const sectionSeconds = {};
+    Object.keys(sectionMs).forEach((id) => {
+      const seconds = Math.round(sectionMs[id] / 1000);
+      if (seconds >= 1) sectionSeconds[id] = Math.min(3600, seconds);
+    });
     send({
       v: 1,
       type: 'engagement',
@@ -451,7 +576,13 @@
       engagedMs: engaged,
       scrollDepth: maxScroll,
       sections,
+      sectionSeconds,
+      // The section on screen when these totals were taken; the last update
+      // of a page view therefore says where reading stopped.
+      focus: focusId,
       vitals,
+      errors: errorCount,
+      error: firstError,
     }, leaving);
   }
 
@@ -461,6 +592,11 @@
     stretchStart = 0;
     maxScroll = 0;
     sections = {};
+    sectionMs = {};
+    focusId = null;
+    focusAt = 0;
+    errorCount = 0;
+    firstError = null;
     interactionCount = 0;
     lastSnapshot = '';
     nextMilestone = 15000;
@@ -478,6 +614,8 @@
       // that is already under way, so its original referrer does not apply.
       referrer: restored ? null : referrer(),
       query: restored ? {} : campaign(),
+      click: restored ? null : clickSource(),
+      load: loadType(restored),
       viewportWidth: window.innerWidth || null,
       touchPoints: Math.min(20, nav.maxTouchPoints || 0),
       language: nav.language || null,
@@ -582,16 +720,92 @@
     if (button.id === 'nav-menu-btn' || button.id === 'docs-menu-btn') {
       return ['menu', button.getAttribute('aria-expanded') === 'true' ? 'uždaryti' : 'atidaryti'];
     }
-    return null;
+    // Any other button is named by its own caption; forms are left alone.
+    if (button.getAttribute('type') === 'submit') return null;
+    const caption = cleanLabel(button.getAttribute('aria-label') || button.textContent, 60);
+    return caption ? ['button', caption] : null;
+  }
+
+  // An expandable block is recorded when it is opened, not when it is closed.
+  function describeSummary(summary) {
+    const details = summary.parentElement;
+    if (details && typeof details.hasAttribute === 'function' && details.hasAttribute('open')) return null;
+    const caption = cleanLabel(summary.textContent, 80);
+    return caption ? ['details', caption] : null;
+  }
+
+  // Three quick clicks on one spot that is not a control: the visitor expected
+  // something to happen there. Selecting a paragraph by triple-click is not that.
+  let burst = { count: 0, at: 0, x: 0, y: 0 };
+
+  function noteStrayClick(event, target) {
+    if (event.button || target.closest('input, textarea, select, label')) return;
+    const time = now();
+    const x = event.clientX || 0;
+    const y = event.clientY || 0;
+    const repeated = time - burst.at < 700 && Math.abs(x - burst.x) < 30 && Math.abs(y - burst.y) < 30;
+    burst = { count: repeated ? burst.count + 1 : 1, at: time, x, y };
+    if (burst.count !== 3) return;
+    try {
+      if (String(window.getSelection()).length) return;
+    } catch (error) {
+      // No selection to check.
+    }
+    const tag = String(target.tagName || '').toLowerCase();
+    const name = String(target.getAttribute('class') || '').split(/\s+/)[0];
+    const spot = /^[a-z0-9_-]{1,40}$/i.test(name) ? `${tag}.${name}` : tag;
+    const section = sectionOf(target);
+    track('rage_click', cleanLabel(section ? `${section} · ${spot}` : spot, 120));
   }
 
   function onClick(event) {
     const target = event.target;
     if (!target || typeof target.closest !== 'function') return;
-    const element = target.closest('a[href], button');
-    if (!element || element.hasAttribute('data-insights-optout')) return;
-    const described = element.tagName === 'A' ? describeLink(element) : describeButton(element);
+    const element = target.closest('a[href], button, summary');
+    if (!element) {
+      noteStrayClick(event, target);
+      return;
+    }
+    if (element.hasAttribute('data-insights-optout')) return;
+    const described = element.tagName === 'A' ? describeLink(element)
+      : element.tagName === 'SUMMARY' ? describeSummary(element) : describeButton(element);
     if (described) track(described[0], described[1]);
+  }
+
+  // ---------------------------------------------
+  // Page faults: a script of this site that failed or a file that did not
+  // load. Counted with the first one named, so broken visits can be explained.
+  // ---------------------------------------------
+  function ownPlace(address) {
+    try {
+      const url = new URL(address, window.location.href);
+      return PRODUCTION_HOSTS.indexOf(url.hostname) !== -1 ? url.pathname : url.hostname;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function onPageError(event) {
+    if (!pageviewId || !event) return;
+    const target = event.target;
+    let label = null;
+    if (target && target !== window && typeof target.getAttribute === 'function') {
+      const address = target.getAttribute('src') || target.getAttribute('href');
+      const place = address ? ownPlace(address) : null;
+      if (place) label = `failas: ${place}`;
+    } else if (event.message && event.filename) {
+      // Faults of browser extensions and of other sites' scripts are not the page's.
+      // Only the kind of fault is kept: its message could quote something typed on the page.
+      const place = ownPlace(event.filename);
+      const named = event.error && event.error.name;
+      const kind = typeof named === 'string' && /^[A-Za-z]{1,40}$/.test(named)
+        ? named
+        : (/\b[A-Z][A-Za-z]{0,30}Error\b/.exec(String(event.message)) || ['Error'])[0];
+      if (place && place.charAt(0) === '/') label = `skriptas: ${place}:${event.lineno || 0} · ${kind}`;
+    }
+    if (!label) return;
+    errorCount = Math.min(MAX_ERRORS, errorCount + 1);
+    if (!firstError) firstError = cleanLabel(label, 120);
   }
 
   // ---------------------------------------------
@@ -603,12 +817,16 @@
     if (event.button === 1) onClick(event);
   }, true);
 
+  // Copying is recorded with the section it happened in, never the text.
   let lastCopyAt = -Infinity;
-  document.addEventListener('copy', () => {
+  document.addEventListener('copy', (event) => {
     if (now() - lastCopyAt < 5000) return;
     lastCopyAt = now();
-    track('text_copy', null);
+    track('text_copy', sectionOf(event && event.target));
   });
+  window.addEventListener('beforeprint', () => track('print', null));
+  // Capture phase: files that fail to load do not bubble their error.
+  window.addEventListener('error', onPageError, true);
 
   // Documentation search: only the fact that someone searched, not the words.
   const docsSearch = document.getElementById('docs-search-input');
