@@ -1896,6 +1896,51 @@ img.h-float {
 }
 
 /* =============================================
+   FOOTER — a quiet door to the creek (/upelis/)
+   ============================================= */
+.home .footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 18px;
+}
+
+.footer__creek {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 4px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+}
+
+.footer__creek img {
+  width: 20px;
+  height: auto;
+  opacity: 0.8;
+  transition: opacity 0.3s ease, rotate 0.6s var(--ease-spring), translate 0.6s var(--ease-spring);
+}
+
+.footer__creek:hover,
+.footer__creek:focus-visible {
+  color: white;
+}
+
+.footer__creek:focus-visible {
+  outline-color: rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.footer__creek:hover img,
+.footer__creek:focus-visible img {
+  opacity: 1;
+  rotate: -8deg;
+  translate: 0 -2px;
+}
+
+/* =============================================
    RESPONSIVE
    ============================================= */
 @media (max-width: 1100px) {
