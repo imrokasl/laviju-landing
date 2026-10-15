@@ -3,11 +3,37 @@ import { createRng, lerp, saturate, smoothstep } from '../core/math.js';
 import { palette, col } from '../core/palette.js';
 import { blob, paint, place, merge } from '../core/geo.js';
 import { mesh } from './kit.js';
-import { PROPS, BRIDGE } from './layout.js';
+import { PROPS, BRIDGE, FALL } from './layout.js';
 
 // Boulders, stepping stones and the stones scattered along the banks.
 
 const LIGHT = new THREE.Vector3(-0.4, 0.84, 0.36).normalize();
+
+// How sharply a shape turns at each of its vertices, as a share of `size`:
+// above 0 on an edge that stands proud, below 0 in a hollow
+function edges(g, size) {
+  const pos = g.attributes.position;
+  const nor = g.attributes.normal;
+  const index = g.index.array;
+  const sum = new Float32Array(pos.count * 3);
+  const near = new Uint16Array(pos.count);
+  for (let i = 0; i < index.length; i += 3) {
+    for (let k = 0; k < 3; k++) {
+      const a = index[i + k];
+      const b = index[i + ((k + 1) % 3)];
+      sum[a * 3] += pos.getX(b);
+      sum[a * 3 + 1] += pos.getY(b);
+      sum[a * 3 + 2] += pos.getZ(b);
+      near[a]++;
+    }
+  }
+  const out = new Float32Array(pos.count);
+  for (let v = 0; v < pos.count; v++) {
+    const k = 1 / Math.max(1, near[v]);
+    out[v] = ((pos.getX(v) - sum[v * 3] * k) * nor.getX(v) + (pos.getY(v) - sum[v * 3 + 1] * k) * nor.getY(v) + (pos.getZ(v) - sum[v * 3 + 2] * k) * nor.getZ(v)) / size;
+  }
+  return out;
+}
 
 export function createRocks(field, kit) {
   const group = new THREE.Group();
@@ -17,42 +43,80 @@ export function createRocks(field, kit) {
   const creek = field.creek;
   const parts = [];
   const obstacles = [];
+  // Every stone, for the ground to shade where it stands
+  const footprints = [];
   const frame = {};
 
   const cRock = col(palette.rock);
   const cLight = col(palette.rockLight);
   const cDark = col(palette.rockDark);
   const cWarm = col(palette.rockWarm);
-  const cMoss = col(palette.moss);
-  const cMossLight = col(palette.grassLight);
   const cWet = col(palette.bedDeep);
 
-  // One stone. `top` is how far its crown stands above `base`.
-  function stone(x, z, r, { squash = 0.72, base, warm = 0.3, moss = 0.5, detail = 3, yaw = rng.range(0, 6.28), stretch = 1, waterline = null } = {}) {
+  // One stone. `facets` splits it into that many flat faces (a boulder that
+  // has broken off a rock face; left at 0 it is worn round, as the creek
+  // leaves them), `flatTop` levels its crown at that share of its height,
+  // `tread` keeps the middle of that crown bare, as feet do.
+  function stone(x, z, r, { squash = 0.72, base, warm = 0.3, moss = 0.5, detail = 3, yaw = rng.range(0, 6.28), stretch = 1, waterline = null, facets = 0, flatTop = 0, tread = 0 } = {}) {
     const seed = rng.range(0, 90);
-    const g = blob(r, detail, noise, { amp: 0.24, freq: 1.25, squashY: squash, seed, flatBottom: true });
+    // A split stone keeps its faces: the noise only weathers them
+    const g = blob(r, detail, noise, { amp: facets ? 0.13 : flatTop ? 0.15 : 0.24, freq: 1.25, squashY: squash, seed, flatBottom: true, facets, flatTop });
     const tone = rng.range(-0.08, 0.08);
     const mossy = moss * rng.range(0.6, 1.2);
-    const ground = base ?? field.height(x, z);
+    let ground = base;
+    if (ground === undefined) {
+      // On a slope a stone beds into the hillside instead of hanging over it
+      ground = field.height(x, z);
+      let low = ground;
+      for (let k = 0; k < 6; k++) low = Math.min(low, field.height(x + Math.cos(k * 1.047 + seed) * r * 0.62, z + Math.sin(k * 1.047 + seed) * r * 0.62));
+      ground = lerp(ground, low, 0.7);
+    }
     const y = ground + r * squash * 0.36;
     // Placed first, so the painted light agrees with the sun whichever way the
     // stone is turned
     place(g, { x, y, z, ry: yaw, sx: stretch });
     g.computeVertexNormals();
+    const turn = edges(g, r);
+    // What grows and gathers on the stone, for its material to draw (aStone)
+    const lives = new Float32Array(g.attributes.position.count * 3);
+    // How far up a stone the earth it stands in reaches
+    const band = 0.07 + r * 0.16;
     paint(g, (p, n, i, out) => {
       const up = n.y;
       const lit = saturate((n.dot(LIGHT) + 0.25) / 1.15);
       const grain = noise.noise3(p.x * 2.4 + seed, p.y * 3.4, p.z * 2.4 - seed);
+      const patch = noise.noise3(p.x * 1.1 - seed, p.y, p.z * 1.1);
+      const floor = field.height(p.x, p.z);
+      const foot = p.y - floor;
       out.copy(cRock).lerp(cWarm, saturate(warm + grain * 0.35));
       out.lerp(cDark, saturate(0.55 - lit * 0.9 - up * 0.25) * 0.75);
       out.lerp(cLight, Math.pow(lit, 1.6) * 0.72);
       // Strata: faint horizontal bands
       out.lerp(cDark, smoothstep(0.55, 0.9, Math.sin(((p.y - y) * 9) / Math.max(r, 0.3) + grain * 3) * 0.5 + 0.5) * 0.12);
-      // Moss gathers on what faces the sky
-      const m = smoothstep(0.52, 0.86, up + grain * 0.25 + noise.noise3(p.x * 1.1 - seed, p.y, p.z * 1.1) * 0.3) * mossy;
-      out.lerp(cMoss, m * 0.9).lerp(cMossLight, m * lit * 0.35);
       out.offsetHSL(0, 0, tone);
+      // An edge that stands proud is worn pale, and a hollow keeps its shade
+      out.lerp(cLight, saturate((turn[i] - 0.006) * 26) * 0.6);
+      out.multiplyScalar(1 - saturate(-turn[i] * 30) * 0.3);
+      // Little light reaches the foot of a stone, where it meets the ground
+      out.multiplyScalar(lerp(0.58, 1, smoothstep(-0.04, 0.14 + r * 0.3, foot)));
+
+      // Moss gathers on what faces the sky, and grows up out of the damp of
+      // the ground on the side the sun does not dry
+      const shady = saturate(0.55 - (n.x * LIGHT.x + n.z * LIGHT.z) * 1.5);
+      const crown = smoothstep(0.34, 0.84, up + patch * 0.3);
+      const skirt = (1 - smoothstep(band * 0.5, band * 1.6 + r * 0.42, foot)) * (0.58 + 0.42 * shady) * smoothstep(-0.55, 0.15, up);
+      // ...and keeps off the edges that weather bares
+      let green = saturate(Math.max(crown * 0.82, skirt) * mossy * 1.3 + patch * 0.14 * mossy - saturate(turn[i] * 18) * 0.25);
+      // ...but not where the creek washes it
+      if (waterline !== null) green *= smoothstep(waterline + 0.02, waterline + 0.1, p.y);
+      // ...nor where it is stepped on: it is left a ragged collar round the tread
+      if (tread) green *= lerp(1, smoothstep(r * 0.34, r * 0.8, Math.hypot(p.x - x, p.z - z) + patch * r * 0.42), tread);
+      lives[i * 3] = green;
+      lives[i * 3 + 1] = saturate(foot / band);
+      // Earth, only where the stone stands on dry ground and not on the beach
+      lives[i * 3 + 2] = field.shore(p.x, p.z) > 3.2 ? 1 : smoothstep(0.04, 0.16, floor - field.level(p.x, p.z));
     });
+    g.setAttribute('aStone', new THREE.BufferAttribute(lives, 3));
     if (waterline !== null) {
       // Darken what the creek keeps wet
       const colors = g.attributes.color;
@@ -66,7 +130,8 @@ export function createRocks(field, kit) {
       }
     }
     parts.push(g);
-    return { x, z, y, top: y + r * squash * 0.98, r };
+    footprints.push({ x, z, r: r * 0.86 * Math.max(1, stretch * 0.92), reach: 0.16 + r * 0.5, k: 0.3 });
+    return { x, z, y, top: y + r * squash * (flatTop ? flatTop + (1 - flatTop) * 0.12 : 0.98), r };
   }
 
   const inWater = (s, level) => {
@@ -89,7 +154,7 @@ export function createRocks(field, kit) {
     for (const [a, l, r] of ring) {
       const x = frame.x + frame.tx * a + frame.nx * l;
       const z = frame.z + frame.tz * a + frame.nz * l;
-      const s = stone(x, z, r, { squash: 0.8, moss: 0.75, warm: 0.2, waterline: level });
+      const s = stone(x, z, r, { squash: 0.8, moss: 0.75, warm: 0.2, waterline: level, facets: r > 0.5 ? 7 : 0 });
       if (field.shore(x, z) < 0.25) inWater(s, level);
     }
   }
@@ -118,13 +183,21 @@ export function createRocks(field, kit) {
       const x = frame.x + frame.nx * lat;
       const z = frame.z + frame.nz * lat;
       const level = field.level(x, z);
-      const s = stone(x, z, r, { squash, moss: 0.85, warm: 0.15, waterline: along > 0.6 ? level : null });
+      const s = stone(x, z, r, { squash, moss: 0.85, warm: 0.15, waterline: along > 0.6 ? level : null, facets: r > 0.45 ? 11 : 6, detail: r > 0.7 ? 4 : 3 });
       if (field.shore(x, z) < r * 0.6) inWater(s, level);
+    }
+    // One stone on the lip itself, which parts the falling water in two
+    {
+      field.creekAt(lipS - 0.05, frame);
+      const lat = FALL.stone * FALL.sheet * frame.w;
+      const level = creek.level[creek.lipIndex];
+      const s = stone(frame.x + frame.nx * lat, frame.z + frame.nz * lat, 0.18, { squash: 0.82, base: level - 0.13, moss: 0.55, warm: 0.2, waterline: level });
+      inWater(s, level);
     }
     // Two stones in the plunge pool that the falling water breaks on
     for (const [along, lat, r] of [
-      [0.55, 0.42, 0.3],
-      [0.8, -0.5, 0.26],
+      [0.75, 0.46, 0.3],
+      [1.0, -0.52, 0.26],
     ]) {
       field.creekAt(footS + along, frame);
       const x = frame.x + frame.nx * lat;
@@ -152,8 +225,9 @@ export function createRocks(field, kit) {
       const z = frame.z + frame.nz * lat;
       // Flat-topped and just clear of the water
       const top = 0.085 + rng.range(-0.012, 0.02);
-      const squash = 0.34;
-      const s = stone(x, z, r, { squash, base: top - r * squash * 1.3, moss: 0.22, warm: 0.5, stretch: rng.range(1.0, 1.22), waterline: 0 });
+      const squash = 0.5;
+      const flatTop = 0.58;
+      const s = stone(x, z, r, { squash, flatTop, base: top - r * squash * (flatTop + (1 - flatTop) * 0.12 + 0.36), moss: 0.8, tread: 1, warm: 0.5, stretch: rng.range(1.0, 1.22), waterline: 0 });
       inWater(s, 0);
       stepping.push(new THREE.Vector3(x, s.top, z));
     }
@@ -197,7 +271,7 @@ export function createRocks(field, kit) {
       if (field.edge(x, z) < 0.8 || field.pathMask(x, z) > 0.2) continue;
       const level = field.level(x, z);
       const wet = field.shore(x, z) < r * 0.5;
-      const s = stone(x, z, r, { squash: rng.range(0.56, 0.74), moss: wet ? 0.25 : 0.6, warm: 0.45, detail: r > 0.24 ? 3 : 2, waterline: wet ? level : null });
+      const s = stone(x, z, r, { squash: rng.range(0.56, 0.74), moss: wet ? 0.25 : 0.6, warm: 0.45, detail: r > 0.24 ? 3 : 2, waterline: wet ? level : null, facets: !wet && r > 0.3 ? 5 : 0 });
       if (wet) inWater(s, level);
       placed++;
     }
@@ -222,14 +296,14 @@ export function createRocks(field, kit) {
       [-14.2, -1.2, 0.44],
     ];
     for (const [x, z, r] of spots) {
-      stone(x, z, r, { squash: rng.range(0.66, 0.82), moss: 0.8, warm: 0.2 });
+      stone(x, z, r, { squash: rng.range(0.66, 0.82), moss: 0.8, warm: 0.2, facets: 9, detail: r > 0.7 ? 4 : 3 });
       // A smaller companion makes it a group rather than a lump
-      if (r > 0.45) stone(x + rng.range(0.5, 0.9) * rng.sign() * r * 1.6, z + rng.range(0.3, 0.8) * r * 1.5, r * rng.range(0.34, 0.5), { squash: 0.7, moss: 0.7, detail: 2 });
+      if (r > 0.45) stone(x + rng.range(0.5, 0.9) * rng.sign() * r * 1.6, z + rng.range(0.3, 0.8) * r * 1.5, r * rng.range(0.34, 0.5), { squash: 0.7, moss: 0.7, detail: 3, facets: 5 });
     }
   }
 
-  const rocks = mesh(merge(parts), kit.rock, { name: 'rocks' });
+  const rocks = mesh(merge(parts, { keep: ['aStone'] }), kit.rock, { name: 'rocks' });
   group.add(rocks);
 
-  return { group, obstacles, stepping };
+  return { group, obstacles, footprints, stepping };
 }

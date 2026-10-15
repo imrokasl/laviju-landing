@@ -11,6 +11,8 @@ const POLAR_MAX = 1.3;
 const ZOOM_MIN = 0.26; // closest distance, as a share of the overview distance
 const ZOOM_MAX = 1.06;
 const PAN_RADIUS = 13.5;
+const ROOM_MAX = 1.4; // how much further back the overview may stand to fit the room it is given
+const FOOT = 0.05; // the cliff under the near rim, as a share of the island's height on the screen
 
 const _v = new THREE.Vector3();
 const _right = new THREE.Vector3();
@@ -26,6 +28,12 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
   const size = { w: 1, h: 1 };
   let home = homes.landscape;
   let fit = 60;
+  // Where the page leaves the picture less room than the frame has, the
+  // overview stands further back than `fit` and is lifted into that room.
+  // Closer views keep `fit` for their measure.
+  let room = null;
+  let overview = fit;
+  let lift = 0;
 
   const view = { az: home.azimuth, pol: home.polar, dist: fit, x: homeTarget.x, y: homeTarget.y, z: homeTarget.z };
   const goal = { ...view };
@@ -66,8 +74,55 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
     return best;
   }
 
+  // The overview in the room it is given: how far back it has to stand for the
+  // island to fit between the top and the bottom of that room, and how far up
+  // the picture has to move to sit in the middle of it.
+  function fitRoom() {
+    overview = fit;
+    lift = 0;
+    if (!room) return;
+    orbitBasis(home.azimuth, home.polar);
+    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    const space = Math.max(1, room.bottom - room.top);
+    // Where the island begins and ends, in pixels below the middle of the frame
+    let top = 0;
+    let bottom = 0;
+    const measure = () => {
+      top = Infinity;
+      bottom = -Infinity;
+      for (const p of fitPoints) {
+        _v.copy(p).sub(homeTarget);
+        const y = (-_v.dot(_up) / ((overview + _v.dot(_forward)) * tanV)) * size.h * 0.5;
+        top = Math.min(top, y);
+        bottom = Math.max(bottom, y);
+      }
+      bottom += (bottom - top) * FOOT;
+    };
+    measure();
+    for (let pass = 0; pass < 4 && bottom - top > space && overview < fit * ROOM_MAX; pass++) {
+      overview = Math.min(fit * ROOM_MAX, (overview * (bottom - top)) / space);
+      measure();
+    }
+    // In the middle of its room. A room too low even for the furthest overview
+    // keeps the treetops clear, and the foot of the island gives way.
+    lift = size.h / 2 + (bottom - top <= space ? (top + bottom) / 2 - (room.top + room.bottom) / 2 : top - room.top);
+  }
+
+  const atHome = () => Math.abs(goal.dist - overview) < 0.01 && Math.abs(goal.az - home.azimuth) < 0.001;
+
+  // The room the page leaves the overview, from `top` to `bottom` in CSS
+  // pixels down the frame; called with nothing, it is the whole of the frame.
+  function setRoom(top = null, bottom = null) {
+    const next = top == null ? null : { top, bottom };
+    if (next?.top === room?.top && next?.bottom === room?.bottom) return;
+    const wasHome = atHome();
+    room = next;
+    fitRoom();
+    if (wasHome) goal.dist = overview;
+  }
+
   function resize(width, height) {
-    const wasHome = Math.abs(goal.dist - fit) < 0.01 && Math.abs(goal.az - home.azimuth) < 0.001;
+    const wasHome = atHome();
     size.w = width;
     size.h = height;
     const aspect = width / height;
@@ -78,24 +133,39 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
       polar: lerp(homes.landscape.polar, homes.portrait.polar, k),
     };
     fit = fitDistance(home.azimuth, home.polar, aspect);
+    fitRoom();
     camera.aspect = aspect;
     if (wasHome || !flight) {
       if (wasHome) {
         goal.az = home.azimuth;
         goal.pol = home.polar;
-        goal.dist = fit;
+        goal.dist = overview;
       } else {
-        goal.dist = clamp(goal.dist, fit * ZOOM_MIN, fit * ZOOM_MAX);
+        goal.dist = clamp(goal.dist, fit * ZOOM_MIN, overview * ZOOM_MAX);
       }
     }
     applyCamera(0);
+  }
+
+  // The way into the sky at a spot of the overview as it sits on the page:
+  // across and up from the middle of the frame, each -1..1 at its edges.
+  function skyAt(x, y, out) {
+    orbitBasis(home.azimuth, home.polar);
+    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    // The overview is lifted into its room, and the sky behind it with it
+    const up = y - (2 * lift) / size.h;
+    return out
+      .copy(_forward)
+      .addScaledVector(_right, x * tanV * (size.w / size.h))
+      .addScaledVector(_up, up * tanV)
+      .normalize();
   }
 
   // ---------- Limits ----------
   function constrain(g) {
     g.az = clamp(g.az, home.azimuth - AZIMUTH_RANGE, home.azimuth + AZIMUTH_RANGE);
     g.pol = clamp(g.pol, POLAR_MIN, POLAR_MAX);
-    g.dist = clamp(g.dist, fit * ZOOM_MIN, fit * ZOOM_MAX);
+    g.dist = clamp(g.dist, fit * ZOOM_MIN, overview * ZOOM_MAX);
     // The closer the camera, the further the target may wander from the centre
     const reach = PAN_RADIUS * clamp(1.18 - g.dist / fit, 0, 1);
     const dx = g.x - homeTarget.x;
@@ -106,7 +176,8 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
       g.x = homeTarget.x + dx * k;
       g.z = homeTarget.z + dz * k;
     }
-    g.y = clamp(g.y, 0.2, 3.4);
+    // High enough for a flight to reach the stork's nest on its pole
+    g.y = clamp(g.y, 0.2, 6.2);
   }
 
   // ---------- Input ----------
@@ -143,7 +214,7 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
 
   function zoomAt(factor, clientX, clientY) {
     const before = goal.dist;
-    goal.dist = clamp(goal.dist * factor, fit * ZOOM_MIN, fit * ZOOM_MAX);
+    goal.dist = clamp(goal.dist * factor, fit * ZOOM_MIN, overview * ZOOM_MAX);
     const applied = goal.dist / before;
     if (applied < 1 && groundPoint(clientX, clientY, _hit)) {
       // Zooming in pulls the target towards what is under the cursor
@@ -249,7 +320,7 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
   }
 
   function goHome(duration = 1.6) {
-    flyTo({ az: home.azimuth, pol: home.polar, dist: fit, x: homeTarget.x, y: homeTarget.y, z: homeTarget.z }, duration);
+    flyTo({ az: home.azimuth, pol: home.polar, dist: overview, x: homeTarget.x, y: homeTarget.y, z: homeTarget.z }, duration);
   }
 
   // Look at a point from a given direction; distance is a share of the overview.
@@ -272,14 +343,14 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
     Object.assign(view, {
       az: home.azimuth - 0.62,
       pol: home.polar - 0.2,
-      dist: fit * 1.5,
+      dist: overview * 1.5,
       x: homeTarget.x,
       y: homeTarget.y + 1.2,
       z: homeTarget.z,
     });
     flight = {
       from: { ...view },
-      to: { az: home.azimuth, pol: home.polar, dist: fit, x: homeTarget.x, y: homeTarget.y, z: homeTarget.z },
+      to: { az: home.azimuth, pol: home.polar, dist: overview, x: homeTarget.x, y: homeTarget.y, z: homeTarget.z },
       t: 0,
       duration: 3.6,
       easing: ease.outQuart,
@@ -344,11 +415,20 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
     goHome,
     intro,
     setShift,
+    setRoom,
+    skyAt,
     get view() {
       return view;
     },
     get fit() {
       return fit;
+    },
+    // How far back the overview stands, and how far up it sits in its room
+    get overview() {
+      return overview;
+    },
+    get lift() {
+      return lift;
     },
     get home() {
       return home;
@@ -368,7 +448,7 @@ export function createRig(camera, dom, { target, homes, fitPoints, reducedMotion
     },
     get isHome() {
       return (
-        Math.abs(goal.dist - fit) < fit * 0.02 &&
+        Math.abs(goal.dist - overview) < overview * 0.02 &&
         Math.abs(goal.az - home.azimuth) < 0.03 &&
         Math.abs(goal.pol - home.polar) < 0.03 &&
         Math.hypot(goal.x - homeTarget.x, goal.z - homeTarget.z) < 0.3

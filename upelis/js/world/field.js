@@ -10,6 +10,10 @@ const CELL = 0.1; // grid spacing for the baked height / shore maps
 const DS = 0.1; // spacing of creek samples along the stream
 const COARSE = 8;
 const MARGIN = 1.2;
+// The upper fall, as shares of the stretch of creek that follows its lip:
+// where the water lets go, and how much of the stretch the step of rock takes
+const FALL_FROM = 0.1;
+const FALL_RUN = 0.3;
 
 export function createField(seed = 7) {
   const noise = createNoise(seed);
@@ -143,10 +147,10 @@ export function createField(seed = 7) {
       c.near[i] = attr('near', cu);
       c.far[i] = attr('far', cu);
 
-      // The water holds its level up to the lip, then drops in a short curtain.
+      // The water holds its level up to the lip, then drops over a step of rock.
       const seg = Math.min(Math.floor(cu), segments - 1);
       if (seg === FALL_LIP) {
-        const drop = Math.pow(saturate((cu - seg - 0.1) / 0.52), 1.7);
+        const drop = Math.pow(saturate((cu - seg - FALL_FROM) / FALL_RUN), 1.5);
         c.level[i] = lerp(CREEK[seg].level, CREEK[seg + 1].level, drop);
       } else {
         c.level[i] = attr('level', cu);
@@ -170,8 +174,8 @@ export function createField(seed = 7) {
       turb = Math.max(c.fall[i], turb * Math.exp(-DS / 1.5));
       c.turb[i] = turb;
       c.speed[i] = clamp(0.95 / (c.w[i] * (0.4 + c.bed[i])), 0.42, 2.1) + c.fall[i] * 1.6;
-      if (c.cu[i] <= FALL_LIP + 0.1) c.lipIndex = i;
-      if (c.cu[i] <= FALL_LIP + 0.62) c.footIndex = i;
+      if (c.cu[i] <= FALL_LIP + FALL_FROM) c.lipIndex = i;
+      if (c.cu[i] <= FALL_LIP + FALL_FROM + FALL_RUN) c.footIndex = i;
     }
 
     for (let i = 0; i < n; i++) {

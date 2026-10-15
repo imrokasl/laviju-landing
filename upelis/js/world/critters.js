@@ -1,12 +1,16 @@
 import * as THREE from '../core/three.js';
-import { TAU, createRng, lerp, saturate, smoothstep } from '../core/math.js';
+import { TAU, createRng, ease, lerp, saturate, smoothstep } from '../core/math.js';
 import { palette, brand, col } from '../core/palette.js';
+import { season } from '../core/season.js';
 import { icoSphere, tube, place, displace, paint, paintSolid, merge } from '../core/geo.js';
 import { mesh, part } from './kit.js';
 import { PROPS } from './layout.js';
 
 // Who lives here: ducks on the water, a frog on its lily pad, fish under the
-// surface, the stork in the shallows, and the small things that fly.
+// surface, the stork, and the small things that fly. Each keeps its own
+// calendar: the stork comes home in spring and leaves in autumn, the ducks go
+// before the ice, the snail and the hedgehog sleep the winter away, and the
+// bird table has its guests only while there is snow.
 // Every animal faces +z in its own space.
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -139,11 +143,13 @@ function storkGeometry() {
   return { body: merge(body), head: merge(head), pivot };
 }
 
-// A blue tit: blue cap and back, white cheeks, yellow breast.
-function titGeometry() {
-  const blue = col(brand.sky.dot);
-  const yellow = col(palette.butter);
-  const white = col(palette.white);
+// A small perching bird. As it stands, a blue tit: blue cap and back, white
+// cheeks, yellow breast. Other colours make a great tit or a bullfinch of it.
+function titGeometry({ cap = brand.sky.dot, back = brand.sky.dot, belly = palette.butter, cheek = palette.white, wing = brand.sky.ink } = {}) {
+  const blue = col(back);
+  const crown = col(cap);
+  const yellow = col(belly);
+  const white = col(cheek);
   const parts = [];
   const body = icoSphere(1, 2);
   displace(body, (p) => {
@@ -156,18 +162,18 @@ function titGeometry() {
   place(head, { y: 0.135, z: 0.06 });
   paint(head, (p, n, i, out) => {
     out.copy(white);
-    if (p.y > 0.155) out.copy(blue);
+    if (p.y > 0.155) out.copy(crown);
     else if (p.y < 0.115 && p.z > 0.07) out.copy(yellow);
   });
   parts.push(head);
   parts.push(ball(palette.ink, 1, { y: 0.135, z: 0.116, sx: 0.012, sy: 0.01, sz: 0.022 }, 1));
   for (const side of [-1, 1]) {
     parts.push(ball(palette.ink, 0.009, { x: side * 0.034, y: 0.146, z: 0.095 }, 1));
-    parts.push(ball(brand.sky.ink, 1, { x: side * 0.056, y: 0.076, z: -0.012, sx: 0.016, sy: 0.04, sz: 0.066, rx: -0.3 }, 1));
+    parts.push(ball(wing, 1, { x: side * 0.056, y: 0.076, z: -0.012, sx: 0.016, sy: 0.04, sz: 0.066, rx: -0.3 }, 1));
     parts.push(part(tube([V(side * 0.02, 0.03, 0.01), V(side * 0.02, -0.005, 0.02)], 0.005, { radial: 4 }), palette.ink));
   }
   // Tail
-  parts.push(ball(brand.sky.ink, 1, { y: 0.058, z: -0.11, sx: 0.022, sy: 0.008, sz: 0.06, rx: 0.25 }, 1));
+  parts.push(ball(wing, 1, { y: 0.058, z: -0.11, sx: 0.022, sy: 0.008, sz: 0.06, rx: 0.25 }, 1));
   return merge(parts);
 }
 
@@ -290,9 +296,9 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     const length = lap.getLength();
     const mother = duckGeometry({ body: palette.storkWhite, wing: '#EFE4D2', beak: palette.beak });
     const young = duckGeometry({ body: palette.duck, wing: palette.duckDark, beak: palette.beak });
+    const sizes = [0.6, 0.36, 0.33, 0.36];
     const ducks = [0, 1, 2, 3].map((k) => {
-      const m = mesh(k === 0 ? mother : young, kit.solid, { name: k === 0 ? 'duck' : 'duckling' });
-      m.scale.setScalar(k === 0 ? 0.6 : 0.33 + (k % 2) * 0.03);
+      const m = mesh(k === 0 ? mother : young, kit.creature, { name: k === 0 ? 'duck' : 'duckling' });
       m.rotation.order = 'YXZ';
       group.add(m);
       return m;
@@ -300,14 +306,19 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     const speed = 0.3;
     let wake = 0.6;
     updaters.push((time, dt) => {
+      // Gone before the ice, back with the thaw
+      const here = season.v.ducks;
+      for (const duck of ducks) duck.visible = here > 0.004;
+      if (here <= 0.004) return;
       ducks.forEach((duck, k) => {
+        duck.scale.setScalar(sizes[k] * ease.outBack(saturate(here * 1.4 - k * 0.1)));
         // The little ones keep in line behind, never quite evenly
         const lag = k === 0 ? 0 : 0.3 + k * 0.36 + Math.sin(time * 0.7 + k * 2) * 0.05;
         const u = ((((time * speed - lag) / length) % 1) + 1) % 1;
         lap.getPointAt(u, _p);
         lap.getTangentAt(u, _t);
         const paddle = Math.sin(time * (k === 0 ? 4.2 : 6.5) + k * 1.9);
-        duck.position.set(_p.x, water.level(_p.x, _p.z) - 0.012 + Math.sin(time * 1.6 + k) * 0.008, _p.z);
+        duck.position.set(_p.x, water.surface(_p.x, _p.z) - 0.012 + Math.sin(time * 1.6 + k) * 0.008, _p.z);
         duck.rotation.set(Math.sin(time * 1.3 + k) * 0.03, Math.atan2(_t.x, _t.z), paddle * (k === 0 ? 0.035 : 0.07));
       });
       wake -= dt;
@@ -321,10 +332,9 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
 
   // ---------- The frog ----------
   if (meadow.pads.length) {
-    // The roomiest free pad out in the open, on the side of the pool the view faces
-    const free = meadow.pads.filter((p) => !p.lily && p.r >= 0.22);
-    const pad = (free.length ? free : meadow.pads).sort((a, b) => b.x * 0.43 + b.z * 0.9 - (a.x * 0.43 + a.z * 0.9))[0];
-    const frog = mesh(frogGeometry(), kit.solid, { name: 'frog' });
+    // The meadow keeps one pad for it: the first up in spring and the last to go
+    const pad = meadow.pads.find((p) => p.frog) || meadow.pads[0];
+    const frog = mesh(frogGeometry(), kit.creature, { name: 'frog' });
     const size = Math.min(1.5, (pad.r / 0.3) * 1.45);
     frog.scale.setScalar(size);
     frog.rotation.order = 'YXZ';
@@ -336,6 +346,12 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     const every = 6.5;
     let lastHop = -1;
     updaters.push((time) => {
+      // It is about for as long as it has a pad to sit on, and digs in before the frost
+      const here = Math.min(season.v.swimmers, smoothstep(0.1, 0.3, season.v.pads));
+      frog.visible = here > 0.004;
+      if (!frog.visible) return;
+      const grown = size * ease.outBack(saturate(here));
+      const rise = water.surface(pad.x, pad.z) - water.level(pad.x, pad.z);
       const k = Math.floor(time / every);
       const f = (time - k * every) / 0.62;
       let y = 0;
@@ -349,10 +365,10 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
         }
       } else if (k > 0) turn = 1;
       const facing = yaw0 + (k > 0 ? (k - 1 + turn) * 0.9 : 0);
-      frog.position.y = pad.y + y;
+      frog.position.y = pad.y + rise + y;
       frog.rotation.set(-y * 1.1, facing, 0);
       const breath = 1 + Math.sin(time * 3.1) * 0.035;
-      frog.scale.set(size * breath, size * (1 + (1 - breath) * 0.8), size);
+      frog.scale.set(grown * breath, grown * (1 + (1 - breath) * 0.8), grown);
     });
     anchors.frog = frog;
   }
@@ -363,12 +379,13 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     const fish = [];
     const count = quality.density > 0.5 ? 6 : 4;
     for (let i = 0; i < count; i++) {
-      const m = mesh(geometry, kit.solid, { name: 'fish', cast: false, receive: false });
+      const m = mesh(geometry, kit.creature, { name: 'fish', cast: false, receive: false });
       m.rotation.order = 'YXZ';
-      m.scale.setScalar(rng.range(0.85, 1.25));
+      const size = rng.range(0.85, 1.25);
       group.add(m);
       fish.push({
         m,
+        size,
         centre: creekPoint(8 + rng.range(-0.4, 0.4), rng.range(-0.75, 0.5)),
         rx: rng.range(0.45, 0.9),
         rz: rng.range(0.25, 0.5),
@@ -380,6 +397,10 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     }
     let rise = 3;
     updaters.push((time, dt) => {
+      // Under the ice they keep to the bottom, out of sight
+      const here = season.v.swimmers;
+      for (const f of fish) f.m.visible = here > 0.004;
+      if (here <= 0.004) return;
       for (const f of fish) {
         const a = time * f.speed + f.phase;
         const c = Math.cos(f.tilt);
@@ -390,9 +411,10 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
         const vz = Math.cos(a * 2) * 2 * f.rz * f.speed;
         const x = f.centre.x + lx * c + lz * s;
         const z = f.centre.z - lx * s + lz * c;
-        const level = water.level(x, z);
+        const level = water.surface(x, z);
         f.m.position.set(x, Math.min(level - 0.04, Math.max(level - f.depth, field.height(x, z) + 0.05)), z);
         f.m.rotation.y = Math.atan2(vx * c + vz * s, -vx * s + vz * c) + Math.sin(time * 7 + f.phase) * 0.2;
+        f.m.scale.setScalar(f.size * saturate(here * 1.5));
       }
       // Now and then one of them touches the surface
       rise -= dt;
@@ -405,28 +427,91 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
   }
 
   // ---------- The stork ----------
+  // Home on its nest in spring, fishing in the shallows all summer, and away
+  // beyond the rim from autumn until the snow has gone.
   {
     const { x, z, yaw } = PROPS.stork;
     const parts = storkGeometry();
     const stork = new THREE.Group();
     stork.name = 'stork';
-    stork.add(mesh(parts.body, kit.solid, { name: 'stork-body' }));
-    const head = mesh(parts.head, kit.solid, { name: 'stork-head' });
+    stork.rotation.order = 'YXZ';
+    stork.add(mesh(parts.body, kit.creature, { name: 'stork-body' }));
+    const head = mesh(parts.head, kit.creature, { name: 'stork-head' });
     head.position.copy(parts.pivot);
     head.rotation.order = 'YXZ';
     stork.add(head);
-    stork.position.set(x, field.height(x, z) - 0.01, z);
-    stork.rotation.y = yaw;
-    stork.scale.setScalar(1.08);
+    // Wings: white, with the black flight feathers along the back edge and the tip
+    const feathers = wingGeometry(
+      [
+        [0, 0.16],
+        [0.42, 0.2],
+        [0.86, 0.1],
+        [1.02, -0.04],
+        [0.8, -0.16],
+        [0.4, -0.18],
+        [0, -0.14],
+      ],
+      { root: 0.9 }
+    );
+    const white = col(palette.storkWhite);
+    const black = col(palette.storkBlack);
+    paint(feathers, (p, n, i, out) => out.copy(p.x > 0.6 || p.z < -0.1 ? black : white));
+    const wings = [1, -1].map((side) => {
+      const wing = mesh(feathers, kit.creatureDouble, { name: 'stork-wing' });
+      wing.position.set(side * 0.1, 0.8, 0.03);
+      stork.add(wing);
+      return wing;
+    });
+    const size = 1.08;
+    stork.scale.setScalar(size);
     group.add(stork);
+
+    const shallows = V(x, field.height(x, z) - 0.01, z);
+    const nest = props.anchors.nest || shallows;
+    // Where it comes from and goes to: far off behind the island
+    const away = V(-30, 17, -34);
+    const last = V().copy(shallows);
+    const top = V();
+    let facing = yaw;
     updaters.push((time) => {
+      const v = season.v;
+      const here = v.stork;
+      stork.visible = here > 0.004;
+      if (!stork.visible) return;
+      const home = v.storkNest;
+      const gone = 1 - here;
+      // Between the nest and the shallows it flies a low arc; to and from the
+      // winter it is a long glide over the far rim
+      _p.copy(shallows).lerp(nest, home);
+      _p.y += Math.sin(home * Math.PI) * 1.5;
+      if (gone > 0) {
+        _p.lerp(away, ease.inOutSine(gone));
+        _p.y += Math.sin(gone * Math.PI) * 3;
+      }
+      const air = saturate(Math.max(Math.sin(home * Math.PI) * 2.2, smoothstep(0, 0.08, gone)));
+      // It looks where it is going; standing, it turns back to its usual way
+      const dx = _p.x - last.x;
+      const dz = _p.z - last.z;
+      if (air > 0.05 && dx * dx + dz * dz > 1e-6) facing = Math.atan2(dx, dz);
+      else if (air <= 0.05) facing = home > 0.5 ? 0.7 : yaw;
+      last.copy(_p);
+      stork.position.copy(_p);
+      stork.scale.setScalar(size * smoothstep(0, 0.2, here));
       // Looks about, then now and then dips its bill as if it had seen a frog
-      const dip = Math.pow(saturate(Math.sin(time * 0.23 + 1.2) * 4 - 3), 2);
-      head.rotation.set(dip * 0.75 + Math.sin(time * 0.7) * 0.03, Math.sin(time * 0.31) * 0.55 + Math.sin(time * 0.83) * 0.12, 0);
-      stork.rotation.z = Math.sin(time * 0.6) * 0.012;
+      const dip = Math.pow(saturate(Math.sin(time * 0.23 + 1.2) * 4 - 3), 2) * (1 - home) * (1 - air);
+      head.rotation.set(dip * 0.75 + Math.sin(time * 0.7) * 0.03 + air * 0.9, (Math.sin(time * 0.31) * 0.55 + Math.sin(time * 0.83) * 0.12) * (1 - air), 0);
+      stork.rotation.set(air * 0.8, facing, Math.sin(time * 0.6) * 0.012);
+      const beat = 0.2 + Math.sin(time * 6.4) * 0.6;
+      wings.forEach((wing, k) => {
+        const side = k ? -1 : 1;
+        wing.visible = air > 0.02;
+        wing.scale.set(side * air, air, air);
+        wing.rotation.z = side * beat;
+      });
+      top.copy(_p).setY(_p.y + 1.4 * size);
     });
     anchors.stork = stork;
-    anchors.storkTop = V(x, stork.position.y + 1.4, z);
+    anchors.storkTop = top;
   }
 
   // ---------- Small birds ----------
@@ -436,7 +521,7 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     if (props.anchors.railPerch) perches.push({ p: props.anchors.railPerch, yaw: props.anchors.railYaw, s: 1.6 });
     if (props.anchors.birdhouse) perches.push({ p: props.anchors.birdhouse, yaw: 0.3, s: 1.35 });
     perches.forEach((perch, i) => {
-      const bird = mesh(geometry, kit.solid, { name: 'tit' });
+      const bird = mesh(geometry, kit.creature, { name: 'tit' });
       bird.position.copy(perch.p);
       bird.scale.setScalar(perch.s);
       bird.rotation.order = 'YXZ';
@@ -455,40 +540,74 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
       });
       if (i === 0) anchors.bird = bird;
     });
+
+    // In winter the bird table has guests: a great tit and a bullfinch
+    if (props.anchors.feeder) {
+      const { point, yaw } = props.anchors.feeder;
+      const cs = Math.cos(yaw);
+      const sn = Math.sin(yaw);
+      [
+        { colours: { cap: palette.ink, back: '#A9B97A', belly: palette.butter, wing: '#5E6A7E' }, at: [-0.15, 0.05], turn: 0.7, s: 1.5 },
+        { colours: { cap: palette.ink, back: '#A7B1C6', belly: '#EE8A78', cheek: '#EE8A78', wing: palette.storkBlack }, at: [0.15, -0.04], turn: -1.0, s: 1.7 },
+      ].forEach((guest, i) => {
+        const bird = mesh(titGeometry(guest.colours), kit.creature, { name: 'table-guest' });
+        const [lx, lz] = guest.at;
+        bird.position.set(point.x + lx * cs + lz * sn, point.y, point.z - lx * sn + lz * cs);
+        bird.rotation.order = 'YXZ';
+        group.add(bird);
+        updaters.push((time) => {
+          const here = season.v.setWinter;
+          bird.visible = here > 0.004;
+          if (!bird.visible) return;
+          bird.scale.setScalar(guest.s * ease.outBack(saturate(here * 1.5 - 0.4 - i * 0.1)));
+          // Pecks at the seeds, looks up, pecks again
+          const peck = Math.pow(saturate(Math.sin(time * 5.2 + i * 2.6) * Math.sin(time * 0.47 + i * 1.7) * 1.6), 2);
+          bird.rotation.set(peck * 0.8, yaw + guest.turn + Math.sin(Math.floor(time * 0.4 + i * 0.6) * 12.9898) * 0.5, 0);
+        });
+      });
+    }
   }
 
   // ---------- The snail and the hedgehog by the log ----------
   if (props.anchors.logTop) {
     const { point, yaw } = props.anchors.logTop;
-    const snail = mesh(snailGeometry(), kit.solid, { name: 'snail' });
+    const snail = mesh(snailGeometry(), kit.creature, { name: 'snail' });
     snail.scale.setScalar(1.7);
     snail.rotation.y = yaw + Math.PI / 2;
     group.add(snail);
     const dx = Math.cos(yaw);
     const dz = -Math.sin(yaw);
     updaters.push((time) => {
+      const here = season.v.crawlers;
+      snail.visible = here > 0.004;
+      if (!snail.visible) return;
+      snail.scale.setScalar(1.7 * ease.outBack(saturate(here)));
       // A snail's pace along the log, there and back
       const crawl = -0.42 + Math.sin(time * 0.05) * 0.3;
       snail.position.set(point.x + dx * crawl, point.y - 0.012, point.z + dz * crawl);
       snail.rotation.y = yaw + Math.PI / 2 + (1 - smoothstep(-0.15, 0.15, Math.cos(time * 0.05))) * Math.PI;
-      snail.scale.z = 1.7 * (1 + Math.sin(time * 1.4) * 0.04);
+      snail.scale.z *= 1 + Math.sin(time * 1.4) * 0.04;
     });
     anchors.snail = snail;
   }
   {
     // Out on the path, where it can be seen
     const { x: hx, z: hz, yaw: heading } = PROPS.hedgehog;
-    const hog = mesh(hedgehogGeometry(createRng(12)), kit.solid, { name: 'hedgehog' });
+    const hog = mesh(hedgehogGeometry(createRng(12)), kit.creature, { name: 'hedgehog' });
     hog.position.set(hx, field.height(hx, hz) - 0.005, hz);
     hog.rotation.order = 'YXZ';
     hog.rotation.y = heading;
     hog.scale.setScalar(1.15);
     group.add(hog);
     updaters.push((time) => {
+      const here = season.v.crawlers;
+      hog.visible = here > 0.004;
+      if (!hog.visible) return;
+      hog.scale.setScalar(1.15 * ease.outBack(saturate(here)));
       // Snuffling about
       hog.rotation.x = Math.sin(time * 2.6) * 0.035 + 0.03;
       hog.rotation.y = heading + Math.sin(time * 0.4) * 0.25;
-      hog.scale.y = 1.15 * (1 + Math.sin(time * 2.6) * 0.02);
+      hog.scale.y *= 1 + Math.sin(time * 2.6) * 0.02;
     });
     anchors.hedgehog = hog;
   }
@@ -497,11 +616,11 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
   // Wings are instanced: two (or four) per animal, their matrices rebuilt
   // every frame from the animal's position, heading and wingbeat.
   const flock = (name, wing, bodyGeometry, animals, wingsEach) => {
-    const wings = new THREE.InstancedMesh(wing, kit.solidDouble, animals.length * wingsEach);
+    const wings = new THREE.InstancedMesh(wing, kit.creatureDouble, animals.length * wingsEach);
     wings.name = `${name}-wings`;
     wings.frustumCulled = false;
     wings.castShadow = false;
-    const bodies = new THREE.InstancedMesh(bodyGeometry, kit.solidDouble, animals.length);
+    const bodies = new THREE.InstancedMesh(bodyGeometry, kit.creatureDouble, animals.length);
     bodies.name = `${name}-bodies`;
     bodies.frustumCulled = false;
     bodies.castShadow = false;
@@ -575,15 +694,20 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
       );
     };
     updaters.push((time) => {
+      // The first few are out in spring, all of them by summer, none after the leaves turn
+      const out = season.v.flyers * animals.length;
+      wings.visible = bodies.visible = out > 0.004;
+      if (!wings.visible) return;
       animals.forEach((a, i) => {
         at(a, time, _p);
         at(a, time + 0.08, _t);
         const yaw = Math.atan2(_t.x - _p.x, _t.z - _p.z);
         // Wings clap above the back and open flat, never below
         const flap = 0.62 + Math.sin(time * a.beat) * 0.6;
-        setWing(wings, i * 2, _p, yaw, -0.3, 0, flap, 1, a.size);
-        setWing(wings, i * 2 + 1, _p, yaw, -0.3, 0, flap, -1, a.size);
-        setBody(bodies, i, _p, yaw, -0.3, 0, a.size);
+        const size = a.size * saturate(out - i);
+        setWing(wings, i * 2, _p, yaw, -0.3, 0, flap, 1, size);
+        setWing(wings, i * 2 + 1, _p, yaw, -0.3, 0, flap, -1, size);
+        setBody(bodies, i, _p, yaw, -0.3, 0, size);
       });
       wings.instanceMatrix.needsUpdate = true;
       bodies.instanceMatrix.needsUpdate = true;
@@ -626,6 +750,10 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     const from = new THREE.Vector3();
     const to = new THREE.Vector3();
     updaters.push((time) => {
+      // Dragonflies belong to high summer
+      const out = smoothstep(0.65, 1, season.v.flyers);
+      wings.visible = bodies.visible = out > 0.004;
+      if (!wings.visible) return;
       animals.forEach((a, i) => {
         const beat = time / a.period + a.phase;
         const k = Math.floor(beat);
@@ -639,9 +767,9 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
         for (let w = 0; w < 4; w++) {
           const side = w % 2 ? -1 : 1;
           const rear = w > 1;
-          setWing(wings, i * 4 + w, _p, a.yaw, 0, 0, 0.12 + blur * (rear ? -0.3 : 0.3), side, a.size, rear ? -0.22 : 0.18);
+          setWing(wings, i * 4 + w, _p, a.yaw, 0, 0, 0.12 + blur * (rear ? -0.3 : 0.3), side, a.size * out, rear ? -0.22 : 0.18);
         }
-        setBody(bodies, i, _p, a.yaw, 0, 0, a.size);
+        setBody(bodies, i, _p, a.yaw, 0, 0, a.size * out);
       });
       wings.instanceMatrix.needsUpdate = true;
       bodies.instanceMatrix.needsUpdate = true;
@@ -679,17 +807,47 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
     }
     const { wings, bodies } = flock('bird', wing, body, animals, 2);
     const centre = V(-6, 0, -15);
+    // In autumn they stop wheeling and draw up into a wedge that crosses over
+    // the island, now and then, on its way south. In winter the sky is empty.
+    const crossing = 34;
+    const pause = 22;
+    const from = V(-37, 9.2, 3.5);
+    const to = V(27, 12.8, -12);
+    const heading = Math.atan2(to.x - from.x, to.z - from.z);
+    const ahead = V(to.x - from.x, 0, to.z - from.z).normalize();
+    const lead = V();
     updaters.push((time) => {
+      const v = season.v;
+      wings.visible = bodies.visible = v.farBirds > 0.004;
+      if (!wings.visible) return;
+      const wedge = v.flock;
+      const lap = Math.min(1, ((time + 12) % (crossing + pause)) / crossing);
+      lead.lerpVectors(from, to, lap);
+      const ends = smoothstep(0, 0.06, lap) * (1 - smoothstep(0.94, 1, lap));
       animals.forEach((a, i) => {
         const ang = time * 0.055 + a.angle;
         _p.set(centre.x + Math.cos(ang) * a.radius, a.height + Math.sin(time * 0.3 + a.phase) * 0.7, centre.z + Math.sin(ang) * a.radius * 0.8);
-        const yaw = Math.atan2(-Math.sin(ang), Math.cos(ang) * 0.8);
+        let yaw = Math.atan2(-Math.sin(ang), Math.cos(ang) * 0.8);
         // A few slow beats, then a glide
         const glide = smoothstep(0.2, 0.6, Math.sin(time * 0.37 + a.phase));
-        const flap = 0.16 + Math.sin(time * a.beat + a.phase) * 0.5 * (1 - glide * 0.85);
-        setWing(wings, i * 2, _p, yaw, 0, 0.2, flap, 1, a.size);
-        setWing(wings, i * 2 + 1, _p, yaw, 0, 0.2, flap, -1, a.size);
-        setBody(bodies, i, _p, yaw, 0, 0.2, a.size);
+        let flap = 0.16 + Math.sin(time * a.beat + a.phase) * 0.5 * (1 - glide * 0.85);
+        let size = a.size * v.farBirds;
+        if (wedge > 0) {
+          // One leads, the rest fall in behind on either side
+          const rank = Math.ceil(i / 2);
+          const arm = i % 2 ? 1 : -1;
+          _t.copy(lead).addScaledVector(ahead, -rank * 1.3);
+          _t.x += ahead.z * arm * rank * 1.0;
+          _t.z -= ahead.x * arm * rank * 1.0;
+          _t.y += rank * 0.14 + Math.sin(time * 0.5 + i) * 0.12;
+          _p.lerp(_t, wedge);
+          if (wedge > 0.5) yaw = heading;
+          flap = lerp(flap, 0.1 + Math.sin(time * 3.4 + i * 0.9) * 0.5, wedge);
+          size *= lerp(1, ends, wedge);
+        }
+        setWing(wings, i * 2, _p, yaw, 0, 0.2, flap, 1, size);
+        setWing(wings, i * 2 + 1, _p, yaw, 0, 0.2, flap, -1, size);
+        setBody(bodies, i, _p, yaw, 0, 0.2, size);
       });
       wings.instanceMatrix.needsUpdate = true;
       bodies.instanceMatrix.needsUpdate = true;

@@ -1,11 +1,12 @@
 import * as THREE from '../core/three.js';
 import { clamp } from '../core/math.js';
-import { h, icon, sticker } from './dom.js';
+import { h, icon, sticker, stickerUrl, prefersReducedMotion } from './dom.js';
 import { TEXT } from '../data/activities.js';
 
 // The ten markers that float over the scene. Each is a real button pinned to
 // a point in the world: it is projected to the screen every frame, nudged
-// clear of its neighbours, and joined to its spot by a short stem.
+// clear of its neighbours, and joined to its spot by a short stem. The markers
+// stay through the year; a new season gives them new names and stickers.
 
 const _v = new THREE.Vector3();
 const SIZE = 54; // badge diameter, CSS px at full scale
@@ -15,18 +16,21 @@ export function createHotspots(container, places, { onOpen }) {
   const spots = places.map((place, index) => {
     const stem = h('span', { class: 'spot__stem', 'aria-hidden': 'true' });
     const dot = h('span', { class: 'spot__dot', 'aria-hidden': 'true' });
+    const art = sticker(place.sticker, 72);
+    const label = h('span', { class: 'spot__label', 'aria-hidden': 'true' }, place.name);
     const button = h(
       'button',
       { class: 'spot__btn', type: 'button', 'aria-label': TEXT.open(place.name) },
       h('span', { class: 'spot__ring', 'aria-hidden': 'true' }),
-      h('span', { class: 'spot__badge' }, sticker(place.sticker, 72)),
+      h('span', { class: 'spot__badge' }, art),
       h('span', { class: 'spot__check', 'aria-hidden': 'true' }, icon('check', 12)),
-      h('span', { class: 'spot__label', 'aria-hidden': 'true' }, place.name)
+      label
     );
     const el = h('div', { class: 'spot', 'data-tone': place.tone, style: `--i:${index}` }, stem, dot, button);
-    button.addEventListener('click', () => onOpen(place.id, button));
+    const spot = { place, el, stem, dot, button, art, label, pictured: place.sticker, turning: 0, ax: 0, ay: 0, bx: 0, by: 0, depth: 0, on: false, shown: null };
+    button.addEventListener('click', () => onOpen(spot.place.id, button));
     container.append(el);
-    return { place, el, stem, dot, button, ax: 0, ay: 0, bx: 0, by: 0, depth: 0, on: false, shown: null };
+    return spot;
   });
   const byId = new Map(spots.map((s) => [s.place.id, s]));
 
@@ -96,17 +100,57 @@ export function createHotspots(container, places, { onOpen }) {
     }
   }
 
+  const describe = (s, seen) => s.button.setAttribute('aria-label', seen ? `${TEXT.open(s.place.name)} (${TEXT.visited})` : TEXT.open(s.place.name));
+
   function setVisited(id) {
     const s = byId.get(id);
     if (!s || s.el.classList.contains('is-visited')) return;
     s.el.classList.add('is-visited');
-    s.button.setAttribute('aria-label', `${TEXT.open(s.place.name)} (${TEXT.visited})`);
+    describe(s, true);
+  }
+
+  // Another season: the same ten spots, as that season has them. A badge
+  // whose picture changes ducks out, and comes back once the new one is in.
+  function setPlaces(next, visited) {
+    const still = prefersReducedMotion();
+    next.forEach((place, index) => {
+      const s = spots[index];
+      s.place = place;
+      const seen = visited.has(place.id);
+      s.el.classList.toggle('is-visited', seen);
+      describe(s, seen);
+      s.label.textContent = place.name;
+      clearTimeout(s.turning);
+      const back = () => s.el.classList.remove('is-turning');
+      if (s.pictured === place.sticker) {
+        back();
+        return;
+      }
+      const swap = () => {
+        s.pictured = place.sticker;
+        s.art.src = stickerUrl(place.sticker);
+        if (s.art.complete) back();
+        else {
+          s.art.addEventListener('load', back, { once: true });
+          s.art.addEventListener('error', back, { once: true });
+          // Shown again in any case, should the picture be slow to arrive
+          s.turning = setTimeout(back, 1500);
+        }
+      };
+      if (still) {
+        swap();
+        return;
+      }
+      s.el.classList.add('is-turning');
+      s.turning = setTimeout(swap, 180 + index * 26);
+    });
   }
 
   return {
     update,
     setActive,
     setVisited,
+    setPlaces,
     show() {
       container.classList.add('is-ready');
     },

@@ -32,6 +32,10 @@ export const CREEK = [
 
 // Index of the control point at the lip of the upper waterfall.
 export const FALL_LIP = 3;
+// The falling sheet: its width as a share of the creek's, and the stone on the
+// lip that parts it (how far across, -1 far bank .. 1 near bank, and the
+// share of the sheet it holds back to either side).
+export const FALL = { sheet: 0.84, stone: 0.36, gap: 0.2 };
 
 // The rocky rise the spring comes out of: a plateau along this spine.
 export const HILL = {
@@ -108,6 +112,38 @@ export const PROPS = {
   kite: { anchor: [11.6, 3.9], x: 12.3, y: 6.7, z: 1.4 },
   steppingStones: { s: 0.0 }, // placed along control point 6, see props
   sign: { x: 8.05, z: 1.75, yaw: -0.7 },
+
+  // The stork has a cartwheel on a pole to come home to
+  nest: { x: 0.9, z: -5.6, yaw: 0.4 },
+
+  // ----- What each season brings out -----
+  // Spring
+  wreath: { x: 10.9, z: 4.6 },
+  // Spring and autumn: puddles along the path as [x, z, radius], an umbrella left open
+  puddles: [
+    [9.1, 0.0, 0.5],
+    [2.95, 5.45, 0.42],
+    [0.7, 6.3, 0.55],
+    [-1.5, 6.3, 0.34],
+    [-4.8, 5.45, 0.48],
+  ],
+  umbrella: { x: 2.5, z: 4.95, yaw: 2.3 },
+  // Autumn
+  leafPile: { x: -7.6, z: 7.9, yaw: 0.3 },
+  // Winter
+  snowman: { x: 11.1, z: 4.7, yaw: 0.5 },
+  sled: { x: -7.3, z: 8.3, yaw: -1.0 },
+  feeder: { x: -1.6, z: -3.9, yaw: 0.5 },
+  iceBranch: { x: -1.35, z: 4.45, yaw: 0.4 },
+  // A hare crosses the snow in front of the log
+  tracks: [
+    [1.0, 8.0],
+    [-1.5, 8.4],
+    [-3.0, 8.9],
+    [-4.6, 10.0],
+    [-6.8, 9.9],
+    [-8.6, 8.9],
+  ],
 };
 
 // Ground the meadow keeps bare, as [x, z, half-length, half-width, yaw]:

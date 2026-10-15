@@ -1,5 +1,8 @@
 // The sound of the creek: three field recordings, each cut to a loop and mixed
-// here. It stays silent, and nothing is fetched, until the visitor asks.
+// here. It stays silent, and nothing is fetched, until the visitor asks. The
+// mix follows the year: the birds thin out towards winter, and under ice the
+// water is heard as through a wall. Rain and wind have no recordings: they
+// are made here, out of noise.
 
 const base = new URL('../assets/audio/', import.meta.url);
 
@@ -16,11 +19,28 @@ const LOOPS = {
 // From the far side of the island the waterfall is only a murmur
 const FALL_FAR = 0.2;
 
+// Rain: the hiss of the rain itself, and its patter on leaves and water
+const RAIN = { hiss: 0.085, patter: 0.06 };
+
+// Wind: noise through a narrow pass that slides up and down as it gusts.
+// `swell` is how far the level rises and falls with it, `sweep` how far the
+// pass slides, in hertz; the two slow waves that do it never fall into step.
+const WIND = { level: 0.42, hz: 420, q: 1.1, swell: 0.5, sweep: 210, waves: [0.13, 0.31] };
+
+// Where the water's low-pass sits: wide open, and shut down under the ice
+const OPEN_HZ = 18000;
+const ICE_HZ = 620;
+const cutoff = (muffle) => OPEN_HZ * (ICE_HZ / OPEN_HZ) ** muffle;
+
 export function createAudio() {
   const Context = window.AudioContext || window.webkitAudioContext;
   let scape = null;
   let on = false;
   let closeness = 0;
+  // The season's share of the birds and of the water, and how much ice lies on the water
+  const mix = { birds: 1, water: 1, muffle: 0 };
+  let raining = 0;
+  let blowing = 0;
 
   function build() {
     const ctx = new Context();
@@ -28,17 +48,79 @@ export function createAudio() {
     master.gain.value = 0;
     master.connect(ctx.destination);
 
+    // Both water recordings pass through one filter; the birds go straight out
+    const underIce = ctx.createBiquadFilter();
+    underIce.type = 'lowpass';
+    underIce.Q.value = 0.5;
+    underIce.frequency.value = cutoff(mix.muffle);
+    underIce.connect(master);
+
     const layers = {};
     for (const [name, loop] of Object.entries(LOOPS)) {
       const level = ctx.createGain();
       level.gain.value = 0;
-      level.connect(master);
+      level.connect(name === 'birds' ? master : underIce);
       layers[name] = { loop, level, loading: null, playing: false };
     }
-    return { ctx, master, layers };
+    // Rain: a few seconds of noise, played round and round through two filters
+    const noise = ctx.createBuffer(1, Math.round(ctx.sampleRate * 3), ctx.sampleRate);
+    const samples = noise.getChannelData(0);
+    for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1;
+    const shower = ctx.createBufferSource();
+    shower.buffer = noise;
+    shower.loop = true;
+    const rain = ctx.createGain();
+    rain.gain.value = raining;
+    rain.connect(master);
+    const hiss = ctx.createBiquadFilter();
+    hiss.type = 'highpass';
+    hiss.frequency.value = 2600;
+    const hissLevel = ctx.createGain();
+    hissLevel.gain.value = RAIN.hiss;
+    shower.connect(hiss).connect(hissLevel).connect(rain);
+    const patter = ctx.createBiquadFilter();
+    patter.type = 'bandpass';
+    patter.frequency.value = 780;
+    patter.Q.value = 0.6;
+    const patterLevel = ctx.createGain();
+    patterLevel.gain.value = RAIN.patter;
+    shower.connect(patter).connect(patterLevel).connect(rain);
+
+    // Wind: the same noise through its own pass. Two slow waves lean on the
+    // pass and on the level, so it rises and dies away as gusts do.
+    const wind = ctx.createGain();
+    wind.gain.value = blowing;
+    wind.connect(master);
+    const pass = ctx.createBiquadFilter();
+    pass.type = 'bandpass';
+    pass.frequency.value = WIND.hz;
+    pass.Q.value = WIND.q;
+    const gust = ctx.createGain();
+    gust.gain.value = WIND.level;
+    shower.connect(pass).connect(gust).connect(wind);
+    for (const hz of WIND.waves) {
+      const wave = ctx.createOscillator();
+      wave.frequency.value = hz;
+      const swell = ctx.createGain();
+      swell.gain.value = (WIND.level * WIND.swell) / WIND.waves.length;
+      wave.connect(swell).connect(gust.gain);
+      const sweep = ctx.createGain();
+      sweep.gain.value = WIND.sweep / WIND.waves.length;
+      wave.connect(sweep).connect(pass.frequency);
+      wave.start();
+    }
+    shower.start();
+
+    return { ctx, master, underIce, layers, rain, wind };
   }
 
-  const levelOf = (name) => LOOPS[name].level * (name === 'fall' ? FALL_FAR + (1 - FALL_FAR) * closeness : 1);
+  function levelOf(name) {
+    const { level } = LOOPS[name];
+    if (name === 'birds') return level * mix.birds;
+    // A frozen waterfall hardly falls
+    if (name === 'fall') return level * mix.water * (1 - 0.7 * mix.muffle) * (FALL_FAR + (1 - FALL_FAR) * closeness);
+    return level * mix.water;
+  }
 
   // Fetches one recording and sets it going. It fades in when it arrives.
   async function start(name) {
@@ -114,6 +196,34 @@ export function createAudio() {
       closeness = k;
       const fall = scape?.layers.fall;
       if (fall?.playing) fall.level.gain.setTargetAtTime(levelOf('fall'), scape.ctx.currentTime, 0.5);
+    },
+
+    // 0..1: how hard it is raining
+    rain(k) {
+      if (Math.abs(k - raining) < 0.01 && (k > 0 || raining === 0)) return;
+      raining = k;
+      if (scape) scape.rain.gain.setTargetAtTime(k, scape.ctx.currentTime, 0.3);
+    },
+
+    // 0..1: how hard it is blowing
+    wind(k) {
+      if (Math.abs(k - blowing) < 0.01 && (k > 0 || blowing === 0)) return;
+      blowing = k;
+      if (scape) scape.wind.gain.setTargetAtTime(k, scape.ctx.currentTime, 0.4);
+    },
+
+    // What the season makes of the mix; called as the year turns
+    season(birds, water, muffle) {
+      if (Math.abs(birds - mix.birds) < 0.01 && Math.abs(water - mix.water) < 0.01 && Math.abs(muffle - mix.muffle) < 0.01) return;
+      mix.birds = birds;
+      mix.water = water;
+      mix.muffle = muffle;
+      if (!scape) return;
+      const { ctx, layers, underIce } = scape;
+      for (const [name, layer] of Object.entries(layers)) {
+        if (layer.playing) layer.level.gain.setTargetAtTime(levelOf(name), ctx.currentTime, 0.4);
+      }
+      underIce.frequency.setTargetAtTime(cutoff(muffle), ctx.currentTime, 0.4);
     },
   };
 }

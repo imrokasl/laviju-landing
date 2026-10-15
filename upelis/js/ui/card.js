@@ -1,8 +1,9 @@
 import { h, icon, stickerUrl, prefersReducedMotion } from './dom.js';
-import { AREAS, TEXT, WATER_NOTE } from '../data/activities.js';
+import { AREAS, ICE_NOTE, TEXT, WATER_NOTE } from '../data/activities.js';
 
 // The idea card: a side panel on wide screens, a bottom sheet on phones.
-// Its frame is built once; opening a place only swaps the words inside.
+// Its frame is built once; opening a place, or the same place in another
+// season, only swaps the words inside.
 
 export function createCard(el, { total, onClose, onStep, onNextIdea }) {
   const blob = h('span', { class: 'card__blob', 'aria-hidden': 'true' });
@@ -19,6 +20,7 @@ export function createCard(el, { total, onClose, onStep, onNextIdea }) {
   const askBubble = h('p', { class: 'ask__bubble' });
   const needs = h('ul', { class: 'needs' });
   const water = h('p', { class: 'card__water' }, icon('drop', 18), h('span', null, WATER_NOTE));
+  const ice = h('p', { class: 'card__water' }, icon('flake', 18), h('span', null, ICE_NOTE));
 
   const body = h(
     'div',
@@ -32,7 +34,8 @@ export function createCard(el, { total, onClose, onStep, onNextIdea }) {
     h('div', { class: 'ask' }, h('h3', { class: 'card__label' }, TEXT.ask), askBubble),
     h('h3', { class: 'card__label' }, TEXT.needs),
     needs,
-    water
+    water,
+    ice
   );
 
   const pips = h('span', { class: 'card__pips', 'aria-hidden': 'true' });
@@ -74,7 +77,7 @@ export function createCard(el, { total, onClose, onStep, onNextIdea }) {
     let id = null;
     const begin = (e) => {
       if (e.target.closest('button')) return;
-      if (!window.matchMedia('(max-width: 760px)').matches) return;
+      if (!window.matchMedia('(max-width: 760.98px)').matches) return;
       id = e.pointerId;
       startY = e.clientY;
       pull = 0;
@@ -108,7 +111,7 @@ export function createCard(el, { total, onClose, onStep, onNextIdea }) {
       art.src = src;
     }
     placePill.textContent = place.name;
-    ideaCount.textContent = place.ideas.length > 1 ? `Idėja ${TEXT.ideaOf(ideaIndex + 1, place.ideas.length)}` : '';
+    ideaCount.textContent = place.ideas.length > 1 ? TEXT.ideaIn(place.season.of, ideaIndex + 1, place.ideas.length) : place.season.name;
     title.textContent = idea.title;
 
     chips.replaceChildren(
@@ -121,6 +124,7 @@ export function createCard(el, { total, onClose, onStep, onNextIdea }) {
     askBubble.textContent = `„${idea.ask}“`;
     needs.replaceChildren(...idea.needs.map((text) => h('li', { class: 'needs__item' }, text)));
     water.hidden = !idea.water;
+    ice.hidden = !idea.ice;
 
     pips.replaceChildren(...place.ideas.map((_, i) => h('i', { class: i === ideaIndex ? 'is-on' : '' })));
     again.hidden = place.ideas.length < 2;

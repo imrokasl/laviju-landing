@@ -2,9 +2,10 @@ import * as THREE from './core/three.js';
 import { pickQuality, isSoftwareRenderer, lowTier, pixelRatioFor } from './core/quality.js';
 import { loadTextures } from './core/assets.js';
 import { shared, installSoftShadows } from './core/materials.js';
+import { createCalendar, season, seasonIndex, SEASON_IDS } from './core/season.js';
 import { createRig } from './core/rig.js';
 import { palette, col } from './core/palette.js';
-import { clamp, ease } from './core/math.js';
+import { clamp, ease, lerp, smoothstep } from './core/math.js';
 import { CAMERA, CREEK, PROPS } from './world/layout.js';
 import { createField } from './world/field.js';
 import { createTerrain } from './world/terrain.js';
@@ -25,7 +26,13 @@ import { createAudio } from './audio.js';
 const canvas = document.getElementById('scene');
 const root = document.getElementById('creek');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const debug = new URLSearchParams(window.location.search).has('debug');
+const params = new URLSearchParams(window.location.search);
+const debug = params.has('debug');
+// The island opens in summer, unless the address asks for another season. From
+// there on the year turns only when the visitor turns it.
+const SUMMER = 1;
+const asked = seasonIndex(params.get('season') ?? params.get('sezonas'));
+const opening = asked >= 0 ? asked : SUMMER;
 
 // Yield to the browser between build steps. The timer keeps the build moving
 // when the tab is in the background and frames are not being painted.
@@ -41,7 +48,7 @@ const nextFrame = () =>
 // Without the picture the page still has its ideas to give.
 function fallBack(state) {
   root.dataset.state = state;
-  renderFallback(document.getElementById('fallback'));
+  renderFallback(document.getElementById('fallback'), SEASON_IDS[opening]);
 }
 
 function createRenderer(quality) {
@@ -75,11 +82,26 @@ async function boot() {
   renderer.shadowMap.autoUpdate = quality.shadowEvery === 1;
   renderer.shadowMap.needsUpdate = true;
 
+  const calendar = createCalendar({ start: opening, reducedMotion });
+
   const audio = createAudio();
   let ambient = null;
   const ui = createExperience(root, {
-    onCelebrate: () => ambient?.celebrate(),
+    season: SEASON_IDS[season.index],
+    // The rainbow belongs to a season whose ten places have all been found
+    onCelebrate: (on) => ambient?.celebrate(on),
     onSound: (on) => audio.toggle(on),
+    onSeason: (id) => {
+      if (!calendar.go(id)) return;
+      // The address remembers the season, so a link can be passed on as it is
+      const url = new URL(window.location.href);
+      url.searchParams.set('season', id);
+      window.history.replaceState(null, '', url);
+    },
+    // The hour is the visitor's to set as well: the page opens by day
+    onHour: (id) => calendar.hour(id),
+    // Rain, mist and wind come and go at the visitor's word alone
+    onWeather: (kind, on) => calendar.weather(kind, on),
   });
   if (!audio.supported) document.getElementById('sound').hidden = true;
 
@@ -93,6 +115,8 @@ async function boot() {
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(col(palette.haze), 70, 190);
+  // The haze takes the colour of the season's air
+  scene.fog.color = season.hues.haze;
   const camera = new THREE.PerspectiveCamera(CAMERA.fov, 1, 1, 400);
 
   ui.setLoading(0.06);
@@ -103,16 +127,17 @@ async function boot() {
   const field = createField(7);
   await built(0.42);
 
-  const atmosphere = createAtmosphere(textures, quality);
+  const atmosphere = createAtmosphere(textures, quality, { reducedMotion });
   scene.add(atmosphere.group);
 
-  const terrain = createTerrain(field, textures);
-  scene.add(terrain.group);
-  await built(0.52);
-
+  // The stones come first: the ground is shaded where they stand
   const kit = createKit(textures);
   const rocks = createRocks(field, kit);
   scene.add(rocks.group);
+  await built(0.48);
+
+  const terrain = createTerrain(field, textures, { footprints: rocks.footprints });
+  scene.add(terrain.group);
   await built(0.58);
 
   const water = createWater(field, textures, { obstacles: rocks.obstacles });
@@ -135,7 +160,7 @@ async function boot() {
   scene.add(critters.group);
   await built(0.94);
 
-  ambient = createAmbient(renderer, { water, field, quality, reducedMotion });
+  ambient = createAmbient(renderer, { water, field, quality, textures, crowns: trees.anchors.crowns, candle: props.anchors.candle, reducedMotion });
   scene.add(ambient.group);
 
   // Points the overview has to keep in frame: the rim, the treetops, the keel
@@ -157,30 +182,76 @@ async function boot() {
     const at = new THREE.Vector3(p.x, p.y + lift, p.z);
     return (out) => out.copy(at);
   };
+  // A marker that follows something on the move
+  const live = (p, lift = 0) => (out) => out.copy(p).setY(p.y + lift);
+  // One spot for each season, spring first. While the year turns the marker
+  // drifts from the old spot to the new one; asked about a season by number,
+  // it answers with that season's spot wherever the year is now.
+  const yearly = (...spots) => {
+    const next = new THREE.Vector3();
+    return (out, p = season.p) => {
+      const at = Math.floor(p) % 4;
+      const turn = smoothstep(0.3, 0.7, p - Math.floor(p));
+      spots[at](out, p);
+      if (turn > 0) out.lerp(spots[(at + 1) % 4](next, p), turn);
+      return out;
+    };
+  };
+
   const fall = water.falls[0];
   const stones = rocks.stepping.reduce((sum, p) => sum.add(p), new THREE.Vector3()).divideScalar(rocks.stepping.length || 1);
   const pool = CREEK[8];
+  const at = props.anchors;
+  // The stork is followed while it is here; with it gone, the marker waits on the nest
+  const nestTop = fixed(at.nestTop);
+  const storkTop = live(critters.anchors.storkTop, 0.1);
+  const _stork = new THREE.Vector3();
+  const stork = (out) => {
+    const here = smoothstep(0.9, 1, season.v.stork);
+    nestTop(out);
+    return here > 0 ? out.lerp(storkTop(_stork), here) : out;
+  };
+  const sailboat = live(at.boat.position, 0.85);
+  const swing = fixed(trees.anchors.swingSeat, 1.05);
+  const cairn = fixed(at.cairn, 0.55);
+  const umbrella = fixed(at.umbrella, 0.8);
+  const picnic = fixed(at.picnic, 0.2);
+  const kitePeg = fixed(at.kitePeg, 0.75);
   const anchors = {
     krioklys: fixed(new THREE.Vector3().lerpVectors(fall.bottom, fall.top, 0.55), 0.1),
     akmenukai: fixed(stones, 0.3),
-    laivelis: (out) => out.copy(props.anchors.boat.position).setY(props.anchors.boat.position.y + 0.85),
-    gandras: fixed(critters.anchors.storkTop, 0.1),
-    tiltelis: fixed(props.anchors.bridgeTop),
-    azuolas: fixed(trees.anchors.swingSeat, 1.05),
-    rastas: fixed(props.anchors.log, 0.15),
-    krantas: fixed(props.anchors.cairn, 0.55),
-    iskyla: fixed(props.anchors.picnic, 0.2),
-    pieva: fixed(props.anchors.kitePeg, 0.75),
+    laivelis: yearly(live(at.paperBoat, 0.6), sailboat, sailboat, sailboat),
+    gandras: yearly(stork, stork, nestTop, fixed(at.feeder.top)),
+    tiltelis: fixed(at.bridgeTop),
+    azuolas: yearly(swing, swing, fixed(at.leafPile), fixed(at.sled)),
+    rastas: fixed(at.log, 0.15),
+    krantas: yearly(umbrella, cairn, cairn, fixed(at.iceBranch)),
+    iskyla: yearly(picnic, picnic, picnic, fixed(at.lantern)),
+    pieva: yearly(fixed(at.wreath, 0.6), kitePeg, kitePeg, fixed(at.snowman)),
   };
-  // The boat keeps sailing, so the camera looks at its pool instead; the
-  // meadow is framed with its kite in the sky
+  // The boats keep moving, so the camera looks at their pool instead; the
+  // meadow is framed with its kite in the sky while there is one, and the
+  // stork's pole is too tall to be looked at from its top
+  const kiteSky = fixed(new THREE.Vector3(at.kitePeg.x - 0.2, 3.3, at.kitePeg.z - 0.9));
+  const poleMiddle = fixed(new THREE.Vector3(at.nestTop.x, at.nestTop.y - 1.7, at.nestTop.z));
   const focus = {
     laivelis: fixed(new THREE.Vector3(pool.x, 0.9, pool.z)),
-    pieva: fixed(new THREE.Vector3(props.anchors.kitePeg.x - 0.2, 3.3, props.anchors.kitePeg.z - 0.9)),
+    gandras: yearly(poleMiddle, anchors.gandras, poleMiddle, anchors.gandras),
+    pieva: yearly(anchors.pieva, kiteSky, kiteSky, anchors.pieva),
   };
   ui.attach({ rig, camera, anchors, focus });
 
   const post = createPost(renderer, quality, textures.wash);
+  // The stars and the moon are drawn over the finished frame, and are told
+  // what of it stands in front of them
+  if (post.active) atmosphere.behind(post.sceneTarget.depthTexture);
+
+  // Where the moon hangs in the overview, across and up from the middle of
+  // the frame, and how big: in the open sky to the right of the treetops, and
+  // on an upright screen in what sky the title leaves over the island, where
+  // it is a little smaller for the narrower frame
+  const MOON = { wide: [0.5, 0.6, 1], upright: [0.56, 0.34, 0.78] };
+  const moonAt = new THREE.Vector3();
 
   let dprScale = 1;
   function resize() {
@@ -191,8 +262,12 @@ async function boot() {
     renderer.setSize(width, height, false);
     post.setSize(width * dpr, height * dpr);
     rig.resize(width, height);
-    scene.fog.near = rig.fit * 1.08;
-    scene.fog.far = rig.fit * 2.9;
+    ui.resized();
+    const upright = clamp((1.25 - width / height) / 0.6, 0, 1);
+    rig.skyAt(lerp(MOON.wide[0], MOON.upright[0], upright), lerp(MOON.wide[1], MOON.upright[1], upright), moonAt);
+    atmosphere.frame({ high: height * dpr, moon: moonAt, size: lerp(MOON.wide[2], MOON.upright[2], upright) });
+    scene.fog.near = rig.overview * 1.08;
+    scene.fog.far = rig.overview * 2.9;
   }
   resize();
   new ResizeObserver(resize).observe(root);
@@ -215,8 +290,13 @@ async function boot() {
     if (governor.slow > 1.2 && dprScale > 0.62) {
       if (dprScale < 1) governor.settled = true;
       dprScale = Math.max(0.6, dprScale * 0.85);
+    } else if (governor.slow > 1.2 && post.state.ao > 0) {
+      // Still slow at the lowest resolution: the contact shade is the next to go,
+      post.state.ao = 0;
+      governor.slow = 0;
+      return;
     } else if (governor.slow > 1.2 && post.state.dof > 0) {
-      // Still slow at the lowest resolution: the soft focus is the next to go
+      // ...and the soft focus after it
       post.state.dof = 0;
       governor.slow = 0;
       return;
@@ -234,10 +314,41 @@ async function boot() {
   if (debug || reducedMotion) rig.goHome(0);
   else rig.intro();
 
-  // Draw once behind the loader, so every shader is ready before the flight
+  // Draw behind the loader, so every shader is ready before the flight. The
+  // things of the other seasons are brought out for this drawing and nothing
+  // is passed over for being out of the frame: a season must not stop
+  // half-way through its change to build a shader. It is drawn twice, first
+  // with nothing casting a shadow: the shadow pass builds its shaders for the
+  // lights of the frame before, and before the first frame there are none.
+  // The shadow map itself is still drawn that first time, empty, so that the
+  // lit shaders have one to read.
   post.state.reveal = 0;
   rig.update(0, 0);
-  post.render(scene, camera, { focus: rig.view.dist, time: 0 });
+  const away = [];
+  const culled = [];
+  const casting = [];
+  scene.traverse((object) => {
+    if (!object.visible) {
+      away.push(object);
+      object.visible = true;
+    }
+    if (object.frustumCulled) {
+      culled.push(object);
+      object.frustumCulled = false;
+    }
+    if (object.castShadow && !object.isLight) {
+      casting.push(object);
+      object.castShadow = false;
+    }
+  });
+  for (const withShadows of [false, true]) {
+    if (withShadows) for (const object of casting) object.castShadow = true;
+    renderer.shadowMap.needsUpdate = true;
+    post.render(scene, camera, { focus: rig.view.dist, time: 0 });
+  }
+  renderer.shadowMap.needsUpdate = true;
+  for (const object of away) object.visible = false;
+  for (const object of culled) object.frustumCulled = true;
   await built(1);
   await nextFrame();
 
@@ -264,16 +375,36 @@ async function boot() {
       ui.start();
     }
 
+    const turning = season.moving;
+    calendar.update(dt);
+    // The finish of the frame follows the year and the hour, and so does the
+    // mix of the sound, in which rain is heard and the birds wait it out, and
+    // the wind is heard too: the one asked for, and the gust a change of
+    // season comes on. The birds are at their loudest in the morning, fewer
+    // are still singing in the evening, and at night only one or two are.
+    if (season.changed) post.grade(season.v.saturation, season.hues.gradeShadow, season.hues.gradeLight);
+    // What is written on the sky is told once the sky has gone dark behind it
+    const dark = season.night > 0.55;
+    if (dark !== (root.dataset.sky === 'dark')) root.dataset.sky = dark ? 'dark' : 'light';
+    const awake = 1 + 0.25 * season.dawn - 0.35 * season.dusk - 0.92 * season.night;
+    audio.season(season.v.birdsong * (1 - 0.6 * season.rain) * (1 - 0.25 * season.windy) * awake, season.v.creekSound, season.v.muffle);
+    audio.rain(season.rain);
+    audio.wind(Math.max(season.windy, 0.6 * season.turning));
+    if (turning && !season.moving) ui.settled();
     rig.update(dt, time);
     atmosphere.update(time);
     trees.update(time);
+    meadow.update(time);
     props.update(time, dt);
     critters.update(time, dt);
-    ambient.update(time, dt);
+    ambient.update(time, dt, post.state.reveal);
     ui.update();
-    if (quality.shadowEvery > 1 && frames++ % quality.shadowEvery === 0) renderer.shadowMap.needsUpdate = true;
+    // While the season turns, the shadows turn with it on every frame
+    if (season.changed || (quality.shadowEvery > 1 && frames++ % quality.shadowEvery === 0)) renderer.shadowMap.needsUpdate = true;
     audio.near((1 - clamp(Math.hypot(rig.view.x - fall.bottom.x, rig.view.z - fall.bottom.z) / 13, 0, 1)) * (1 - clamp((rig.zoom - 0.3) / 0.7, 0, 1)));
-    post.render(scene, camera, { focus: rig.view.dist, time });
+    // The paper margin is the overview's: it draws back as the view leans in,
+    // and by night, when paper white would lie over the dark like fog
+    post.render(scene, camera, { focus: rig.view.dist, time, margin: (0.25 + 0.75 * clamp((rig.zoom - 0.4) / 0.5, 0, 1)) * (1 - 0.85 * season.night) });
   }
 
   function frame(stamp = performance.now()) {
@@ -301,10 +432,17 @@ async function boot() {
   frame();
 
   if (debug) {
-    window.__creek = { THREE, renderer, scene, camera, rig, field, quality, post, shared, textures, water, trees, rocks, kit, meadow, terrain, props, critters, ambient, ui, audio };
+    window.__creek = { THREE, renderer, scene, camera, rig, field, quality, post, shared, textures, water, trees, rocks, kit, meadow, terrain, props, critters, ambient, ui, audio, atmosphere, calendar, season };
     // Runs the world forward by hand, for looking at it where frames are not being painted
     window.__creek.advance = (seconds, step = 1 / 30) => {
       for (let t = 0; t < seconds; t += step) tick(step);
+    };
+    // ...and keeps it at full sharpness there: frames that come now and then
+    // look like slow ones to the governor, which would go on to blur the picture
+    window.__creek.steady = () => {
+      governor.quiet = Infinity;
+      dprScale = 1;
+      resize();
     };
   }
 }

@@ -93,7 +93,10 @@ body {
   display: none !important;
 }
 
-.creek button {
+/* Buttons take the type and colour of the page. The selector is kept this
+   weak on purpose: with `.creek` in front of it, it outranks the size, weight
+   and colour that every kind of button below sets for itself. */
+button {
   font: inherit;
   color: inherit;
 }
@@ -276,6 +279,30 @@ body {
   width: 38px;
   height: 38px;
   object-fit: contain;
+}
+
+/* By night the sky behind the page is dark, and what is written straight on
+   it turns light. The island says when: the light takes its time to go. */
+.brand,
+.hero__title,
+.hero__lede,
+.serif-accent {
+  transition: color 0.8s ease, text-shadow 0.8s ease;
+}
+
+.creek[data-sky='dark'] .brand,
+.creek[data-sky='dark'] .hero__title {
+  color: #f6f8ff;
+  text-shadow: 0 1px 18px rgba(14, 22, 58, 0.45);
+}
+
+.creek[data-sky='dark'] .hero__lede {
+  color: rgba(236, 241, 255, 0.9);
+  text-shadow: 0 1px 12px rgba(14, 22, 58, 0.5);
+}
+
+.creek[data-sky='dark'] .serif-accent {
+  color: #bcd3ff;
 }
 
 .hero {
@@ -616,7 +643,14 @@ body {
   background: radial-gradient(circle at 50% 38%, #fff 0 55%, var(--tone-1) 100%);
   box-shadow: 0 0 0 2.5px #fff, 0 0 0 4.5px var(--tone-3), 0 14px 26px -8px rgba(30, 42, 58, 0.42), 0 3px 8px rgba(30, 42, 58, 0.14);
   animation: spot-bob 4.6s ease-in-out calc(var(--i) * -0.63s) infinite;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, scale 0.42s var(--ease-spring), opacity 0.2s ease;
+}
+
+/* A new season: the badge ducks out while its picture is changed */
+.spot.is-turning .spot__badge {
+  scale: 0.35;
+  opacity: 0;
+  transition: box-shadow 0.3s ease, scale 0.18s ease-in calc(var(--i) * 26ms), opacity 0.16s ease calc(var(--i) * 26ms);
 }
 
 .spot.is-active .spot__badge {
@@ -965,6 +999,10 @@ body {
   margin-top: 1px;
 }
 
+.card__water + .card__water {
+  margin-top: 8px;
+}
+
 .card__foot {
   display: flex;
   align-items: center;
@@ -1021,17 +1059,203 @@ body {
   text-align: center;
 }
 
+/* ---------- The dock: the hint, and under it the seasons, the hours and the weather ---------- */
+/* It lies across the foot of the page and lets the picture be taken hold of
+   through it: only what stands on it answers to the pointer */
+.dock {
+  --edge: clamp(12px, 3vh, 28px);
+  position: absolute;
+  z-index: 22;
+  left: calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease 0.7s, transform 0.7s var(--ease-out) 0.7s, right 0.55s var(--ease-out);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.creek[data-state='ready'] .dock {
+  opacity: 1;
+  transform: none;
+}
+
+/* Side by side while there is room; in a narrower window the sky goes above the year */
+.dock__row {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 10px;
+  max-width: 100%;
+}
+
+/* The hours and the weather keep together: both are asked of the sky */
+.sky {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.seasons,
+.hours,
+.weather {
+  pointer-events: auto;
+}
+
+/* ---------- The seasons and the hours ---------- */
+/* Each a choice of one out of four */
+.seasons,
+.hours {
+  --at: 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 4px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34), inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+/* The patch of its own colour under the one that is on */
+.seasons__thumb,
+.hours__thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 4);
+  border-radius: 9999px;
+  background: var(--tone-2);
+  box-shadow: inset 0 0 0 1px var(--tone-3);
+  transform: translateX(calc(var(--at) * 100%));
+  transition: transform 0.55s var(--ease-spring), background-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.seasons__opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 16px 0 11px;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.seasons__opt:hover {
+  color: var(--text);
+}
+
+.seasons__opt[aria-checked='true'] {
+  color: var(--tone-ink);
+}
+
+.seasons__opt .sticker {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  transition: transform 0.45s var(--ease-spring);
+}
+
+.seasons__opt:hover .sticker {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.seasons__opt[aria-checked='true'] .sticker {
+  transform: scale(1.16) rotate(-7deg);
+}
+
+/* ---------- The weather ---------- */
+/* Switches, not a choice of one: each stays on until it is switched off */
+.weather {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34), inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+/* An hour and a kind of weather are drawn alike: a line picture and a name */
+.hours__opt,
+.weather__opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 15px 0 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.hours__opt:hover,
+.weather__opt:hover {
+  color: var(--text);
+}
+
+.weather__opt[aria-pressed='true'] {
+  background: var(--tone-2);
+  box-shadow: inset 0 0 0 1px var(--tone-3);
+  color: var(--tone-ink);
+}
+
+/* The hour that is on has the sliding patch under it */
+.hours__opt[aria-checked='true'] {
+  color: var(--tone-ink);
+}
+
+.hours__opt .icon,
+.weather__opt .icon {
+  transition: transform 0.45s var(--ease-spring);
+}
+
+.hours__opt:hover .icon,
+.weather__opt:hover .icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.hours__opt[aria-checked='true'] .icon,
+.weather__opt[aria-pressed='true'] .icon {
+  transform: scale(1.14) rotate(-7deg);
+}
+
 /* ---------- Hint and toast ---------- */
 .hint {
-  position: absolute;
-  z-index: 25;
-  left: 50%;
-  bottom: calc(clamp(16px, 4vh, 36px) + env(safe-area-inset-bottom, 0px));
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  width: max-content;
-  max-width: calc(100% - 2 * var(--gutter));
+  max-width: 100%;
   margin: 0;
   padding: 10px 16px 10px 14px;
   border-radius: 9999px;
@@ -1041,14 +1265,13 @@ body {
   font-weight: 600;
   box-shadow: 0 12px 28px -8px rgba(30, 42, 58, 0.45);
   opacity: 0;
-  transform: translate(-50%, 14px);
-  pointer-events: none;
+  transform: translateY(14px);
   transition: opacity 0.5s ease, transform 0.7s var(--ease-out);
 }
 
 .hint.is-on {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: none;
 }
 
 .hint__dot {
@@ -1102,6 +1325,10 @@ body {
     left: calc(50% - min(408px, 38vw) / 2 - 12px);
   }
 
+  .creek[data-card='open'] .dock {
+    right: calc(var(--gutter) + env(safe-area-inset-right, 0px) + min(408px, 38vw) + 24px);
+  }
+
   /* The card takes the corner, so the tools and their list step aside with it */
   .creek[data-card='open'] .top__tools {
     transform: translateX(calc(-1 * (min(408px, 38vw) + 14px)));
@@ -1123,6 +1350,55 @@ body {
 
   .card__again {
     padding-inline: 10px;
+  }
+}
+
+/* Three rows of switches do not fit side by side in every window. The
+   weather is the first to go by its pictures alone, and with that the three
+   share a row down to a small laptop's width; in a narrower window the hours
+   and the weather go above the seasons. Whatever goes by its picture keeps
+   its name for a screen reader and as a tooltip. */
+@media (min-width: 761px) and (max-width: 1369px) {
+  .weather__opt {
+    padding: 0;
+  }
+
+  .weather__name {
+    display: none;
+  }
+}
+
+/* Beside an open card there is less room still, and the switches are not what
+   the visitor is looking at: they keep to one row for as long as they can.
+   The weather goes by its pictures alone, then the hours do too, then the
+   seasons go by their names alone. */
+@media (min-width: 761px) and (max-width: 1859px) {
+  .creek[data-card='open'] .weather__opt {
+    padding: 0;
+  }
+
+  .creek[data-card='open'] .weather__name {
+    display: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1615px) {
+  .creek[data-card='open'] .hours__opt {
+    padding: 0;
+  }
+
+  .creek[data-card='open'] .hours__name {
+    display: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1359px) {
+  .creek[data-card='open'] .seasons__opt {
+    padding: 0 13px;
+  }
+
+  .creek[data-card='open'] .seasons__opt .sticker {
+    display: none;
   }
 }
 
@@ -1199,8 +1475,8 @@ body {
 .creek[data-state='error'] .top__tools,
 .creek[data-state='unsupported'] .hero,
 .creek[data-state='error'] .hero,
-.creek[data-state='unsupported'] .hint,
-.creek[data-state='error'] .hint {
+.creek[data-state='unsupported'] .dock,
+.creek[data-state='error'] .dock {
   display: none;
 }
 
@@ -1225,10 +1501,65 @@ body {
 
 .fallback__lede {
   max-width: 38em;
-  margin: 0 0 36px;
+  margin: 0 0 22px;
   color: var(--text-secondary);
   font-size: 17px;
   line-height: 1.65;
+}
+
+.fallback__jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.fallback__jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px 0 10px;
+  border: 1px solid var(--tone-3);
+  border-radius: 9999px;
+  background: var(--tone-2);
+  color: var(--tone-ink) !important;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fallback__jump .sticker {
+  width: 28px;
+  height: 28px;
+}
+
+.fallback__season {
+  margin-bottom: 56px;
+  scroll-margin-top: 16px;
+}
+
+.fallback__year {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 26px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--tone-3);
+  font-size: clamp(28px, 4.4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.fallback__year .places__art {
+  width: 60px;
+  height: 60px;
+}
+
+.fallback__year .places__art .sticker {
+  width: 46px;
+  height: 46px;
 }
 
 .fallback__place {
@@ -1240,14 +1571,14 @@ body {
   align-items: center;
   gap: 14px;
   margin: 0 0 14px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
 
 .fallback__head .places__art {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
 }
 
 .fallback__grid {
@@ -1290,7 +1621,9 @@ body {
 }
 
 /* ---------- Phones ---------- */
-@media (max-width: 760px) {
+/* Up to 760.98 and not 760: on a scaled display a window can be a fraction of
+   a pixel wide, and one of 760 and a half has to be one or the other too */
+@media (max-width: 760.98px) {
   .top {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -1423,7 +1756,99 @@ body {
     display: none;
   }
 
+  /* The seasons become a bar across the foot of the page, each a sticker over
+     its name. Above them the sky has a lower bar of its own, the hours and
+     the weather side by side in it, each switch a picture over its name:
+     seven names do not fit in one line on a phone, and as many switches the
+     same width do. */
+  .dock {
+    --edge: 10px;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .dock__row {
+    flex-direction: column-reverse;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .seasons {
+    border-radius: 22px;
+  }
+
+  .sky {
+    gap: 6px;
+  }
+
+  .hours,
+  .weather {
+    border-radius: 20px;
+  }
+
+  .hours {
+    flex: 4 1 0;
+    min-width: 0;
+  }
+
+  .weather {
+    flex: 3 1 0;
+    min-width: 0;
+    gap: 0;
+  }
+
+  .hours__opt,
+  .weather__opt {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    height: 46px;
+    padding: 0 1px;
+    border-radius: 16px;
+    font-size: 10.5px;
+    letter-spacing: -0.015em;
+  }
+
+  /* Should a name ever not fit, it is cut short and does not spill over */
+  .hours__name,
+  .weather__name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hours__opt .icon,
+  .weather__opt .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .seasons__thumb {
+    border-radius: 18px;
+  }
+
+  .hours__thumb {
+    border-radius: 16px;
+  }
+
+  .seasons__opt {
+    flex-direction: column;
+    gap: 1px;
+    height: 54px;
+    padding: 0 2px;
+    border-radius: 18px;
+    font-size: 11.5px;
+  }
+
+  .seasons__opt .sticker {
+    width: 27px;
+    height: 27px;
+  }
+
   .hint {
+    align-self: center;
     padding: 9px 14px 9px 12px;
     border-radius: 18px;
     font-size: 12.5px;
@@ -1440,6 +1865,40 @@ body {
   /* The mark alone carries the brand when the row gets tight */
   .brand span {
     display: none;
+  }
+}
+
+@media (max-width: 349px) {
+  /* ...and the names under the sky's switches go down a size to stay whole */
+  .hours__opt,
+  .weather__opt {
+    font-size: 9px;
+  }
+}
+
+/* A phone that is not a tall one has no room for the lede between the title
+   and the picture */
+@media (max-width: 760.98px) and (max-height: 699px) {
+  .hero__lede {
+    display: none;
+  }
+}
+
+/* ...and a small one lying on its side is too low for two bars, one over the
+   other: there they share a row, every switch as wide as the next */
+@media (max-width: 760.98px) and (max-height: 480px) {
+  .dock__row {
+    flex-direction: row;
+  }
+
+  .seasons {
+    flex: 4 1 0;
+    min-width: 0;
+  }
+
+  .sky {
+    flex: 7 1 0;
+    min-width: 0;
   }
 }
 

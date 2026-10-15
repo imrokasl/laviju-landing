@@ -1,8 +1,9 @@
 import * as THREE from '../core/three.js';
 
 // The finishing pass: the scene is drawn into a floating-point buffer, then
-// given a soft tilt-shift focus, a little bloom, a gentle grade and a
-// watercolour-paper grain before it reaches the screen.
+// given the soft shade of things standing close together, a tilt-shift focus,
+// a little bloom, the season's grade and a watercolour-paper grain before it
+// reaches the screen.
 
 const VERTEX = /* glsl */ `
 varying vec2 vUv;
@@ -15,12 +16,106 @@ void main() {
 const DEPTH_GLSL = /* glsl */ `
 uniform sampler2D tDepth;
 uniform vec2 uNearFar;
+// The depth has one level, and is read inside loops: asking for that level
+// by name spares the compiler the slopes it would otherwise work out
 float viewDepth( vec2 uv ) {
-  float d = texture2D( tDepth, uv ).x;
+  float d = textureLod( tDepth, uv, 0.0 ).x;
   float n = uNearFar.x;
   float f = uNearFar.y;
   return ( n * f ) / ( f - d * ( f - n ) );
 }
+`;
+
+// Ambient occlusion, read off the depth of the frame at half resolution: how
+// much of the sky a point is hidden from by whatever stands within reach of
+// it. The slope of the surface comes from the depth too, so nothing else has
+// to be drawn for it.
+const AO_FRAGMENT = /* glsl */ `
+uniform vec2 uTexel; // one pixel of this pass
+uniform vec4 uProject; // 1 / P00, 1 / P11, P02, P12 of the camera's projection
+uniform vec3 uAo; // reach (metres), strength, bias (metres)
+varying vec2 vUv;
+${DEPTH_GLSL}
+vec3 viewPos( vec2 uv ) {
+  float z = viewDepth( uv );
+  return vec3( ( uv * 2.0 - 1.0 + uProject.zw ) * uProject.xy * z, - z );
+}
+float ign( vec2 p ) {
+  return fract( 52.9829189 * fract( dot( p, vec2( 0.06711056, 0.00583715 ) ) ) );
+}
+void main() {
+  if ( textureLod( tDepth, vUv, 0.0 ).x > 0.99995 ) {
+    // Nothing shades the sky
+    gl_FragColor = vec4( 1.0 );
+    return;
+  }
+  vec3 p = viewPos( vUv );
+  // Of each pair of neighbours, the one that lies on the same surface
+  vec3 right = viewPos( vUv + vec2( uTexel.x, 0.0 ) );
+  vec3 left = viewPos( vUv - vec2( uTexel.x, 0.0 ) );
+  vec3 up = viewPos( vUv + vec2( 0.0, uTexel.y ) );
+  vec3 down = viewPos( vUv - vec2( 0.0, uTexel.y ) );
+  vec3 dx = abs( right.z - p.z ) < abs( p.z - left.z ) ? right - p : p - left;
+  vec3 dy = abs( up.z - p.z ) < abs( p.z - down.z ) ? up - p : p - down;
+  vec3 n = normalize( cross( dx, dy ) );
+
+  float depth = - p.z;
+  vec2 reach = uAo.x * 0.5 / ( depth * uProject.xy );
+  float turn = ign( gl_FragCoord.xy ) * 6.2831853;
+  float r2 = uAo.x * uAo.x;
+  float sum = 0.0;
+  for ( int i = 0; i < AO_TAPS; i ++ ) {
+    float k = ( float( i ) + 0.5 ) / float( AO_TAPS );
+    float a = k * 6.2831853 * AO_TURNS + turn;
+    vec3 v = viewPos( vUv + vec2( cos( a ), sin( a ) ) * reach * k ) - p;
+    float vv = dot( v, v );
+    float f = max( r2 - vv, 0.0 );
+    sum += f * f * f * max( ( dot( v, n ) - uAo.z ) / ( vv + 0.012 ), 0.0 );
+  }
+  float ao = max( 0.0, 1.0 - sum * uAo.y * 5.0 / ( r2 * r2 * r2 * float( AO_TAPS ) ) );
+  // Where the reach shrinks under a couple of pixels there is nothing left to measure
+  ao = mix( 1.0, ao, smoothstep( 1.5, 4.0, reach.y / uTexel.y ) );
+  gl_FragColor = vec4( ao, ao, ao, 1.0 );
+}
+`;
+
+// ...smoothed along one axis at a time, without letting the shade of one
+// thing spill on to another that stands well in front of it or behind
+const AO_BLUR_FRAGMENT = /* glsl */ `
+uniform sampler2D tAo;
+uniform vec2 uStep;
+varying vec2 vUv;
+${DEPTH_GLSL}
+void main() {
+  float here = viewDepth( vUv );
+  float sum = texture2D( tAo, vUv ).r * 0.3;
+  float total = 0.3;
+  for ( int i = 1; i <= 3; i ++ ) {
+    float w = i == 1 ? 0.24 : ( i == 2 ? 0.14 : 0.06 );
+    for ( int s = 0; s < 2; s ++ ) {
+      vec2 uv = vUv + uStep * float( i ) * ( s == 0 ? 1.0 : - 1.0 );
+      float k = w * max( 0.0, 1.0 - abs( viewDepth( uv ) - here ) / ( here * 0.02 + 0.05 ) );
+      sum += textureLod( tAo, uv, 0.0 ).r * k;
+      total += k;
+    }
+  }
+  float ao = sum / total;
+  gl_FragColor = vec4( ao, ao, ao, 1.0 );
+}
+`;
+
+// Shade gathers where things stand close together: cool rather than black, as
+// a painter would lay it in. Water and the falls cover the ground they are
+// drawn over (the alpha of the frame says how much of it still shows), and
+// take none of its shade.
+const SHADE_GLSL = /* glsl */ `
+#ifdef USE_AO
+uniform sampler2D tAo;
+uniform vec4 uOcclude; // the colour light keeps where it is shut in, and how much of the shade is laid on
+vec3 shaded( vec3 c, float keep, float open ) {
+  return c * mix( vec3( 1.0 ), mix( uOcclude.rgb, vec3( 1.0 ), open ), uOcclude.a * clamp( keep, 0.0, 1.0 ) );
+}
+#endif
 `;
 
 // Half-resolution copy of the picture with the blur amount in alpha
@@ -30,12 +125,20 @@ uniform vec2 uTexel;
 uniform vec4 uFocus; // distance, sharp range, far falloff, near falloff
 varying vec2 vUv;
 ${DEPTH_GLSL}
+${SHADE_GLSL}
 void main() {
   vec3 c = vec3( 0.0 );
   float coc = 0.0;
+  #ifdef USE_AO
+    float open = texture2D( tAo, vUv ).r;
+  #endif
   for ( int i = 0; i < 4; i ++ ) {
     vec2 o = vec2( i == 0 || i == 2 ? -0.5 : 0.5, i < 2 ? -0.5 : 0.5 ) * uTexel;
-    vec3 s = min( texture2D( tColor, vUv + o ).rgb, vec3( 6.0 ) );
+    vec4 scene = texture2D( tColor, vUv + o );
+    #ifdef USE_AO
+      scene.rgb = shaded( scene.rgb, scene.a, open );
+    #endif
+    vec3 s = min( scene.rgb, vec3( 6.0 ) );
     float z = viewDepth( vUv + o );
     float far = clamp( ( z - uFocus.x - uFocus.y ) / uFocus.z, 0.0, 1.0 );
     float near = clamp( ( uFocus.x - uFocus.y - z ) / uFocus.w, 0.0, 1.0 );
@@ -149,8 +252,12 @@ uniform float uBloom;
 uniform float uDof;
 uniform float uTime;
 uniform float uReveal;
+uniform float uSaturation;
+uniform float uMargin;
+uniform vec3 uShade;
+uniform vec3 uLight;
 varying vec2 vUv;
-
+${SHADE_GLSL}
 float hash( vec2 p ) {
   vec3 q = fract( vec3( p.xyx ) * 0.1031 );
   q += dot( q, q.yzx + 33.33 );
@@ -169,7 +276,11 @@ vec3 toSRGB( vec3 c ) {
 }
 
 void main() {
-  vec3 c = texture2D( tColor, vUv ).rgb;
+  vec4 scene = texture2D( tColor, vUv );
+  vec3 c = scene.rgb;
+  #ifdef USE_AO
+    c = shaded( c, scene.a, texture2D( tAo, vUv ).r );
+  #endif
 
   #ifdef USE_DOF
     vec4 blur = texture2D( tBlur, vUv );
@@ -182,16 +293,19 @@ void main() {
 
   c = softClip( max( c, vec3( 0.0 ) ) );
 
-  // Grade: a touch more colour, cool lilac shadows, warm lights
+  // Grade: a touch more colour, and the season's two tints, one lifted into
+  // the shadows and one laid over the lights (cool lilac and warm cream in summer)
   float luma = dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
-  c = mix( vec3( luma ), c, 1.07 );
-  c += vec3( 0.006, 0.01, 0.026 ) * ( 1.0 - smoothstep( 0.0, 0.45, luma ) );
-  c *= mix( vec3( 1.0 ), vec3( 1.018, 1.004, 0.972 ), smoothstep( 0.45, 1.0, luma ) );
+  c = mix( vec3( luma ), c, uSaturation );
+  c += uShade * ( 1.0 - smoothstep( 0.0, 0.45, luma ) );
+  c *= mix( vec3( 1.0 ), uLight, smoothstep( 0.45, 1.0, luma ) );
 
-  // The corners lift towards paper white, like an unpainted margin
+  // The corners lift towards paper white, like an unpainted margin. It is the
+  // margin of the whole picture: over sky it is hardly seen, over dark ground
+  // it lies like fog, so it draws back as the view leans in (uMargin).
   vec2 q = vUv - 0.5;
   float edge = smoothstep( 0.32, 0.86, dot( q, q ) * 2.1 );
-  c = mix( c, vec3( 0.93, 0.955, 0.985 ), edge * 0.2 );
+  c = mix( c, vec3( 0.93, 0.955, 0.985 ), edge * uMargin );
 
   c = toSRGB( c );
 
@@ -209,12 +323,34 @@ void main() {
 }
 `;
 
+// What falls through the air in front of everything (snow, rain) is kept out
+// of the picture proper and drawn over it once it is finished: things that
+// small and bright write no depth, so the soft focus would take them for part
+// of the sky behind them and smear them away. They are told apart by layer.
+export const OVER_LAYER = 1;
+
+// How far the corners of the overview lift towards paper white
+const MARGIN = 0.2;
+
 export function createPost(renderer, quality, paperTexture) {
   const gl = renderer.getContext();
+
+  function drawOver(scene, camera) {
+    // The shadows of the frame have been drawn already
+    const shadows = renderer.shadowMap.autoUpdate;
+    renderer.shadowMap.autoUpdate = false;
+    const cleared = renderer.autoClear;
+    renderer.autoClear = false;
+    camera.layers.set(OVER_LAYER);
+    renderer.render(scene, camera);
+    camera.layers.set(0);
+    renderer.autoClear = cleared;
+    renderer.shadowMap.autoUpdate = shadows;
+  }
   const floatTargets = renderer.capabilities.isWebGL2 !== false && (renderer.extensions.has('EXT_color_buffer_half_float') || renderer.extensions.has('EXT_color_buffer_float'));
   const active = quality.post && floatTargets;
 
-  const state = { reveal: 1, bloom: quality.bloom, dof: quality.dof ? 1 : 0 };
+  const state = { reveal: 1, bloom: quality.bloom, dof: quality.dof ? 1 : 0, ao: quality.ao > 0 ? 1 : 0 };
 
   if (!active) {
     // Plain path: draw straight to the canvas and let three encode the colour
@@ -223,9 +359,20 @@ export function createPost(renderer, quality, paperTexture) {
       active: false,
       state,
       setSize() {},
+      grade() {},
       render(scene, camera) {
         renderer.setRenderTarget(null);
         renderer.render(scene, camera);
+        drawOver(scene, camera);
+        // The alpha of the frame carries the contact shade for a finishing pass
+        // this path does not have, and three's canvas always has an alpha
+        // channel: left as it is, the page would show through the picture.
+        // Three leaves every channel writable after a drawing, which is what
+        // it is told it has again once the alpha alone has been filled in
+        renderer.state.buffers.color.setClear(0, 0, 0, 1);
+        gl.colorMask(false, false, false, true);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.colorMask(true, true, true, true);
       },
     };
   }
@@ -246,6 +393,7 @@ export function createPost(renderer, quality, paperTexture) {
   sceneTarget.depthTexture.minFilter = sceneTarget.depthTexture.magFilter = THREE.NearestFilter;
 
   const half = [0, 1, 2].map(() => new THREE.WebGLRenderTarget(2, 2, targetOptions));
+  const shade = [0, 1].map(() => new THREE.WebGLRenderTarget(2, 2, { ...targetOptions, type: THREE.UnsignedByteType }));
   const BLOOM_LEVELS = 5;
   const bloomDown = [];
   const bloomUp = [];
@@ -275,13 +423,38 @@ export function createPost(renderer, quality, paperTexture) {
 
   const texel = () => ({ value: new THREE.Vector2() });
 
-  const downMaterial = pass(DOWN_FRAGMENT, {
-    tColor: { value: sceneTarget.texture },
+  const shadeDefines = quality.ao > 0 ? { USE_AO: '' } : {};
+  const occlude = { value: new THREE.Vector4(0.4, 0.46, 0.74, 0) };
+  const aoMaterial = pass(
+    AO_FRAGMENT,
+    {
+      tDepth: { value: sceneTarget.depthTexture },
+      uTexel: texel(),
+      uNearFar: { value: new THREE.Vector2(1, 100) },
+      uProject: { value: new THREE.Vector4(1, 1, 0, 0) },
+      uAo: { value: new THREE.Vector3(1, 1.7, 0.035) },
+    },
+    { AO_TAPS: quality.aoTaps || 8, AO_TURNS: (quality.aoTaps || 8) > 8 ? '3.0' : '2.0' }
+  );
+  const aoBlurMaterial = pass(AO_BLUR_FRAGMENT, {
+    tAo: { value: null },
     tDepth: { value: sceneTarget.depthTexture },
-    uTexel: texel(),
     uNearFar: { value: new THREE.Vector2(1, 100) },
-    uFocus: { value: new THREE.Vector4(60, 10, 30, 20) },
+    uStep: { value: new THREE.Vector2() },
   });
+  const downMaterial = pass(
+    DOWN_FRAGMENT,
+    {
+      tColor: { value: sceneTarget.texture },
+      tDepth: { value: sceneTarget.depthTexture },
+      tAo: { value: shade[1].texture },
+      uOcclude: occlude,
+      uTexel: texel(),
+      uNearFar: { value: new THREE.Vector2(1, 100) },
+      uFocus: { value: new THREE.Vector4(60, 10, 30, 20) },
+    },
+    shadeDefines
+  );
   const blurMaterial = pass(BLUR_FRAGMENT, { tColor: { value: null }, uTexel: texel(), uRadius: { value: 8 } }, { DOF_TAPS: quality.dofTaps });
   const tentMaterial = pass(TENT_FRAGMENT, { tColor: { value: null }, uTexel: texel() });
   const brightMaterial = pass(BRIGHT_FRAGMENT, { tColor: { value: null }, uTexel: texel(), uThreshold: { value: new THREE.Vector2(0.9, 0.35) } });
@@ -294,7 +467,7 @@ export function createPost(renderer, quality, paperTexture) {
   addMaterial.blendDst = THREE.OneFactor;
   addMaterial.transparent = true;
 
-  const finalDefines = {};
+  const finalDefines = { ...shadeDefines };
   if (quality.dof) finalDefines.USE_DOF = '';
   if (quality.bloom > 0) finalDefines.USE_BLOOM = '';
   const finalMaterial = pass(
@@ -303,15 +476,32 @@ export function createPost(renderer, quality, paperTexture) {
       tColor: { value: sceneTarget.texture },
       tBlur: { value: half[2].texture },
       tBloom: { value: bloomUp[0].texture },
+      tAo: { value: shade[1].texture },
+      uOcclude: occlude,
       tPaper: { value: paperTexture },
       uResolution: { value: new THREE.Vector2(1, 1) },
       uBloom: { value: quality.bloom },
       uDof: { value: 1 },
       uTime: { value: 0 },
       uReveal: { value: 1 },
+      uSaturation: { value: 1.07 },
+      uMargin: { value: MARGIN },
+      uShade: { value: new THREE.Vector3(0.006, 0.01, 0.026) },
+      uLight: { value: new THREE.Vector3(1.018, 1.004, 0.972) },
     },
     finalDefines
   );
+
+  // The season's grade, from two tints that are close to white: what counts
+  // is which way each leans. Summer's lean the way the picture always has.
+  function grade(saturation, shadow, light) {
+    const u = finalMaterial.uniforms;
+    u.uSaturation.value = saturation;
+    const low = Math.min(shadow.r, shadow.g, shadow.b);
+    u.uShade.value.set(0.004 + (shadow.r - low) * 0.14, 0.01 + (shadow.g - low) * 0.14, 0.006 + (shadow.b - low) * 0.14);
+    const mean = (light.r + light.g + light.b) / 3;
+    u.uLight.value.set(1 + (light.r - mean) * 0.33, 1 + (light.g - mean) * 0.33, 1 + (light.b - mean) * 0.33);
+  }
 
   const size = { w: 4, h: 4 };
 
@@ -322,6 +512,7 @@ export function createPost(renderer, quality, paperTexture) {
     const hw = Math.max(2, size.w >> 1);
     const hh = Math.max(2, size.h >> 1);
     for (const t of half) t.setSize(hw, hh);
+    for (const t of shade) t.setSize(hw, hh);
     for (let i = 0; i < BLOOM_LEVELS; i++) {
       const w = Math.max(2, size.w >> (i + 2));
       const h = Math.max(2, size.h >> (i + 2));
@@ -337,12 +528,32 @@ export function createPost(renderer, quality, paperTexture) {
     renderer.render(quadScene, quadCamera);
   }
 
-  function render(scene, camera, { focus = 60, time = 0 } = {}) {
+  // margin: how much of the paper margin is left, 1 in the overview
+  function render(scene, camera, { focus = 60, time = 0, margin = 1 } = {}) {
     renderer.setRenderTarget(sceneTarget);
     renderer.render(scene, camera);
 
     const wasAutoClear = renderer.autoClear;
     renderer.autoClear = false;
+
+    const shading = quality.ao > 0 && state.ao > 0;
+    occlude.value.w = shading ? quality.ao * state.ao : 0;
+    if (shading) {
+      const e = camera.projectionMatrix.elements;
+      const st = shade[0];
+      aoMaterial.uniforms.uTexel.value.set(1 / st.width, 1 / st.height);
+      aoMaterial.uniforms.uNearFar.value.set(camera.near, camera.far);
+      aoMaterial.uniforms.uProject.value.set(1 / e[0], 1 / e[5], e[8], e[9]);
+      draw(aoMaterial, shade[1]);
+      // Across, then down
+      aoBlurMaterial.uniforms.uNearFar.value.set(camera.near, camera.far);
+      aoBlurMaterial.uniforms.tAo.value = shade[1].texture;
+      aoBlurMaterial.uniforms.uStep.value.set(1 / st.width, 0);
+      draw(aoBlurMaterial, shade[0]);
+      aoBlurMaterial.uniforms.tAo.value = shade[0].texture;
+      aoBlurMaterial.uniforms.uStep.value.set(0, 1 / st.height);
+      draw(aoBlurMaterial, shade[1]);
+    }
 
     if (quality.dof || quality.bloom > 0) {
       // Half-resolution copy with the blur amount
@@ -392,10 +603,12 @@ export function createPost(renderer, quality, paperTexture) {
     finalMaterial.uniforms.uReveal.value = state.reveal;
     finalMaterial.uniforms.uBloom.value = state.bloom / (BLOOM_LEVELS - 1) * 1.6;
     finalMaterial.uniforms.uDof.value = state.dof;
+    finalMaterial.uniforms.uMargin.value = MARGIN * margin;
     draw(finalMaterial, null);
 
     renderer.autoClear = wasAutoClear;
+    drawOver(scene, camera);
   }
 
-  return { active: true, state, setSize, render, sceneTarget };
+  return { active: true, state, setSize, grade, render, sceneTarget };
 }

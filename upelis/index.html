@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Jaukus upelis · Laviju</title>
-    <meta name="description" content="Jaukus upelis: dešimt vietų prie vandens ir idėjos, ką čia veikti lauke kartu su vaiku." />
+    <meta name="description" content="Jaukus upelis: dešimt vietų prie vandens keturiais metų laikais ir idėjos, ką čia veikti lauke kartu su vaiku." />
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#F4F7FC" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
@@ -23,7 +23,7 @@
         class="creek__canvas"
         id="scene"
         role="img"
-        aria-label="Trimatė sala su upeliu: krioklys, akmenukų takas, tvenkinys su laiveliu, tiltelis, ąžuolas su sūpynėmis ir pieva."
+        aria-label="Trimatė sala su upeliu: krioklys, akmenukų takas, tvenkinys su laiveliu, tiltelis, ąžuolas su sūpynėmis ir pieva. Sala keičiasi su metų laikais ir paros metu."
       ></canvas>
 
       <header class="top">
@@ -43,7 +43,7 @@
                       <path d="M4 16 C 60 6, 120 20, 180 10 S 270 8, 296 14" /></svg></em></span
               ></span>
             </h1>
-            <p class="hero__lede">Dešimt vietų prie vandens – ir idėjos, ką čia veikti lauke kartu su vaiku.</p>
+            <p class="hero__lede">Dešimt vietų prie vandens ir keturi metų laikai – idėjos, ką lauke veikti kartu su vaiku.</p>
           </div>
         </div>
 
@@ -65,12 +65,23 @@
 
       <div class="places" id="places" hidden></div>
 
-      <!-- After the header, so the keyboard meets the title and tools first -->
+      <!-- The year, the day and the sky are the visitor's to turn: none of them changes by itself -->
+      <div class="dock">
+        <p class="hint" id="hint"><i class="hint__dot" aria-hidden="true"></i><span class="hint__text"></span></p>
+        <div class="dock__row">
+          <div class="seasons" id="seasons" role="radiogroup"></div>
+          <div class="sky">
+            <div class="hours" id="hours" role="radiogroup"></div>
+            <div class="weather" id="weather" role="group"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- After the header and the dock, so the keyboard meets the title and tools first -->
       <div class="spots" id="spots" role="group" aria-label="Vietos prie upelio"></div>
 
       <aside class="card" id="card" hidden></aside>
 
-      <p class="hint" id="hint"><i class="hint__dot" aria-hidden="true"></i><span class="hint__text"></span></p>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
       <div class="loader" id="loader" aria-hidden="true">

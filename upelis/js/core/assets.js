@@ -6,12 +6,25 @@ const TEXTURES = {
   wash: { file: 'wash.webp', data: true, repeat: true },
   strokes: { file: 'strokes.webp', data: true, repeat: true },
   woodgrain: { file: 'woodgrain.webp', data: true, repeat: true },
+  // Furrowed bark for the trunks, and the grain and lichen of stone
+  bark: { file: 'bark.webp', data: true, repeat: true },
+  rock: { file: 'rock.webp', data: true, repeat: true },
   pebbles: { file: 'pebbles.webp', repeat: true },
   // Leaf sprites hold painted light and shade only; the shader supplies the hue
   foliageOak: { file: 'foliage-oak.webp', data: true, sprite: true },
   foliageBirch: { file: 'foliage-birch.webp', data: true, sprite: true },
   spruceSprig: { file: 'spruce-sprig.webp', data: true, sprite: true },
   willowStrand: { file: 'willow-strand.webp', data: true, sprite: true },
+  // For the seasons: bare twigs (light and shade only), sixteen fallen leaves
+  // on one sheet (colour) and the cracks and frost of the creek's ice
+  twigs: { file: 'twigs.webp', data: true, sprite: true },
+  leaves: { file: 'leaves.webp', sprite: true },
+  // A cluster of blossom for the bushes that flower in spring (colour)
+  blossom: { file: 'blossom.webp', sprite: true },
+  ice: { file: 'ice.webp', data: true, repeat: true },
+  // Cushions of moss for the stones, and the crumbly earth of paths and bare ground
+  moss: { file: 'moss.webp', data: true, repeat: true },
+  earth: { file: 'earth.webp', data: true, repeat: true },
 };
 
 const base = new URL('../../assets/textures/', import.meta.url);

@@ -348,7 +348,8 @@ export function setSway(geom, fn) {
 // ---------- Merge ----------
 // Joins geometries into one indexed mesh. Missing colours become white and a
 // missing sway weight becomes zero, so mixed parts can share one draw call.
-export function merge(list, { keepUv = false } = {}) {
+// `keep` names further attributes to carry over (zero where a part lacks them).
+export function merge(list, { keepUv = false, keep = [] } = {}) {
   const geoms = list.filter(Boolean);
   let vertexCount = 0;
   let indexCount = 0;
@@ -366,6 +367,10 @@ export function merge(list, { keepUv = false } = {}) {
   const sway = hasSway ? new Float32Array(vertexCount) : null;
   const uv = keepUv ? new Float32Array(vertexCount * 2) : null;
   const index = vertexCount > 65535 ? new Uint32Array(indexCount) : new Uint16Array(indexCount);
+  const extras = keep.map((name) => {
+    const size = geoms.find((g) => g.attributes[name])?.attributes[name].itemSize ?? 1;
+    return { name, size, array: new Float32Array(vertexCount * size) };
+  });
 
   let vOff = 0;
   let iOff = 0;
@@ -376,6 +381,7 @@ export function merge(list, { keepUv = false } = {}) {
     if (g.attributes.color) color.set(g.attributes.color.array.subarray(0, count * 3), vOff * 3);
     if (sway && g.attributes.sway) sway.set(g.attributes.sway.array.subarray(0, count), vOff);
     if (uv && g.attributes.uv) uv.set(g.attributes.uv.array.subarray(0, count * 2), vOff * 2);
+    for (const e of extras) if (g.attributes[e.name]) e.array.set(g.attributes[e.name].array.subarray(0, count * e.size), vOff * e.size);
 
     if (g.index) {
       const src = g.index.array;
@@ -395,17 +401,39 @@ export function merge(list, { keepUv = false } = {}) {
   out.setAttribute('color', new THREE.BufferAttribute(color, 3));
   if (sway) out.setAttribute('sway', new THREE.BufferAttribute(sway, 1));
   if (uv) out.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  for (const e of extras) out.setAttribute(e.name, new THREE.BufferAttribute(e.array, e.size));
   out.setIndex(new THREE.BufferAttribute(index, 1));
   out.computeBoundingSphere();
   out.computeBoundingBox();
   return out;
 }
 
-// A soft organic lump: an icosphere pushed around by noise.
-export function blob(radius, detail, noise, { amp = 0.22, freq = 1.1, squashY = 1, seed = 0, flatBottom = false } = {}) {
+const chance = (a, b) => {
+  const h = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+  return h - Math.floor(h);
+};
+
+// A soft organic lump: an icosphere pushed around by noise. `facets` splits it
+// first, the way frost splits a boulder: that many flat faces are cut into the
+// round, each as deep as it happens to fall, and `flatTop` (a share of the
+// radius) levels the crown. `cut` is how flat a face is left: 1 is ruled.
+export function blob(radius, detail, noise, { amp = 0.22, freq = 1.1, squashY = 1, seed = 0, flatBottom = false, facets = 0, flatTop = 0, cut = 0.88 } = {}) {
   const geom = icoSphere(1, detail);
+  const faces = [];
+  for (let i = 0; i < facets; i++) {
+    // Spread over the sphere along a spiral, each a little off its place
+    const y = Math.max(-1, Math.min(1, 1 - (2 * (i + 0.5 + (chance(seed, i) - 0.5) * 0.9)) / facets));
+    const ring = Math.sqrt(1 - y * y);
+    const turn = i * 2.39996 + seed + chance(seed + 7.3, i) * 1.1;
+    faces.push([ring * Math.cos(turn), y, ring * Math.sin(turn), 0.64 + 0.3 * chance(seed + 3.1, i)]);
+  }
+  if (flatTop > 0) faces.push([0, 1, 0, flatTop]);
   displace(geom, (p) => {
     const n = noise.fbm3(p.x * freq + seed, p.y * freq + seed * 1.7, p.z * freq - seed * 0.6, 3);
+    for (const [fx, fy, fz, reach] of faces) {
+      const over = p.x * fx + p.y * fy + p.z * fz - reach;
+      if (over > 0) p.set(p.x - fx * over * cut, p.y - fy * over * cut, p.z - fz * over * cut);
+    }
     const k = 1 + n * amp;
     p.multiplyScalar(radius * k);
     p.y *= squashY;

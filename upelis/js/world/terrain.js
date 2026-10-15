@@ -1,8 +1,8 @@
 import * as THREE from '../core/three.js';
 import { lerp, saturate, smoothstep } from '../core/math.js';
 import { palette, col } from '../core/palette.js';
-import { stylized } from '../core/materials.js';
-import { TREES } from './layout.js';
+import { stylized, GRASS_SHADE, GRASS_WET } from '../core/materials.js';
+import { TREES, PROPS, BRIDGE } from './layout.js';
 
 // The island itself: the turf on top, the soil wall around it and the rock
 // that tapers away underneath.
@@ -34,10 +34,71 @@ float creekCaustics(vec2 uv, float t) {
 }
 `;
 
-export function createTerrain(field, textures) {
+// `footprints` are the stones standing on the island, as { x, z, r, reach, k }:
+// the ground is shaded where each of them meets it, and left bare around it.
+export function createTerrain(field, textures, { footprints = [] } = {}) {
   const group = new THREE.Group();
   group.name = 'terrain';
   const noise = field.noise;
+
+  // ---------- Contact shade ----------
+  // The seam of dark where a stone, a trunk or a post meets the ground. It is
+  // painted into the turf (and so into the grass that grows there), which
+  // costs nothing to draw and holds on every device.
+  const contacts = [
+    ...footprints.map((f) => ({ ...f, stone: true })),
+    { x: TREES.oak.x, z: TREES.oak.z, r: 0.62, reach: 1.5, k: 0.38 },
+    { x: TREES.willow.x, z: TREES.willow.z, r: 0.5, reach: 1.2, k: 0.36 },
+    ...TREES.birches.map((t) => ({ x: t.x, z: t.z, r: 0.2, reach: 0.7, k: 0.3 })),
+    ...TREES.spruces.map((t) => ({ x: t.x, z: t.z, r: 0.5, reach: 1.3, k: 0.34 })),
+    ...TREES.bushes.map((t) => ({ x: t.x, z: t.z, r: t.r * 0.6, reach: t.r * 0.9, k: 0.3 })),
+    { x: PROPS.nest.x, z: PROPS.nest.z, r: 0.1, reach: 0.5, k: 0.3 },
+    { x: PROPS.sign.x, z: PROPS.sign.z, r: 0.06, reach: 0.4, k: 0.28 },
+    { x: PROPS.cairn.x, z: PROPS.cairn.z, r: 0.16, reach: 0.4, k: 0.3 },
+    { x: PROPS.bucket.x, z: PROPS.bucket.z, r: 0.11, reach: 0.34, k: 0.26 },
+    { x: PROPS.picnic.x, z: PROPS.picnic.z, r: 0.95, reach: 0.5, k: 0.2 },
+    { x: BRIDGE.from[0], z: BRIDGE.from[1], r: 0.5, reach: 0.7, k: 0.3 },
+    { x: BRIDGE.to[0], z: BRIDGE.to[1], r: 0.5, reach: 0.7, k: 0.3 },
+  ];
+  {
+    // The fallen log lies along the ground: a row of footprints end to end
+    const { x, z, yaw, length } = PROPS.log;
+    for (let k = -2; k <= 2; k++) contacts.push({ x: x + Math.cos(yaw) * (k / 2) * length * 0.46, z: z - Math.sin(yaw) * (k / 2) * length * 0.46, r: 0.24, reach: 0.5, k: 0.32 });
+  }
+  const BIN = 2;
+  const bins = new Map();
+  for (const c of contacts) {
+    const span = c.r + c.reach;
+    for (let i = Math.floor((c.x - span) / BIN); i <= Math.floor((c.x + span) / BIN); i++) {
+      for (let j = Math.floor((c.z - span) / BIN); j <= Math.floor((c.z + span) / BIN); j++) {
+        const key = i * 1024 + j;
+        if (!bins.has(key)) bins.set(key, []);
+        bins.get(key).push(c);
+      }
+    }
+  }
+  const contactShade = (x, z) => {
+    const list = bins.get(Math.floor(x / BIN) * 1024 + Math.floor(z / BIN));
+    if (!list) return 0;
+    let lit = 1;
+    for (const c of list) {
+      const t = saturate((Math.hypot(x - c.x, z - c.z) - c.r) / c.reach);
+      if (t < 1) lit *= 1 - c.k * (1 - t) * (1 - t);
+    }
+    return 1 - lit;
+  };
+  // The turf does not close up against a stone: a little earth shows around it
+  const stoneRing = (x, z) => {
+    const list = bins.get(Math.floor(x / BIN) * 1024 + Math.floor(z / BIN));
+    if (!list) return 0;
+    let ring = 0;
+    for (const c of list) {
+      if (!c.stone) continue;
+      const d = Math.hypot(x - c.x, z - c.z);
+      ring = Math.max(ring, 1 - smoothstep(c.r * 0.95, c.r * 1.36 + 0.12, d));
+    }
+    return ring;
+  };
 
   // Soft dark pools under the canopies, painted into the turf
   const shades = [
@@ -57,11 +118,30 @@ export function createTerrain(field, textures) {
     return s;
   };
 
+  // Where the leaves come down in autumn: thick under the trees that shed
+  // them, thinning out a few steps away
+  const shedders = [
+    { x: TREES.oak.x, z: TREES.oak.z, r: 7.4 },
+    { x: TREES.willow.x, z: TREES.willow.z, r: 5.4 },
+    ...TREES.birches.map((t) => ({ x: t.x, z: t.z, r: 4.4 })),
+    ...TREES.bushes.map((t) => ({ x: t.x, z: t.z, r: t.r * 2.6 })),
+  ];
+  const leafFall = (x, z) => {
+    let k = 0;
+    for (const t of shedders) {
+      const d = Math.hypot(x - t.x, z - t.z) / t.r;
+      if (d < 1) k = Math.max(k, Math.pow(1 - d, 1.25));
+    }
+    return k;
+  };
+
   // ---------- Turf ----------
   const count = (GU + 1) * (GV + 1);
   const position = new Float32Array(count * 3);
   const color = new Float32Array(count * 3);
   const terrain = new Float32Array(count * 4); // grass, pebbles, water depth, sand
+  const litter = new Float32Array(count); // how many leaves land here in autumn
+  const bare = new Float32Array(count * 2); // how much of the ground is bare rock, and how much bare earth
   const index = new Uint32Array(GU * GV * 6);
 
   const cGrassDeep = col(palette.grassDeep);
@@ -78,6 +158,11 @@ export function createTerrain(field, textures) {
   const cRockLight = col(palette.rockLight);
   const cRockDark = col(palette.rockDark);
   const cSoil = col(palette.soil);
+  const cContact = new THREE.Color('#3E4A6E');
+  // Bare earth in the meadow, and the worn edge of a path
+  const cEarth = col(palette.soil).clone().lerp(col(palette.path), 0.34);
+  const cEarthDark = col(palette.soilDark).clone().lerp(col(palette.path), 0.2);
+  const cPathEdge = col(palette.soil).clone().lerp(col(palette.path), 0.55);
 
   const c = new THREE.Color();
   const n = new THREE.Vector3();
@@ -100,7 +185,8 @@ export function createTerrain(field, textures) {
     c.lerp(cGrassSun, saturate(big * 1.3 - 0.25) * 0.55);
     const lush = (1 - smoothstep(0.3, 2.6, shore)) * 0.55;
     c.lerp(cGrassDeep, lush * (0.6 + 0.4 * saturate(0.5 - mid)));
-    c.lerp(cMoss, canopyShade(x, z) * 1.4);
+    const canopy = canopyShade(x, z);
+    c.lerp(cMoss, canopy * 1.4).multiplyScalar(1 - canopy * 0.3);
     let grass = 1;
 
     // Rock where the hill is steep, with pale strata
@@ -112,11 +198,13 @@ export function createTerrain(field, textures) {
       grass *= 1 - rocky;
     }
 
-    // Trodden path
+    // Trodden path: worn pale down the middle, darker under the grass that leans over its edge
     const path = shore > 0.25 ? field.pathMask(x, z) * (1 - rocky) : 0;
+    let earth = 0;
     if (path > 0) {
-      c.lerp(cPath, path * 0.9);
+      c.lerp(cPath, path * 0.9).lerp(cPathEdge, path * (1 - path) * 1.9);
       grass *= 1 - path;
+      earth = path;
     }
 
     // Sand and pebbles hug the waterline: wide where the bank is gentle
@@ -125,34 +213,56 @@ export function createTerrain(field, textures) {
     let water = -1;
     if (shore < 3.2) {
       const wobble = mid * 0.05 + fine * 0.02;
-      sand = 1 - smoothstep(0.1, 0.27, above + wobble);
+      // Nothing settles on a rock face: the step under the fall stays bare, and wet
+      const lie = 1 - smoothstep(0.3, 0.55, slope);
+      sand = (1 - smoothstep(0.1, 0.27, above + wobble)) * lie;
       if (sand > 0) {
         out.copy(cSand).lerp(cSandWet, 1 - smoothstep(0.0, 0.07, above));
         c.lerp(out, sand);
         grass *= 1 - sand;
       }
-      pebbles = (1 - smoothstep(0.02, 0.2, above + wobble)) * (0.75 + 0.25 * saturate(0.5 + mid));
+      pebbles = (1 - smoothstep(0.02, 0.2, above + wobble)) * (0.75 + 0.25 * saturate(0.5 + mid)) * lie;
       if (above < 0) {
         const d = -above;
-        c.lerp(cBed, smoothstep(0, 0.22, d));
-        c.lerp(cBedDeep, smoothstep(0.28, 0.85, d) * 0.62);
-        pebbles = lerp(pebbles, 0.85, smoothstep(0, 0.15, d)) * (1 - smoothstep(0.5, 0.95, d) * 0.45);
+        c.lerp(cBed, smoothstep(0, 0.22, d) * lie);
+        c.lerp(cBedDeep, smoothstep(0.28, 0.85, d) * 0.62 * lie);
+        pebbles = lerp(pebbles, 0.85 * lie, smoothstep(0, 0.15, d)) * (1 - smoothstep(0.5, 0.95, d) * 0.45);
+      }
+      if (lie < 1) {
+        c.lerp(cRockDark, (1 - lie) * (1 - smoothstep(0.0, 0.3, above)) * 0.5);
+        grass *= lie;
       }
       water = shore < 0.8 ? -above : -1;
+    }
+
+    // Bare earth around a stone that stands in the grass, ragged as the turf is
+    const ring = stoneRing(x, z) * (1 - sand) * (1 - rocky);
+    if (ring > 0) {
+      const worn = saturate(ring * 1.8 - 0.32 + fine * 0.42 + mid * 0.3);
+      out.copy(cEarth).lerp(cEarthDark, saturate(0.45 + mid * 0.6));
+      c.lerp(out, worn * 0.86);
+      grass *= 1 - worn;
+      earth = Math.max(earth, worn);
     }
 
     // Catch a little light on the turf lip
     const e = field.edge(x, z);
     c.lerp(cGrassLight, (1 - smoothstep(0, 0.7, e)) * 0.35 * grass);
 
+    // ...and lose a little wherever something stands on the ground
+    const contact = contactShade(x, z);
+    if (contact > 0) c.multiplyScalar(1 - contact).lerp(cContact, contact * 0.34);
+
     out.copy(c);
     mask[0] = grass;
     mask[1] = pebbles;
     mask[2] = water;
     mask[3] = sand;
+    mask[4] = rocky;
+    mask[5] = earth;
   }
 
-  const mask = [0, 0, 0, 0];
+  const mask = [0, 0, 0, 0, 0, 0];
   const tmpColor = new THREE.Color();
   for (let j = 0; j <= GV; j++) {
     const v = (j / GV) * 2 - 1;
@@ -168,7 +278,10 @@ export function createTerrain(field, textures) {
       color[k * 3] = tmpColor.r;
       color[k * 3 + 1] = tmpColor.g;
       color[k * 3 + 2] = tmpColor.b;
-      terrain.set(mask, k * 4);
+      for (let m = 0; m < 4; m++) terrain[k * 4 + m] = mask[m];
+      bare[k * 2] = mask[4];
+      bare[k * 2 + 1] = mask[5];
+      litter[k] = leafFall(xz[0], xz[1]);
     }
   }
 
@@ -192,6 +305,8 @@ export function createTerrain(field, textures) {
   topGeom.setAttribute('position', new THREE.BufferAttribute(position, 3));
   topGeom.setAttribute('color', new THREE.BufferAttribute(color, 3));
   topGeom.setAttribute('aTerrain', new THREE.BufferAttribute(terrain, 4));
+  topGeom.setAttribute('aLitter', new THREE.BufferAttribute(litter, 1));
+  topGeom.setAttribute('aBare', new THREE.BufferAttribute(bare, 2));
   topGeom.setIndex(new THREE.BufferAttribute(index, 1));
   topGeom.computeVertexNormals();
 
@@ -199,35 +314,130 @@ export function createTerrain(field, textures) {
     name: 'turf',
     rim: 0.06,
     ramp: 0.6,
+    // The turf lays its own snow: in drifts, and never under the water
+    snow: 0,
     uniforms: {
       uStrokes: { value: textures.strokes },
       uPebbles: { value: textures.pebbles },
+      uLeaves: { value: textures.leaves },
+      uStone: { value: textures.rock },
+      uEarth: { value: textures.earth },
     },
     hooks: {
       vertexPars: /* glsl */ `
         attribute vec4 aTerrain;
+        attribute float aLitter;
+        attribute vec2 aBare;
         varying vec4 vTerrain;
+        varying float vLitter;
+        varying vec2 vBare;
+        varying vec3 vGroundNormal;
       `,
-      vertexLocal: /* glsl */ `vTerrain = aTerrain;`,
+      vertexLocal: /* glsl */ `
+        vTerrain = aTerrain;
+        vLitter = aLitter;
+        vBare = aBare;
+        vGroundNormal = normal;
+      `,
       fragmentPars: /* glsl */ `
         uniform sampler2D uStrokes;
         uniform sampler2D uPebbles;
+        uniform sampler2D uLeaves;
+        uniform sampler2D uStone;
+        uniform sampler2D uEarth;
+        uniform vec4 uWind;
         varying vec4 vTerrain;
+        varying float vLitter;
+        varying vec2 vBare;
+        varying vec3 vGroundNormal;
         ${CAUSTICS_GLSL}
+
+        // One fallen leaf to a cell of the ground: which of the sixteen painted
+        // leaves it is, where it lies and how it is turned is up to the cell.
+        vec4 creekLeaf( vec2 p, float share ) {
+          vec2 cell = floor( p );
+          float h = creekHash( cell + 17.3 );
+          if ( h > share ) return vec4( 0.0 );
+          float turn = fract( h * 37.7 + 0.31 ) * 6.2832;
+          vec2 nudge = vec2( fract( h * 91.3 + 0.7 ), fract( h * 173.9 + 0.2 ) ) - 0.5;
+          vec2 c = fract( p ) - 0.5 - nudge * 0.34;
+          float cs = cos( turn );
+          float sn = sin( turn );
+          vec2 q = vec2( c.x * cs - c.y * sn, c.x * sn + c.y * cs ) * 1.5 + 0.5;
+          if ( q.x < 0.0 || q.x > 1.0 || q.y < 0.0 || q.y > 1.0 ) return vec4( 0.0 );
+          float which = floor( fract( h * 53.1 + 0.13 ) * 16.0 );
+          vec2 uv = ( vec2( mod( which, 4.0 ), floor( which / 4.0 ) ) + q ) * 0.25;
+          // The cells break the coordinates up, so the slopes come from the ground itself
+          return textureGrad( uLeaves, uv, dFdx( p ) * 0.375, dFdy( p ) * 0.375 );
+        }
       `,
       fragmentAlbedo: /* glsl */ `
         {
           vec2 wuv = vWorldPos.xz;
           float strokes = texture2D( uStrokes, wuv * 0.26 ).r;
           vec3 pebbles = texture2D( uPebbles, wuv * 0.46 ).rgb;
+          float grass = vTerrain.x;
+
+          // Grass follows the year: yellow-green in spring, straw by late autumn
+          diffuseColor.rgb = mix( diffuseColor.rgb, creekGrass( diffuseColor.rgb, creekGround ), grass );
+          // ...and takes as little of the frame's contact shade as its blades do,
+          // and of the rain: it is bare earth, sand and stone that a shower darkens
+          creekShade = mix( 1.0, ${GRASS_SHADE.toFixed(2)}, saturate( grass ) );
+          creekWet = mix( 1.0, ${GRASS_WET.toFixed(2)}, saturate( grass ) );
+          // The wind is seen crossing the meadow, in step with the blades it bends
+          float gustPhase = dot( wuv, uWind.xy ) * 0.42 - uWind.w * 1.25;
+          float gust = sin( gustPhase ) * 0.55 + sin( gustPhase * 2.17 + 1.3 ) * 0.3;
+          diffuseColor.rgb *= 1.0 + gust * 0.05 * grass * uWind.z * creekGround.w;
 
           // Pigment pooling: broad and fine watercolour variation everywhere
           diffuseColor.rgb *= creekWash( wuv );
           // Brush strokes in the grass
-          diffuseColor.rgb *= mix( 1.0, 0.62 + 0.78 * strokes, vTerrain.x * 0.62 );
+          diffuseColor.rgb *= mix( 1.0, 0.62 + 0.78 * strokes, grass * 0.62 );
+          // Bare rock keeps its grain whichever way it faces: the step under the
+          // fall is as much stone as the top of the hill
+          vec3 stoneAt = vWorldPos * 0.5;
+          vec3 stoneDx = dFdx( stoneAt );
+          vec3 stoneDy = dFdy( stoneAt );
+          if ( vBare.x > 0.01 ) {
+            vec3 face = abs( vGroundNormal );
+            face *= face;
+            face /= max( face.x + face.y + face.z, 0.001 );
+            float grain = textureGrad( uStone, stoneAt.zy, stoneDx.zy, stoneDy.zy ).r * face.x
+              + textureGrad( uStone, stoneAt.xz, stoneDx.xz, stoneDy.xz ).r * face.y
+              + textureGrad( uStone, stoneAt.xy, stoneDx.xy, stoneDy.xy ).r * face.z;
+            diffuseColor.rgb *= mix( 1.0, 0.54 + 0.92 * grain, saturate( vBare.x ) );
+          }
+          // Trodden paths and the bare earth around stones: crumbs, grit and small stones
+          float crumbs = texture2D( uEarth, wuv * 0.58 ).r;
+          diffuseColor.rgb *= mix( 1.0, 0.52 + 0.98 * crumbs, saturate( vBare.y ) * 0.9 );
           // Painted pebbles on the bed and the beach, tinted by the ground under them
           vec3 stone = pebbles * mix( vec3( 1.0 ), diffuseColor.rgb * 1.5, 0.42 );
           diffuseColor.rgb = mix( diffuseColor.rgb, stone, saturate( vTerrain.y ) * 0.92 );
+
+          float dry = 1.0 - smoothstep( -0.04, 0.02, vTerrain.z );
+
+          // Fallen leaves: two loose layers, thick under the trees that shed them
+          if ( creekGround.z > 0.002 && dry > 0.0 ) {
+            float share = saturate( vLitter * 1.3 + 0.05 ) * creekGround.z * dry;
+            vec4 leafA = creekLeaf( wuv * 3.1, share );
+            vec4 leafB = creekLeaf( vec2( wuv.x * 0.83 + wuv.y * 0.56, wuv.y * 0.83 - wuv.x * 0.56 ) * 2.3 + 11.7, share * 0.85 );
+            vec4 leaf = mix( leafA, leafB, leafB.a );
+            float lies = max( leafA.a, leafB.a );
+            // What has lain under the snow comes out of it brown: last year's
+            // leaves, the few the spring finds still lying
+            float old = max( creekGround.y, creekWinter.x );
+            leaf.rgb = mix( leaf.rgb, vec3( 0.62, 0.44, 0.28 ) * ( 0.25 + 1.5 * dot( leaf.rgb, vec3( 0.3, 0.5, 0.2 ) ) ), old * 0.86 );
+            diffuseColor.rgb = mix( diffuseColor.rgb, leaf.rgb * ( 0.8 + 0.3 * strokes ), lies * 0.96 );
+          }
+
+          // Snow: it settles in patches that follow the wash, and melts the same way
+          if ( creekWinter.x > 0.002 && dry > 0.0 ) {
+            float drift = texture2D( uWash, wuv * 0.043 + 0.21 ).r;
+            float hold = ( drift * 0.5 + texture2D( uWash, wuv * 0.31 + 0.6 ).r * 0.3 + strokes * 0.2 ) * 0.72;
+            creekSnow = smoothstep( hold, hold + 0.28, creekWinter.x ) * dry;
+            vec3 snow = uSnowColor * ( 0.9 + 0.14 * drift + 0.05 * strokes );
+            diffuseColor.rgb = mix( diffuseColor.rgb, snow, creekSnow );
+          }
         }
       `,
       fragmentFinal: /* glsl */ `
@@ -237,7 +447,17 @@ export function createTerrain(field, textures) {
             float sunny = saturate( dot( reflectedLight.directDiffuse, vec3( 0.6 ) ) / ( dot( diffuseColor.rgb, vec3( 0.3334 ) ) + 0.02 ) );
             float ca = creekCaustics( vWorldPos.xz * 0.62, uTime ) + creekCaustics( vWorldPos.xz * 0.41 + 3.7, uTime * 0.8 ) * 0.6;
             float depthFade = 1.0 - smoothstep( 0.45, 1.0, vTerrain.z ) * 0.55;
-            outgoingLight += vec3( 1.0, 0.97, 0.86 ) * ca * 0.2 * under * sunny * depthFade;
+            outgoingLight += vec3( 1.0, 0.97, 0.86 ) * ca * 0.2 * under * sunny * depthFade * ( 1.0 - creekWinter.y );
+          }
+          if ( creekSnow > 0.01 ) {
+            // Glints: grains that catch the sun, a different handful from every side
+            vec2 grain = vWorldPos.xz * 15.0;
+            float g = creekHash( floor( grain ) );
+            vec2 at = fract( grain ) - 0.5 - ( vec2( fract( g * 41.3 ), fract( g * 87.1 ) ) - 0.5 ) * 0.5;
+            float facet = fract( g * 57.3 + dot( geometryViewDir.xy, vec2( 5.1, 3.7 ) ) );
+            float glint = step( 0.9, g ) * smoothstep( 0.55, 0.95, facet ) * ( 1.0 - smoothstep( 0.04, 0.2, length( at ) ) );
+            float sunny = saturate( dot( reflectedLight.directDiffuse, vec3( 0.6 ) ) / ( dot( diffuseColor.rgb, vec3( 0.3334 ) ) + 0.02 ) );
+            outgoingLight += vec3( 1.0, 0.98, 0.93 ) * glint * sunny * creekSnow * 0.9;
           }
         }
       `,
@@ -264,6 +484,7 @@ export function createTerrain(field, textures) {
   const layers = WALL.length + UNDER_RINGS;
   const sPos = new Float32Array(R * layers * 3 + 3);
   const sCol = new Float32Array(R * layers * 3 + 3);
+  const sTurf = new Float32Array((R * layers + 1) * 3); // x: 1 where the wall is still turf, y: 1 where it is soil, z: metres below the rim
   const sIdx = new Uint32Array(R * (layers - 1) * 6 + R * 3);
 
   const cTurfEdge = col(palette.grassLight);
@@ -319,8 +540,8 @@ export function createTerrain(field, textures) {
         if (l === 0) c.copy(cTurfEdge);
         else if (l === 1) c.copy(cTurfEdge).lerp(cTurfUnder, 0.35);
         else if (l === 2) c.copy(cTurfUnder);
-        else if (l === 3) c.copy(cSoilDark);
-        else c.copy(cSoil).lerp(cClay, saturate(0.5 + strata * 0.9)).lerp(cRockWarm, saturate((depth - 0.9) / 0.6));
+        else if (l === 3) c.copy(cSoilDark).multiplyScalar(0.78);
+        else c.copy(cSoil).lerp(cClay, saturate(0.5 + strata * 0.9)).lerp(cRockWarm, saturate((depth - 0.9) / 0.6)).multiplyScalar(l === 4 ? 0.9 : 1);
       } else {
         const ringT = (l - WALL.length + 1) / UNDER_RINGS;
         // Rings crowd towards the rim, where the rock turns under fastest
@@ -345,6 +566,9 @@ export function createTerrain(field, textures) {
       sCol[v * 3] = c.r;
       sCol[v * 3 + 1] = c.g;
       sCol[v * 3 + 2] = c.b;
+      sTurf[v * 3] = l < 2 ? 1 : l === 2 ? 0.6 : 0;
+      sTurf[v * 3 + 1] = l < 3 ? 0 : l < WALL.length ? 1 : Math.max(0, 1 - (l - WALL.length + 1) / 3);
+      sTurf[v * 3 + 2] = l < WALL.length ? WALL[l][0] : Math.max(wallDepth, rimY - y);
     }
   }
 
@@ -394,6 +618,7 @@ export function createTerrain(field, textures) {
   const sideGeom = new THREE.BufferGeometry();
   sideGeom.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
   sideGeom.setAttribute('color', new THREE.BufferAttribute(sCol, 3));
+  sideGeom.setAttribute('aTurf', new THREE.BufferAttribute(sTurf, 3));
   sideGeom.setIndex(new THREE.BufferAttribute(sIdx, 1));
   sideGeom.computeVertexNormals();
 
@@ -402,14 +627,64 @@ export function createTerrain(field, textures) {
     rim: 0.16,
     ramp: 0.5,
     cloud: false,
+    // The overhang keeps most of the rain off it
+    wet: 0.5,
+    uniforms: { uStone: { value: textures.rock }, uEarth: { value: textures.earth } },
     hooks: {
+      vertexPars: /* glsl */ `
+        attribute vec3 aTurf;
+        varying vec3 vTurf;
+      `,
+      vertexLocal: /* glsl */ `vTurf = aTurf;`,
+      fragmentPars: /* glsl */ `
+        uniform sampler2D uStone;
+        uniform sampler2D uEarth;
+        varying vec3 vTurf;
+        // A painted sheet wrapped round the island: so many tiles to a full
+        // turn, so many to a metre of height. Its slopes are worked out from
+        // the place itself: read off the angle they would jump where the angle
+        // wraps, and draw a seam down the island.
+        #define CREEK_ROUND( sheet, turns, rise, shift ) textureGrad( sheet, vec2( angle * turns * 0.1591549 + shift, vWorldPos.y * rise ), vec2( dAngle.x * turns * 0.1591549, dHeight.x * rise ), vec2( dAngle.y * turns * 0.1591549, dHeight.y * rise ) ).r
+      `,
       fragmentAlbedo: /* glsl */ `
+        diffuseColor.rgb = mix( diffuseColor.rgb, creekGrass( diffuseColor.rgb, creekGround ), vTurf.x );
         {
-          // Wrap the wash around the island so the strata read as painted bands
-          float around = atan( vWorldPos.z, vWorldPos.x ) * 2.2;
-          float wash = texture2D( uWash, vec2( around, vWorldPos.y * 0.21 ) ).r;
-          float fine = texture2D( uWash, vec2( around * 2.7 + 0.4, vWorldPos.y * 0.63 ) ).r;
+          float angle = atan( vWorldPos.z, vWorldPos.x );
+          float reach = max( dot( vWorldPos.xz, vWorldPos.xz ), 0.01 );
+          vec2 dAngle = vec2( vWorldPos.x * dFdx( vWorldPos.z ) - vWorldPos.z * dFdx( vWorldPos.x ), vWorldPos.x * dFdy( vWorldPos.z ) - vWorldPos.z * dFdy( vWorldPos.x ) ) / reach;
+          vec2 dHeight = vec2( dFdx( vWorldPos.y ), dFdy( vWorldPos.y ) );
+          // The wash, wrapped so the strata read as painted bands
+          float wash = CREEK_ROUND( uWash, 14.0, 0.21, 0.0 );
+          float fine = CREEK_ROUND( uWash, 37.0, 0.63, 0.4 );
           diffuseColor.rgb *= 0.66 + 0.44 * wash + 0.26 * fine;
+          // ...and under the turf the island is stone, with a grain of its own
+          float grain = CREEK_ROUND( uStone, 28.0, 0.42, 0.0 );
+          diffuseColor.rgb *= mix( 1.0, 0.7 + 0.6 * grain, ( 1.0 - vTurf.x ) * ( 1.0 - vTurf.y * 0.5 ) );
+
+          // Between the two it is soil: crumbly, with small stones in it,
+          float soil = vTurf.y;
+          float depth = vTurf.z;
+          float crumbs = CREEK_ROUND( uEarth, 80.0, 0.86, 0.0 );
+          // laid down in beds that dip and rise as they go round,
+          float bed = depth * 3.1 + sin( angle * 5.0 ) * 0.22 + sin( angle * 13.0 + 1.7 ) * 0.1 + wash * 0.9;
+          float bedTone = fract( sin( floor( bed + 0.5 ) * 12.9898 ) * 43758.5453 );
+          float bedWide = fwidth( bed );
+          float seam = ( 1.0 - smoothstep( bedWide, 0.09 + bedWide * 1.5, abs( fract( bed ) - 0.5 ) ) ) * ( 1.0 - smoothstep( 0.12, 0.4, bedWide ) );
+          // and dark with leaf mould at the top, where the roots are
+          float mould = 1.0 - smoothstep( 0.18, 0.7, depth + ( crumbs - 0.5 ) * 0.25 );
+          diffuseColor.rgb *= mix( 1.0, ( 0.46 + 1.08 * crumbs ) * ( 0.86 + 0.26 * bedTone ) * ( 1.0 - 0.22 * seam ) * ( 1.0 - 0.3 * mould ), soil );
+          // The bigger stones in it show pale
+          float cobble = CREEK_ROUND( uEarth, 26.0, 0.28, 0.37 );
+          diffuseColor.rgb = mix( diffuseColor.rgb, vec3( 0.56, 0.54, 0.55 ) * ( 0.7 + 0.6 * crumbs ), smoothstep( 0.66, 0.78, cobble ) * soil * smoothstep( 0.2, 0.5, depth ) * 0.7 );
+          // Roots hang out of the turf, each to its own length (290 places for one in a turn)
+          float rootAt = angle * 46.1549;
+          float rootId = floor( rootAt );
+          float rootDraw = fract( sin( rootId * 78.233 ) * 43758.5453 );
+          float rootRun = depth / ( 0.3 + 0.75 * rootDraw );
+          float rootWide = ( abs( dAngle.x ) + abs( dAngle.y ) ) * 46.1549;
+          float strand = abs( fract( rootAt ) - 0.5 + sin( depth * 8.0 + rootId * 2.4 ) * 0.2 * rootRun );
+          float root = ( 1.0 - smoothstep( 0.0, 0.15 * ( 1.0 - rootRun * 0.8 ) + rootWide, strand ) ) * step( rootRun, 1.0 ) * step( 0.45, fract( rootDraw * 7.31 ) ) * ( 1.0 - smoothstep( 0.25, 0.6, rootWide ) );
+          diffuseColor.rgb = mix( diffuseColor.rgb, vec3( 0.7, 0.54, 0.38 ) * ( 0.8 + 0.4 * crumbs ), root * 0.8 * soil );
         }
       `,
     },
