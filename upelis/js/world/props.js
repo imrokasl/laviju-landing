@@ -3,6 +3,7 @@ import { TAU, createRng, ease, lerp, saturate, smoothstep } from '../core/math.j
 import { palette, brand, col } from '../core/palette.js';
 import { season } from '../core/season.js';
 import { icoSphere, roundedBox, tube, curvePoints, lathe, blob, place, displace, paint, paintSolid, setSway, merge } from '../core/geo.js';
+import { shadeByOpenness } from '../core/models.js';
 import { mesh, part, grainUv, tubeGrain, vary } from './kit.js';
 import { BRIDGE, CAMERA, PROPS } from './layout.js';
 
@@ -23,7 +24,7 @@ const _c = new THREE.Color();
 
 const ball = (hex, r, placement, detail = 1) => part(icoSphere(r, detail), hex, placement);
 
-export function createProps(field, kit, trees, water) {
+export function createProps(field, kit, trees, water, models = {}) {
   const group = new THREE.Group();
   group.name = 'props';
   const rng = createRng(555);
@@ -184,8 +185,11 @@ export function createProps(field, kit, trees, water) {
       const t = i / 12;
       pts.push(V((t - 0.5) * length, Math.sin(t * Math.PI) * 0.03, Math.sin(t * 5) * 0.035));
     }
-    const trunk = tube(pts, (t) => radius * (1 - t * 0.14) * (1 + Math.sin(t * 17) * 0.03), { radial: 16, capStart: false, capEnd: false });
-    {
+    // Modelled in Blender along the same line: bark in plates, a branch
+    // broken off short, one end sawn and the other snapped and hollow
+    const model = models.log;
+    const trunk = model ? model.rind.geometry : tube(pts, (t) => radius * (1 - t * 0.14) * (1 + Math.sin(t * 17) * 0.03), { radial: 16, capStart: false, capEnd: false });
+    if (!model) {
       // The sheet of bark goes twice round it, and keeps its scale along it
       const uv = trunk.attributes.uv;
       for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 2, uv.getY(i) * length * 0.78);
@@ -205,23 +209,31 @@ export function createProps(field, kit, trees, water) {
     const stubPts = [V(length * 0.12, 0.2, 0.1), V(length * 0.16, 0.5, 0.26), V(length * 0.17, 0.62, 0.42)];
     const stub = tube(stubPts, 0.07, { radial: 7 });
     paintSolid(stub, vary(palette.barkOak, rng, { l: 0.04 }));
-    rind.push(trunk, stub);
+    rind.push(trunk);
+    if (model) {
+      shadeByOpenness(model.rind, 0.55);
+      // The sawn face, the hollow and the snapped stub come with their own colours
+      shadeByOpenness(model.wood, 0.4);
+      solids.push(model.wood.geometry);
+    } else rind.push(stub);
 
-    // Cut ends, with their rings
-    for (const [end, r] of [
-      [-1, radius],
-      [1, radius * 0.835],
-    ]) {
-      const disc = new THREE.CircleGeometry(r * 0.97, 22).deleteAttribute('uv');
-      const pale = col(palette.woodLight);
-      const ring = col(palette.wood);
-      paint(disc, (p, n, i, out) => {
-        const d = Math.hypot(p.x, p.y) / r;
-        out.copy(pale).lerp(ring, (0.5 + 0.5 * Math.sin(d * 26)) * 0.5 + (d > 0.86 ? 0.5 : 0));
-      });
-      const tip = end < 0 ? pts[0] : pts[pts.length - 1];
-      place(disc, { x: tip.x, y: tip.y, z: tip.z, ry: (end * Math.PI) / 2 });
-      solids.push(disc);
+    // Cut ends, with their rings (the model brings its own)
+    if (!model) {
+      for (const [end, r] of [
+        [-1, radius],
+        [1, radius * 0.835],
+      ]) {
+        const disc = new THREE.CircleGeometry(r * 0.97, 22).deleteAttribute('uv');
+        const pale = col(palette.woodLight);
+        const ring = col(palette.wood);
+        paint(disc, (p, n, i, out) => {
+          const d = Math.hypot(p.x, p.y) / r;
+          out.copy(pale).lerp(ring, (0.5 + 0.5 * Math.sin(d * 26)) * 0.5 + (d > 0.86 ? 0.5 : 0));
+        });
+        const tip = end < 0 ? pts[0] : pts[pts.length - 1];
+        place(disc, { x: tip.x, y: tip.y, z: tip.z, ry: (end * Math.PI) / 2 });
+        solids.push(disc);
+      }
     }
 
     // Mushrooms keep company on the shady side

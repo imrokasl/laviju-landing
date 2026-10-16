@@ -1,6 +1,7 @@
 import * as THREE from './core/three.js';
 import { pickQuality, isSoftwareRenderer, lowTier, pixelRatioFor } from './core/quality.js';
 import { loadTextures } from './core/assets.js';
+import { loadModels } from './core/models.js';
 import { shared, installSoftShadows } from './core/materials.js';
 import { createCalendar, season, seasonIndex, SEASON_IDS } from './core/season.js';
 import { createRig } from './core/rig.js';
@@ -120,7 +121,10 @@ async function boot() {
   const camera = new THREE.PerspectiveCamera(CAMERA.fov, 1, 1, 400);
 
   ui.setLoading(0.06);
+  // The models made in Blender are fetched alongside the textures
+  const modelsArriving = loadModels();
   const textures = await loadTextures(renderer, (share) => ui.setLoading(0.06 + share * 0.3));
+  const models = await modelsArriving;
   shared.uWash.value = textures.wash;
   await nextFrame();
 
@@ -144,7 +148,7 @@ async function boot() {
   scene.add(water.group);
   await built(0.66);
 
-  const trees = createTrees(field, kit, textures, quality);
+  const trees = createTrees(field, kit, textures, quality, models);
   scene.add(trees.group);
   await built(0.76);
 
@@ -152,7 +156,7 @@ async function boot() {
   scene.add(meadow.group);
   await built(0.85);
 
-  const props = createProps(field, kit, trees, water);
+  const props = createProps(field, kit, trees, water, models);
   scene.add(props.group);
   await built(0.9);
 

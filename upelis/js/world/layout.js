@@ -100,6 +100,42 @@ export const TREES = {
   ],
 };
 
+// The oak's wood, in metres of its own before it is grown to `scale`: the
+// trunk from its foot up, the six limbs from where they leave it (the first
+// carries the swing) and the clumps of its crown as [x, y, z, radius]. The
+// crown is grown on these in trees.js; the trunk, its roots and the limbs are
+// a model made in Blender round the same lines (landing-web/upelis/blender).
+export const OAK = {
+  scale: 0.9,
+  trunk: [
+    [0, 0, 0],
+    [0.06, 1.2, 0.02],
+    [-0.08, 2.3, 0.06],
+    [0, 3.2, 0],
+  ],
+  limbs: [
+    [[0, 2.45, 0], [1.25, 3.05, 0.5], [2.6, 3.42, 1.05], [3.7, 4.0, 1.5]], // carries the swing
+    [[0, 2.7, 0], [-1.2, 3.6, 0.2], [-2.4, 4.3, 0.5], [-3.3, 4.7, 0.7]],
+    [[0, 2.9, 0], [0.3, 3.9, -1.1], [0.6, 4.7, -2.3]],
+    [[0, 3.1, 0], [-0.2, 4.3, 0.3], [0.1, 5.5, 0.4]],
+    [[0, 2.6, 0], [-0.9, 3.3, 1.2], [-1.7, 3.9, 2.3]],
+    [[0, 2.8, 0], [1.3, 3.9, -0.6], [2.5, 4.4, -1.5]],
+  ],
+  clumps: [
+    [3.3, 4.7, 1.5, 1.75],
+    [-3.0, 5.1, 0.8, 1.85],
+    [0.6, 5.4, -2.2, 1.8],
+    [0.0, 6.4, 0.3, 2.0],
+    [-1.6, 4.6, 2.3, 1.6],
+    [1.7, 5.7, -0.4, 1.7],
+    [-1.5, 5.9, -1.2, 1.7],
+    [1.3, 4.8, 2.3, 1.45],
+    [-3.7, 4.1, -0.9, 1.3],
+    [2.7, 4.2, -1.5, 1.35],
+    [-0.3, 5.0, 1.2, 1.5],
+  ],
+};
+
 export const PROPS = {
   log: { x: -4.3, z: 7.9, yaw: 0.95, length: 3.1 },
   hedgehog: { x: -2.4, z: 6.0, yaw: 1.28 },

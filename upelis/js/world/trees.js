@@ -3,8 +3,9 @@ import { TAU, createRng, lerp, saturate, smoothstep } from '../core/math.js';
 import { palette, col } from '../core/palette.js';
 import { season } from '../core/season.js';
 import { blob, tube, curvePoints, lathe, roundedBox, icoSphere, place, paint, displace, setSway, merge } from '../core/geo.js';
+import { shadeByOpenness } from '../core/models.js';
 import { mesh, part, grainUv } from './kit.js';
-import { TREES } from './layout.js';
+import { OAK, TREES } from './layout.js';
 
 // The trees and bushes. Each crown is a few soft lumps dressed in painted leaf
 // cards; the cards borrow their normals from the crown's overall shape, so a
@@ -112,7 +113,7 @@ function cardBatch() {
   return { add, build, get count() { return index.length / 24; } };
 }
 
-export function createTrees(field, kit, textures, quality) {
+export function createTrees(field, kit, textures, quality, models = {}) {
   const group = new THREE.Group();
   group.name = 'trees';
   const noise = field.noise;
@@ -377,11 +378,12 @@ export function createTrees(field, kit, textures, quality) {
   {
     const { x, z } = TREES.oak;
     const y = field.height(x, z) - 0.08;
-    const S = 0.9;
+    const S = OAK.scale;
     const at = (lx, ly, lz) => new THREE.Vector3(x + lx * S, y + ly * S, z + lz * S);
 
     // Trunk with a root flare, and toes gripping the knoll
-    limb([at(0, 0, 0), at(0.06, 1.2, 0.02), at(-0.08, 2.3, 0.06), at(0, 3.2, 0)], 0.5 * S, 0.34 * S, { radial: 14, flare: 0.34 * S, samples: 16 });
+    const grown = barks.length;
+    limb(OAK.trunk.map((p) => at(...p)), 0.5 * S, 0.34 * S, { radial: 14, flare: 0.34 * S, samples: 16 });
     shoulder(at(0, 2.95, 0), 0.47 * S, 11.3);
     for (let k = 0; k < 6; k++) {
       const a = (k / 6) * TAU + rng.range(-0.3, 0.3);
@@ -389,33 +391,25 @@ export function createTrees(field, kit, textures, quality) {
       limb([at(Math.cos(a) * 0.2, 0.55, Math.sin(a) * 0.2), at(Math.cos(a) * 0.62, 0.2, Math.sin(a) * 0.62), at(Math.cos(a) * reach, -0.12, Math.sin(a) * reach)], 0.2 * S, 0.07 * S, { radial: 6, samples: 8 });
     }
 
-    const limbs = [
-      [[0, 2.45, 0], [1.25, 3.05, 0.5], [2.6, 3.42, 1.05], [3.7, 4.0, 1.5]], // carries the swing
-      [[0, 2.7, 0], [-1.2, 3.6, 0.2], [-2.4, 4.3, 0.5], [-3.3, 4.7, 0.7]],
-      [[0, 2.9, 0], [0.3, 3.9, -1.1], [0.6, 4.7, -2.3]],
-      [[0, 3.1, 0], [-0.2, 4.3, 0.3], [0.1, 5.5, 0.4]],
-      [[0, 2.6, 0], [-0.9, 3.3, 1.2], [-1.7, 3.9, 2.3]],
-      [[0, 2.8, 0], [1.3, 3.9, -0.6], [2.5, 4.4, -1.5]],
-    ];
     const swingLimb = [];
-    limbs.forEach((path, i) => {
+    OAK.limbs.forEach((path, i) => {
       const pts = limb(path.map((p) => at(...p)), (i === 0 ? 0.25 : 0.21) * S, 0.07 * S, { radial: 8 });
       if (i === 0) swingLimb.push(...pts);
     });
+    // The wood modelled in Blender round the same lines takes the place of
+    // what was just grown: buttress roots, bark in plates, limbs grown out of
+    // the trunk. It is grown all the same, so every number drawn for it is
+    // drawn and the rest of the island keeps its shape.
+    const wood = models.oak?.bark;
+    if (wood) {
+      barks.splice(grown);
+      wood.geometry.translate(x, y, z);
+      barkPaint(wood.geometry, palette.barkDark, palette.barkOak, 11.3);
+      shadeByOpenness(wood, 0.45);
+      barks.push(wood.geometry);
+    }
 
-    const clumps = [
-      [3.3, 4.7, 1.5, 1.75],
-      [-3.0, 5.1, 0.8, 1.85],
-      [0.6, 5.4, -2.2, 1.8],
-      [0.0, 6.4, 0.3, 2.0],
-      [-1.6, 4.6, 2.3, 1.6],
-      [1.7, 5.7, -0.4, 1.7],
-      [-1.5, 5.9, -1.2, 1.7],
-      [1.3, 4.8, 2.3, 1.45],
-      [-3.7, 4.1, -0.9, 1.3],
-      [2.7, 4.2, -1.5, 1.35],
-      [-0.3, 5.0, 1.2, 1.5],
-    ].map(([cx, cy, cz, r]) => {
+    const clumps = OAK.clumps.map(([cx, cy, cz, r]) => {
       const p = at(cx, cy, cz);
       return { x: p.x, y: p.y, z: p.z, r: r * S };
     });
