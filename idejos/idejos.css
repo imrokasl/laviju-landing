@@ -1,0 +1,507 @@
+/* =============================================
+   LAVIJU IDĖJOS — email list page for Instagram and Facebook links
+   Self-contained: the same tokens as /styles.css and the pastels of
+   /blog/blog.css, without the full landing layer, so the page opens
+   fast in the in-app browsers of social networks.
+   ============================================= */
+
+:root {
+  --primary: #3565B0;
+  --primary-dark: #244B87;
+  --text: #1E2A3A;
+  --text-secondary: #52657E;
+  --border: #D8E2EF;
+  --surface: #FFFFFF;
+  --danger: #B3261E;
+  --danger-bg: #FDECEA;
+  --sky-1: #EEF5FD;
+  --sky-2: #DCEBFA;
+  --sky-ink: #2A5599;
+  --butter-1: #FFF9E8;
+  --butter-2: #FDF0C8;
+  --sage-1: #F0F8F2;
+  --sage-2: #DCEFE2;
+  --sage-ink: #2F6B47;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  color-scheme: light;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text);
+  background:
+    radial-gradient(120% 60% at 50% 0%, var(--sky-2) 0%, rgba(220, 235, 250, 0) 70%),
+    linear-gradient(180deg, var(--sky-1) 0%, var(--butter-1) 100%);
+  background-color: var(--sky-1);
+  overflow-x: hidden;
+}
+
+main {
+  flex: 1;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--primary);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--primary-dark);
+  outline-offset: 3px;
+}
+
+/* ---------- Top bar ---------- */
+.i-top {
+  display: flex;
+  justify-content: center;
+  padding: 20px 16px 0;
+}
+
+.i-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.i-brand img {
+  width: 32px;
+  height: 32px;
+}
+
+/* ---------- Hero card ---------- */
+.i-hero {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 16px 40px;
+}
+
+.i-card {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 28px 22px 26px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 2px rgba(30, 42, 58, 0.04), 0 18px 48px rgba(42, 85, 153, 0.12);
+  text-align: center;
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .i-card {
+    background: rgba(255, 255, 255, 0.82);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+}
+
+.i-envelope {
+  width: 132px;
+  margin: -6px auto 14px;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 10px 14px rgba(42, 85, 153, 0.16));
+}
+
+.i-pill {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--butter-2);
+  color: #775800;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.i-title {
+  font-size: clamp(34px, 9vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.i-title em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--primary);
+}
+
+.i-lede {
+  max-width: 30em;
+  margin: 14px auto 0;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ---------- Form ---------- */
+.i-form {
+  margin-top: 24px;
+  text-align: left;
+}
+
+/* Without scripts the form cannot send, so the email fallback is shown instead. */
+html:not(.js) .i-form {
+  display: none;
+}
+
+.i-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.i-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.i-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 18px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  /* 16px or more stops iOS from zooming into the field. */
+  font-size: 17px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.i-input::placeholder {
+  color: #8593A6;
+}
+
+.i-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(53, 101, 176, 0.14);
+  outline: none;
+}
+
+.i-input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.i-input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 4px rgba(179, 38, 30, 0.12);
+}
+
+.i-button {
+  min-height: 54px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--primary);
+  color: #FFFFFF;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(53, 101, 176, 0.28);
+  transition: background-color 0.2s ease, transform 0.25s var(--ease-spring), box-shadow 0.2s ease;
+}
+
+.i-button:hover {
+  background: var(--primary-dark);
+}
+
+.i-button:active {
+  transform: scale(0.98);
+}
+
+.i-button[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.8;
+}
+
+/* A hidden field that people never see; scripts that fill every field do. */
+.i-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.i-status {
+  min-height: 0;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.i-status:empty {
+  margin-top: 0;
+}
+
+.i-status[data-tone="error"] {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.i-consent {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.i-done {
+  margin-top: 24px;
+  padding: 20px 18px;
+  border-radius: 18px;
+  background: var(--sage-1);
+  border: 2px solid var(--sage-2);
+  animation: i-pop 0.6s var(--ease-spring) both;
+}
+
+.i-done:focus {
+  outline: none;
+}
+
+.i-done__title {
+  color: var(--sage-ink);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.i-done__text {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.i-noscript {
+  margin-top: 22px;
+  color: var(--text-secondary);
+}
+
+/* ---------- Floating stickers ---------- */
+.i-stickers {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.i-stk {
+  position: absolute;
+  filter: drop-shadow(0 8px 12px rgba(30, 42, 58, 0.1));
+  animation: i-float 7s ease-in-out infinite;
+}
+
+.i-stk--sun { width: 66px; top: 0; right: 4px; animation-duration: 9s; }
+.i-stk--raincoat { width: 62px; top: 4px; left: 4px; transform: rotate(-10deg); animation-delay: -2s; }
+.i-stk--sailboat { display: none; }
+.i-stk--crayons { display: none; }
+.i-stk--leaf { display: none; }
+
+@media (min-width: 760px) {
+  .i-hero {
+    padding: 48px 24px 64px;
+  }
+
+  .i-card {
+    padding: 40px 48px 36px;
+  }
+
+  .i-envelope {
+    width: 156px;
+  }
+
+  .i-row {
+    flex-direction: row;
+  }
+
+  .i-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Beside a wider card the stickers sit around it, never over the form. */
+  .i-stickers {
+    z-index: 0;
+  }
+
+  .i-stk--sun { width: 120px; top: 18px; right: 4%; }
+  .i-stk--raincoat { width: 150px; top: 110px; left: 2%; }
+  .i-stk--sailboat { display: block; width: 140px; bottom: 34px; right: 3%; transform: rotate(6deg); animation-delay: -4s; }
+  .i-stk--crayons { display: block; width: 110px; bottom: 54px; left: 6%; transform: rotate(-14deg); animation-delay: -1s; }
+  .i-stk--leaf { display: block; width: 54px; top: 46%; right: 14%; transform: rotate(24deg); animation-delay: -3s; }
+}
+
+@media (min-width: 1000px) {
+  .i-stk--raincoat { left: 6%; }
+  .i-stk--sailboat { right: 8%; }
+  .i-stk--leaf { right: 18%; }
+}
+
+/* ---------- What you get ---------- */
+.i-what {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 16px 48px;
+}
+
+.i-what__title {
+  margin-bottom: 18px;
+  font-size: clamp(26px, 6vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.i-list {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+}
+
+.i-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 22px;
+}
+
+.i-item--butter { background: var(--butter-2); }
+.i-item--sage { background: var(--sage-2); }
+.i-item--sky { background: var(--sky-2); }
+
+.i-item img {
+  flex-shrink: 0;
+  width: 64px;
+}
+
+.i-item h3 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.i-item p {
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.i-note {
+  margin-top: 20px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+@media (min-width: 760px) {
+  .i-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .i-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 22px 22px 24px;
+  }
+
+  .i-item img {
+    width: 76px;
+    margin-bottom: 4px;
+  }
+}
+
+/* ---------- Footer ---------- */
+.i-footer {
+  padding: 20px 16px 28px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+
+.i-footer p + p {
+  margin-top: 4px;
+}
+
+/* ---------- Motion ---------- */
+.js .i-card {
+  animation: i-rise 0.8s var(--ease-out) both;
+}
+
+@keyframes i-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes i-pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes i-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
