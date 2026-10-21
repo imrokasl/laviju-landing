@@ -655,23 +655,8 @@
   }
 
   // ---------------------------------------------
-  // Library — topic filters with FLIP layout animation
+  // Filters with FLIP layout animation: library topics, ideas by time of day
   // ---------------------------------------------
-  const grid = document.querySelector('[data-grid]');
-  const filterButtons = Array.from(document.querySelectorAll('.filter'));
-  const filterStatus = document.querySelector('[data-filter-status]');
-  const posts = grid ? Array.from(grid.querySelectorAll('.post')) : [];
-  const FILTER_NAMES = {
-    all: '',
-    kalba: 'Kalba',
-    kasdienybe: 'Kasdienybė',
-    zaidimai: 'Žaidimai',
-    knygos: 'Knygos',
-    tevams: 'Tėvams',
-  };
-  let activeFilter = 'all';
-  let filterRun = 0;
-
   function ltForm(n, forms) {
     const n10 = n % 10;
     const n100 = n % 100;
@@ -680,103 +665,149 @@
     return forms[2];
   }
 
-  function updateStatus(count, filter) {
-    if (!filterStatus) return;
-    const verb = ltForm(count, ['Rodomas', 'Rodomi', 'Rodoma']);
-    const noun = ltForm(count, ['straipsnis', 'straipsniai', 'straipsnių']);
-    const topic = FILTER_NAMES[filter] ? ` · ${FILTER_NAMES[filter]}` : '';
-    filterStatus.textContent = `${verb} ${count} ${noun}${topic}`;
-  }
-
-  function applyFilter(filter, animate) {
-    if (!grid || !(filter in FILTER_NAMES)) return;
-    activeFilter = filter;
-    const run = ++filterRun;
-    const shouldShow = (post) => filter === 'all' || post.dataset.cat === filter;
-
-    filterButtons.forEach((button) => {
-      const on = button.dataset.filter === filter;
-      button.classList.toggle('is-active', on);
-      button.setAttribute('aria-pressed', String(on));
-    });
-
-    const visibleCount = posts.filter(shouldShow).length;
-    updateStatus(visibleCount, filter);
-
-    const canAnimate = animate && !reduceMotion && typeof grid.animate === 'function';
-    const leaving = posts.filter((post) => !post.hidden && !shouldShow(post));
-
-    function relayout() {
-      if (run !== filterRun) return;
-      const first = new Map();
-      posts.forEach((post) => {
-        if (!post.hidden) first.set(post, post.getBoundingClientRect());
-      });
-
-      posts.forEach((post) => {
-        const show = shouldShow(post);
-        post.hidden = !show;
-        if (show) {
-          revealNow(post);
-          if (revealObserver) revealObserver.unobserve(post);
-        }
-      });
-
-      if (!canAnimate) return;
-      posts.forEach((post) => {
-        if (post.hidden) return;
-        const last = post.getBoundingClientRect();
-        const before = first.get(post);
-        if (!before || leaving.includes(post)) {
-          post.animate(
-            [
-              { opacity: 0, transform: 'translateY(18px) scale(0.97)' },
-              { opacity: 1, transform: 'none' },
-            ],
-            { duration: 520, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', delay: 60 }
-          );
-          return;
-        }
-        const dx = before.left - last.left;
-        const dy = before.top - last.top;
-        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-          post.animate(
-            [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }],
-            { duration: 600, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
-          );
-        }
-      });
-    }
-
-    if (canAnimate && leaving.length) {
-      const fades = leaving.map((post) =>
-        post.animate(
-          [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.96)' }],
-          { duration: 180, easing: 'ease-in', fill: 'forwards' }
-        )
-      );
-      Promise.all(fades.map((animation) => animation.finished.catch(() => {}))).then(() => {
-        fades.forEach((animation) => animation.cancel());
-        relayout();
-      });
+  // Items list their groups space-separated (data-cat="kalba tevams"), so one item can show under several buttons
+  // On phones chip rows scroll sideways. Bring a chip fully into view by moving the row
+  // only (never the page), to the nearest chip-aligned stop so scroll snapping keeps it
+  function revealChip(chip, smooth) {
+    const row = chip && chip.parentElement;
+    if (!row || row.scrollWidth <= row.clientWidth + 1) return;
+    const inset = parseFloat(getComputedStyle(row).scrollPaddingLeft) || 0;
+    const origin = row.getBoundingClientRect().left - row.scrollLeft;
+    const startOf = (el) => el.getBoundingClientRect().left - origin;
+    const start = startOf(chip);
+    const end = start + chip.offsetWidth;
+    const view = row.clientWidth - inset;
+    let left;
+    if (start - inset < row.scrollLeft - 1) {
+      left = start - inset;
+    } else if (end > row.scrollLeft + view + 1) {
+      const stop = Array.from(row.children).map(startOf).find((edge) => end - (edge - inset) <= view);
+      left = (stop === undefined ? start : stop) - inset;
     } else {
-      relayout();
+      return;
     }
-
-    try {
-      const url = new URL(window.location.href);
-      if (filter === 'all') url.searchParams.delete('tema');
-      else url.searchParams.set('tema', filter);
-      window.history.replaceState(null, '', url);
-    } catch (error) {
-      // URL API unavailable — filtering still works
-    }
+    left = Math.max(0, Math.min(left, row.scrollWidth - row.clientWidth));
+    row.scrollTo({ left, behavior: smooth && !reduceMotion ? 'smooth' : 'auto' });
   }
 
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      if (button.dataset.filter !== activeFilter) applyFilter(button.dataset.filter, true);
+  function createFilter({ grid, items, buttons, key, names, group, status, describe, param }) {
+    let active = 'all';
+    let filterRun = 0;
+
+    function apply(filter, animate) {
+      if (!grid || !Object.prototype.hasOwnProperty.call(names, filter)) return;
+      active = filter;
+      const run = ++filterRun;
+      const shouldShow = (item) => filter === 'all' || item.dataset[group].split(' ').includes(filter);
+
+      buttons.forEach((button) => {
+        const on = button.dataset[key] === filter;
+        button.classList.toggle('is-active', on);
+        button.setAttribute('aria-pressed', String(on));
+      });
+      revealChip(buttons.find((button) => button.dataset[key] === filter), animate);
+
+      if (status) status.textContent = describe(items.filter(shouldShow).length, names[filter]);
+
+      const canAnimate = animate && !reduceMotion && typeof grid.animate === 'function';
+      const leaving = items.filter((item) => !item.hidden && !shouldShow(item));
+
+      function relayout() {
+        if (run !== filterRun) return;
+        const first = new Map();
+        items.forEach((item) => {
+          if (!item.hidden) first.set(item, item.getBoundingClientRect());
+        });
+
+        items.forEach((item) => {
+          const show = shouldShow(item);
+          item.hidden = !show;
+          if (show) {
+            revealNow(item);
+            if (revealObserver) revealObserver.unobserve(item);
+          }
+        });
+
+        if (!canAnimate) return;
+        items.forEach((item) => {
+          if (item.hidden) return;
+          const last = item.getBoundingClientRect();
+          const before = first.get(item);
+          if (!before || leaving.includes(item)) {
+            item.animate(
+              [
+                { opacity: 0, transform: 'translateY(18px) scale(0.97)' },
+                { opacity: 1, transform: 'none' },
+              ],
+              { duration: 520, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', delay: 60 }
+            );
+            return;
+          }
+          const dx = before.left - last.left;
+          const dy = before.top - last.top;
+          if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+            item.animate(
+              [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }],
+              { duration: 600, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+            );
+          }
+        });
+      }
+
+      if (canAnimate && leaving.length) {
+        const fades = leaving.map((item) =>
+          item.animate(
+            [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.96)' }],
+            { duration: 180, easing: 'ease-in', fill: 'forwards' }
+          )
+        );
+        Promise.all(fades.map((animation) => animation.finished.catch(() => {}))).then(() => {
+          fades.forEach((animation) => animation.cancel());
+          relayout();
+        });
+      } else {
+        relayout();
+      }
+
+      try {
+        const url = new URL(window.location.href);
+        if (filter === 'all') url.searchParams.delete(param);
+        else url.searchParams.set(param, filter);
+        window.history.replaceState(null, '', url);
+      } catch (error) {
+        // URL API unavailable — filtering still works
+      }
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.dataset[key] !== active) apply(button.dataset[key], true);
+      });
     });
+
+    return apply;
+  }
+
+  const FILTER_NAMES = {
+    all: '',
+    kalba: 'Kalba',
+    kasdienybe: 'Kasdienybė',
+    zaidimai: 'Žaidimai',
+    knygos: 'Knygos',
+    tevams: 'Tėvams',
+  };
+  const grid = document.querySelector('[data-grid]');
+  const applyFilter = createFilter({
+    grid,
+    items: grid ? Array.from(grid.querySelectorAll('.post')) : [],
+    buttons: Array.from(document.querySelectorAll('.filter')),
+    key: 'filter',
+    names: FILTER_NAMES,
+    group: 'cat',
+    status: document.querySelector('[data-filter-status]'),
+    describe: (count, topic) =>
+      `${ltForm(count, ['Rodomas', 'Rodomi', 'Rodoma'])} ${count} ${ltForm(count, ['straipsnis', 'straipsniai', 'straipsnių'])}${topic ? ` · ${topic}` : ''}`,
+    param: 'tema',
   });
 
   document.querySelectorAll('[data-filter-link]').forEach((link) => {
@@ -784,6 +815,46 @@
       applyFilter(link.dataset.filterLink, false);
     });
   });
+
+  // Blog index: ideas from every article, by the time of day they fit
+  const MOMENT_NAMES = {
+    all: '',
+    ryte: 'Ryte',
+    diena: 'Dieną',
+    vakare: 'Vakare',
+    miegas: 'Prieš miegą',
+    visada: 'Bet kada',
+  };
+  const ideasGrid = document.querySelector('[data-ideas]');
+  const momentButtons = Array.from(document.querySelectorAll('[data-moment]'));
+  const applyMoment = createFilter({
+    grid: ideasGrid,
+    items: ideasGrid ? Array.from(ideasGrid.querySelectorAll('.idea')) : [],
+    buttons: momentButtons,
+    key: 'moment',
+    names: MOMENT_NAMES,
+    group: 'moments',
+    status: document.querySelector('[data-moment-status]'),
+    describe: (count, moment) =>
+      `${ltForm(count, ['Rodoma', 'Rodomos', 'Rodoma'])} ${count} ${ltForm(count, ['idėja', 'idėjos', 'idėjų'])}${moment ? ` · ${moment}` : ''}`,
+    param: 'metas',
+  });
+
+  // The time of day it is now gets a small "Dabar" tag, as a suggestion only
+  const hour = new Date().getHours();
+  const nowButton = momentButtons.find((button) => {
+    if (!button.dataset.momentFrom) return false;
+    const from = Number(button.dataset.momentFrom);
+    const to = Number(button.dataset.momentTo);
+    return from < to ? hour >= from && hour < to : hour >= from || hour < to;
+  });
+  if (nowButton) {
+    const tag = document.createElement('span');
+    tag.className = 'moment__now';
+    tag.textContent = 'Dabar';
+    nowButton.appendChild(tag);
+    if (!new URLSearchParams(window.location.search).has('metas')) revealChip(nowButton, false);
+  }
 
   // ---------------------------------------------
   // Quick-read sheet (native <dialog>)
@@ -799,17 +870,20 @@
     const linkSlot = peek.querySelector('[data-peek-link]');
     let trigger = null;
     let closing = false;
+    const CARDS = '.post, .story, .idea';
 
+    // Links outside a card (reading lists, search results) borrow the picture and title of the card with the same quick read
     function sourceCardFor(id) {
-      const link = document.querySelector(`.library a[data-peek="${id}"]`) || document.querySelector(`a[data-peek="${id}"]`);
-      return link ? link.closest('.post, .story') : null;
+      const links = Array.from(document.querySelectorAll(`a[data-peek="${id}"]`));
+      const link = links.find((el) => el.closest('.library')) || links.find((el) => el.closest(CARDS));
+      return link ? link.closest(CARDS) : null;
     }
 
     function openPeek(link) {
       const id = link.dataset.peek;
       const template = document.querySelector(`template[data-peek-id="${id}"]`);
       if (!template) return false;
-      const card = link.closest('.post, .story') || sourceCardFor(id);
+      const card = link.closest(CARDS) || sourceCardFor(id);
 
       artSlot.textContent = '';
       const art = card && card.querySelector('.art');
@@ -824,7 +898,7 @@
 
       const meta = card && card.querySelector('.meta');
       metaSlot.innerHTML = meta ? meta.innerHTML : '';
-      const title = card && card.querySelector('.post__title, .story__title');
+      const title = card && card.querySelector('.post__title, .story__title, .entry__title, .idea__title');
       const listTitle = link.querySelector('.start__title');
       titleSlot.textContent = (title || listTitle || link).textContent.trim();
 
@@ -1393,22 +1467,328 @@
   });
 
   // ---------------------------------------------
+  // Blog index — search articles and ideas as you type
+  // ---------------------------------------------
+  const finder = document.querySelector('[data-finder]');
+  if (finder) {
+    const input = finder.querySelector('.finder__input');
+    const panel = finder.querySelector('[data-finder-panel]');
+    const clearButton = finder.querySelector('[data-finder-clear]');
+    const finderStatus = finder.querySelector('[data-finder-status]');
+    const narrowQuery = window.matchMedia('(max-width: 640px)');
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+
+    // Lithuanian letters fold to plain ones, so "moliugas" finds "moliūgas"
+    const fold = (text) => text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+    // Folds one character at a time, remembering where each folded character came from
+    function foldWithMap(text) {
+      let folded = '';
+      const map = [];
+      for (let i = 0; i < text.length; i++) {
+        const piece = fold(text[i]);
+        folded += piece;
+        for (let j = 0; j < piece.length; j++) map.push(i);
+      }
+      return { folded, map };
+    }
+
+    // Longer words lose their ending, so "knyga" also finds "knygos" and "moliūgas" finds "moliūgų"
+    function termsOf(query) {
+      return fold(query)
+        .split(/[^a-z0-9+]+/)
+        .filter(Boolean)
+        .map((word) => (word.length > 4 ? word.slice(0, Math.max(4, word.length - 2)) : word));
+    }
+
+    const isWordStart = (text, index) => index === 0 || !/[a-z0-9]/.test(text[index - 1]);
+
+    function startsWord(text, term) {
+      for (let index = text.indexOf(term); index !== -1; index = text.indexOf(term, index + 1)) {
+        if (isWordStart(text, index)) return true;
+      }
+      return false;
+    }
+
+    // Every word must match somewhere; a match in the title counts most
+    function scoreOf(record, terms) {
+      let total = 0;
+      for (const term of terms) {
+        if (startsWord(record.title, term)) total += record.title.startsWith(term) ? 14 : 10;
+        else if (startsWord(record.keys, term)) total += 6;
+        else if (startsWord(record.text, term)) total += 3;
+        else if (record.text.includes(term)) total += 1;
+        else return 0;
+      }
+      return total;
+    }
+
+    const records = Array.from(document.querySelectorAll('[data-find]')).map((item, order) => {
+      const link = item.querySelector('.entry__link, .idea__link');
+      const title = item.querySelector('.entry__title, .idea__title').textContent.trim();
+      const art = item.querySelector('.art');
+      const sticker = art && art.querySelector('.art__stk');
+      const tone = art && art.className.match(/\bart--(\w+)/);
+      const peekId = link.dataset.peek || '';
+      const quickRead = peekId && document.querySelector(`template[data-peek-id="${peekId}"]`);
+      return {
+        order,
+        label: title,
+        href: link.getAttribute('href'),
+        peek: peekId,
+        idea: item.dataset.findKind === 'Idėja',
+        meta: item.dataset.findMeta || '',
+        thumb: sticker ? sticker.getAttribute('src') : '',
+        tone: tone ? tone[1] : 'sky',
+        title: fold(title),
+        keys: fold(`${item.dataset.findKeys || ''} ${item.dataset.findMeta || ''}`),
+        text: fold(`${item.textContent} ${quickRead ? quickRead.content.textContent : ''}`).replace(/\s+/g, ' '),
+      };
+    });
+
+    function make(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text) node.textContent = text;
+      return node;
+    }
+
+    // The searched words are marked where they start a word of the title
+    function highlighted(text, terms) {
+      const { folded, map } = foldWithMap(text);
+      const ranges = [];
+      terms.forEach((term) => {
+        for (let index = folded.indexOf(term); index !== -1; index = folded.indexOf(term, index + 1)) {
+          if (isWordStart(folded, index)) ranges.push([map[index], map[index + term.length - 1] + 1]);
+        }
+      });
+      const merged = [];
+      ranges.sort((a, b) => a[0] - b[0]).forEach(([start, end]) => {
+        const last = merged[merged.length - 1];
+        if (last && start <= last[1]) last[1] = Math.max(last[1], end);
+        else merged.push([start, end]);
+      });
+      const fragment = document.createDocumentFragment();
+      let cursor = 0;
+      merged.forEach(([start, end]) => {
+        fragment.append(text.slice(cursor, start), make('mark', '', text.slice(start, end)));
+        cursor = end;
+      });
+      fragment.append(text.slice(cursor));
+      return fragment;
+    }
+
+    function resultLink(record, terms) {
+      const link = make('a', 'finder__result');
+      link.href = record.href;
+      // ideas open their quick read, as their cards do
+      if (record.peek) link.dataset.peek = record.peek;
+
+      const thumb = make('span', 'finder__thumb');
+      thumb.style.setProperty('--thumb', `var(--${record.tone}-2)`);
+      if (record.thumb) {
+        const image = make('img');
+        image.src = record.thumb;
+        image.alt = '';
+        image.decoding = 'async';
+        thumb.appendChild(image);
+      }
+
+      const text = make('span', 'finder__text');
+      const title = make('b');
+      title.appendChild(highlighted(record.label, terms));
+      text.append(title, make('small', '', record.meta));
+
+      const arrow = document.createElementNS(SVG_NS, 'svg');
+      arrow.setAttribute('class', 'finder__arrow');
+      arrow.setAttribute('viewBox', '0 0 24 24');
+      arrow.setAttribute('aria-hidden', 'true');
+      const path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('d', 'M5 12h14M13 6l6 6-6 6');
+      arrow.appendChild(path);
+
+      link.append(thumb, text, arrow);
+      return link;
+    }
+
+    function renderGroup(id, label, hits, terms) {
+      if (!hits.length) return;
+      const heading = make('p', 'finder__group', label);
+      heading.id = id;
+      const list = make('ul', 'finder__list');
+      list.setAttribute('aria-labelledby', id);
+      hits.forEach(({ record }) => {
+        const item = make('li');
+        item.appendChild(resultLink(record, terms));
+        list.appendChild(item);
+      });
+      panel.append(heading, list);
+    }
+
+    // Spoken once typing pauses, not after every letter
+    let announceTimer = 0;
+    function announce(message) {
+      window.clearTimeout(announceTimer);
+      announceTimer = window.setTimeout(() => {
+        if (finderStatus) finderStatus.textContent = message;
+      }, 600);
+    }
+
+    function search() {
+      const query = input.value.trim();
+      finder.classList.toggle('has-query', input.value !== '');
+      clearButton.hidden = input.value === '';
+      panel.textContent = '';
+
+      const terms = fold(query).replace(/[^a-z0-9+]/g, '').length >= 2 ? termsOf(query) : [];
+      if (!terms.length) {
+        panel.hidden = true;
+        announce('');
+        return;
+      }
+
+      const hits = records
+        .map((record) => ({ record, score: scoreOf(record, terms) }))
+        .filter((hit) => hit.score > 0)
+        .sort((a, b) => b.score - a.score || a.record.order - b.record.order);
+      const articles = hits.filter((hit) => !hit.record.idea).slice(0, 3);
+      const ideas = hits.filter((hit) => hit.record.idea).slice(0, 6);
+
+      if (articles.length || ideas.length) {
+        renderGroup('finder-articles', 'Straipsniai', articles, terms);
+        renderGroup('finder-ideas', 'Idėjos', ideas, terms);
+        const count = articles.length + ideas.length;
+        announce(`${count} ${ltForm(count, ['rezultatas', 'rezultatai', 'rezultatų'])}`);
+      } else {
+        const empty = make('p', 'finder__empty');
+        const all = make('a', '', 'peržiūrėkite visus straipsnius');
+        all.href = '#straipsniai';
+        empty.append('Pagal „', make('b', '', query), '“ nieko neradome. Pabandykite kitą žodį arba ', all, '.');
+        panel.appendChild(empty);
+        announce('Nieko nerasta');
+      }
+      panel.hidden = false;
+    }
+
+    const panelLinks = () => Array.from(panel.querySelectorAll('a'));
+
+    input.addEventListener('input', search);
+    input.addEventListener('click', () => {
+      if (panel.childElementCount) panel.hidden = false;
+    });
+
+    // Phones: lift the field towards the top, so the results are not hidden under the keyboard
+    input.addEventListener('focus', () => {
+      if (!narrowQuery.matches) return;
+      window.setTimeout(() => {
+        if (document.activeElement !== input || finder.getBoundingClientRect().top < viewportH * 0.3) return;
+        window.scrollTo({ top: pageTop(finder) - 88, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }, 250);
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown' && panelLinks().length) {
+        event.preventDefault();
+        panel.hidden = false;
+        panelLinks()[0].focus();
+      } else if (event.key === 'Escape' && (input.value || !panel.hidden)) {
+        event.preventDefault();
+        if (!panel.hidden) {
+          panel.hidden = true;
+        } else {
+          input.value = '';
+          search();
+        }
+      }
+    });
+
+    panel.addEventListener('keydown', (event) => {
+      const links = panelLinks();
+      const index = links.indexOf(document.activeElement);
+      if (index === -1) return;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (links[index + 1]) links[index + 1].focus();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        (links[index - 1] || input).focus();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        panel.hidden = true;
+        input.focus();
+      }
+    });
+
+    // Enter moves into the results instead of leaving the page unexpectedly
+    finder.addEventListener('submit', (event) => {
+      event.preventDefault();
+      search();
+      const first = panelLinks()[0];
+      if (first) first.focus();
+    });
+
+    // Leaving for an article closes the list; a quick read keeps it for afterwards
+    panel.addEventListener('click', (event) => {
+      const link = event.target.closest('a');
+      if (link && !link.dataset.peek) panel.hidden = true;
+    });
+
+    clearButton.addEventListener('click', () => {
+      input.value = '';
+      search();
+      input.focus();
+    });
+
+    finder.querySelectorAll('[data-finder-suggest]').forEach((button) => {
+      button.addEventListener('click', () => {
+        input.value = button.dataset.finderSuggest;
+        search();
+        input.focus();
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!panel.hidden && !finder.contains(event.target) && !event.target.closest('dialog')) panel.hidden = true;
+    });
+    finder.addEventListener('focusout', (event) => {
+      const next = event.relatedTarget;
+      if (next && !finder.contains(next) && !next.closest('dialog')) panel.hidden = true;
+    });
+
+    // "/" jumps to the search field, as on many sites
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) return;
+      if (event.target.closest('input, textarea, select, [contenteditable]') || (peek && peek.open)) return;
+      event.preventDefault();
+      input.focus();
+    });
+  }
+
+  // ---------------------------------------------
   // Boot
   // ---------------------------------------------
   function restoreHashPosition() {
     const hash = window.location.hash;
     if (hash.length < 2) return;
-    let target = null;
+    let id = '';
     try {
-      target = document.getElementById(decodeURIComponent(hash.slice(1)));
+      id = decodeURIComponent(hash.slice(1));
     } catch (error) {
-      target = null;
+      return;
     }
-    if (target) target.scrollIntoView({ block: 'start' });
+    const target = document.getElementById(id);
+    if (target) {
+      target.scrollIntoView({ block: 'start' });
+      return;
+    }
+    // Sections of a page that moved to its own address keep working from old links
+    const { moved, movedIds } = document.body.dataset;
+    if (moved && movedIds && movedIds.split(' ').includes(id)) window.location.replace(moved + hash);
   }
 
-  const initialTopic = new URLSearchParams(window.location.search).get('tema');
-  if (initialTopic && initialTopic in FILTER_NAMES) applyFilter(initialTopic, false);
+  const initialParams = new URLSearchParams(window.location.search);
+  if (initialParams.has('tema')) applyFilter(initialParams.get('tema'), false);
+  if (initialParams.has('metas')) applyMoment(initialParams.get('metas'), false);
 
   measureAll();
   restoreHashPosition();

@@ -33,7 +33,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,72,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=20260928-1" />
-  <link rel="stylesheet" href="/blog/blog.css?v=20260927-4" />
+  <link rel="stylesheet" href="/blog/blog.css?v=20261021-3" />
   <script>document.documentElement.classList.add('js');</script>
   <script type="application/ld+json">
     {
@@ -470,12 +470,39 @@
               </button>
               <span class="share__status" aria-live="polite" data-share-status></span>
             </div>
+            <nav class="next-reads" aria-labelledby="next-reads-title">
+              <h2 class="next-reads__title" id="next-reads-title">Skaitykite toliau</h2>
+              <ul class="next-reads__list">
+                <li>
+                  <a class="contents__item" href="/blog/moliugadienis/" style="--thumb:var(--peach-2)">
+                    <span class="contents__thumb" aria-hidden="true"><img src="/blog/assets/moliugadienis/moliugai.webp" width="772" height="691" alt="" loading="lazy" decoding="async" /></span>
+                    <span class="contents__text">
+                      <span class="contents__kicker contents__kicker--week">Savaitės tema</span>
+                      <b>Moliūgadienis: vienas moliūgas&nbsp;– visa diena kartu</b>
+                      <small>Žaidimai · 6 idėjos · 6 min</small>
+                    </span>
+                    <svg class="contents__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </a>
+                </li>
+                <li>
+                  <a class="contents__item" href="/blog/kalba-auga-kartu-su-jumis/" style="--thumb:var(--sky-2)">
+                    <span class="contents__thumb" aria-hidden="true"><img src="/blog/assets/stickers/bird.webp" width="480" height="354" alt="" loading="lazy" decoding="async" /></span>
+                    <span class="contents__text">
+                      <span class="contents__kicker">Interaktyvus gidas</span>
+                      <b>Kalba auga kartu su jumis</b>
+                      <small>Garsai, „+1“, pokalbiai · 7 min</small>
+                    </span>
+                    <svg class="contents__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </a>
+                </li>
+              </ul>
+            </nav>
             <div class="a-end__actions">
               <a class="btn btn--ghost" href="/blog/#straipsniai">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 <span>Visi straipsniai</span>
               </a>
-              <a class="btn btn--primary magnetic" href="/blog/#garsai">
+              <a class="btn btn--primary magnetic" href="/blog/kalba-auga-kartu-su-jumis/#garsai">
                 <span>Išbandykite interaktyviai</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </a>
@@ -556,7 +583,7 @@
   </footer>
 
   <script src="/script.js?v=20260927-1"></script>
-  <script src="/blog/blog.js?v=20260927-4"></script>
+  <script src="/blog/blog.js?v=20261021-2"></script>
   <script src="/insights.js?v=20261010-1"></script>
 </body>
 </html>
