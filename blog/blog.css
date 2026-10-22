@@ -95,6 +95,67 @@
   color: var(--primary);
 }
 
+/* Blog link: bold, with a tiny blue tit perched on the T that sings when hovered.
+   Sizes are in em so the same rules fit the nav and the larger mobile menu;
+   the art is absolutely placed, so the link keeps its plain-text size. */
+.nav__link--strong,
+.mobile-menu__link--strong {
+  font-weight: 700;
+}
+
+.nav__link--strong {
+  color: var(--text);
+}
+
+.nav__perch {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.nav__bird {
+  position: absolute;
+  left: -0.6em;
+  bottom: 0.76em; /* feet on the T's crossbar */
+  z-index: -1; /* behind the letters, so the crossbar covers its toes */
+  width: auto;
+  height: 1.2em;
+  max-width: none;
+  transform-origin: 62% 100%;
+}
+
+.nav__notes {
+  position: absolute;
+  left: 0.72em;
+  bottom: 1.54em;
+  width: auto;
+  height: 0.62em;
+  max-width: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-0.15em, 0.2em) scale(0.6) rotate(-8deg);
+  transition: opacity 0.25s ease, transform 0.6s var(--ease-out);
+}
+
+.nav__link--strong:hover .nav__bird,
+.mobile-menu__link--strong:hover .nav__bird {
+  animation: nav-bird-hop 0.7s var(--ease-out);
+}
+
+.nav__link--strong:hover .nav__notes,
+.mobile-menu__link--strong:hover .nav__notes {
+  opacity: 1;
+  transform: translate(0.2em, -0.3em) scale(1) rotate(6deg);
+  transition-delay: 0.15s;
+}
+
+@keyframes nav-bird-hop {
+  0%, 100% { transform: none; }
+  30% { transform: translateY(-0.22em) rotate(-6deg); }
+  55% { transform: none; }
+  72% { transform: translateY(-0.07em) rotate(2deg); }
+}
+
 /* ---------- Shared editorial typography ---------- */
 .serif-accent {
   position: relative;

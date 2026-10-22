@@ -1283,7 +1283,7 @@ img {
 
 }
 
-/* Seven nav links stop fitting beside the logo below ~980px: switch to the menu button */
+/* The nav links stop fitting beside the logo below ~980px: switch to the menu button */
 @media (max-width: 980px) {
   .nav__links {
     display: none;
