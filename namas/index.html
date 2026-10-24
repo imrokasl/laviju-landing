@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="lt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Jaukus namas · Laviju</title>
+    <meta name="description" content="Jaukus namas: virtuvė, svetainė, vaikų ir tėvų kambariai, garažas ir kiemas keturiais metų laikais – ir idėjos, ką juose veikti kartu su vaiku." />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#F4F7FC" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,72,600&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/house.css" />
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+  </head>
+  <body>
+    <div class="house" id="namas" data-state="loading" data-card="closed">
+      <canvas
+        class="house__canvas"
+        id="scene"
+        role="img"
+        aria-label="Trimatis namas su kiemu: virtuvė, svetainė, vaikų ir tėvų kambariai, garažas su balkonu ant stogo, obelis su sūpynėmis, daržas, šiltnamis ir smėlio dėžė. Namas keičiasi su metų laikais ir paros metu."
+      ></canvas>
+
+      <header class="top">
+        <div class="top__lead">
+          <a class="brand" href="/" aria-label="Laviju pradinis puslapis">
+            <img class="brand__mark" src="assets/logo.svg" alt="" width="40" height="36" />
+            <span>Laviju</span>
+          </a>
+          <div class="hero">
+            <span class="pill pill--sky hero__pill">Slaptas kampelis</span>
+            <h1 class="hero__title">
+              <span class="hero__line"><span>Jaukus</span></span>
+              <span class="hero__line"
+                ><span
+                  ><em class="serif-accent"
+                    >namas<svg class="scribble" viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true">
+                      <path d="M4 16 C 60 6, 120 20, 180 10 S 270 8, 296 14" /></svg></em></span
+              ></span>
+            </h1>
+            <p class="hero__lede">Šeši namų ir kiemo kampeliai, keturi metų laikai – ir idėjos, ką juose veikti kartu su vaiku.</p>
+          </div>
+          <!-- The area looked into stands where the title stood, with the way back -->
+          <div class="room" id="room" hidden>
+            <button class="room__back" id="back" type="button"></button>
+            <h2 class="room__title"></h2>
+            <p class="room__lede"></p>
+          </div>
+        </div>
+
+        <div class="top__tools">
+          <button class="progress" id="progress" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="places">
+            <svg class="progress__ring" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+              <circle class="progress__track" cx="12" cy="12" r="9" />
+              <circle class="progress__arc" cx="12" cy="12" r="9" />
+            </svg>
+            <span class="progress__text"><span class="progress__word">Atrasta </span>0 iš 39</span>
+            <svg class="icon progress__caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 9.5l6 6 6-6" />
+            </svg>
+          </button>
+          <button class="icon-btn" id="home" type="button"></button>
+          <button class="icon-btn" id="sound" type="button" aria-pressed="false"></button>
+        </div>
+      </header>
+
+      <div class="places" id="places" hidden></div>
+
+      <!-- The year, the day and the sky are the visitor's to turn: none of them changes by itself -->
+      <div class="dock">
+        <p class="hint" id="hint"><i class="hint__dot" aria-hidden="true"></i><span class="hint__text"></span></p>
+        <div class="dock__row">
+          <div class="seasons" id="seasons" role="radiogroup"></div>
+          <div class="sky">
+            <div class="hours" id="hours" role="radiogroup"></div>
+            <div class="weather" id="weather" role="group"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- After the header and the dock, so the keyboard meets the title and tools first -->
+      <div class="spots" id="spots"></div>
+
+      <aside class="card" id="card" hidden></aside>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+      <div class="loader" id="loader" aria-hidden="true">
+        <img class="loader__mark" src="assets/logo.svg" alt="" width="64" height="57" />
+        <p class="loader__text">Namuose jau kvepia arbata…</p>
+        <span class="loader__bar"><i></i></span>
+      </div>
+
+      <section class="fallback" id="fallback" hidden></section>
+    </div>
+
+    <noscript>
+      <p class="noscript">Jaukiam namui reikia „JavaScript“. Įjunkite jį naršyklėje arba grįžkite į <a href="/">laviju.lt</a>.</p>
+    </noscript>
+
+    <script>
+      // Modules do not load from disk: say how to open the page instead of loading for ever
+      if (/^(file|data):$/.test(location.protocol)) {
+        document.querySelector('.loader__text').textContent =
+          'Namas atsidaro tik per serverį: paleiskite „node landing-web/server.js“ ir atverkite http://localhost:3000/namas/';
+        document.querySelector('.loader__bar').hidden = true;
+      }
+    </script>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,2274 @@
+/* =============================================
+   JAUKUS NAMAS — the page around the picture
+   Tokens mirror landing-web/public/styles.css and
+   blog/blog.css, so the house sits inside the same
+   blue-led pastel system as laviju.lt and the app.
+   ============================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f4f7fc;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+.house {
+  --primary: #3565b0;
+  --primary-light: #5f87bf;
+  --primary-dark: #244b87;
+  --primary-ultralight: #e8f0fa;
+  --teal: #5ba3b5;
+  --bg: #f4f7fc;
+  --text: #1e2a3a;
+  --text-secondary: #52657e;
+  --text-tertiary: #66758a;
+  --border: #d8e2ef;
+  --border-light: #edf1f8;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --gutter: clamp(14px, 2.4vw, 32px);
+
+  --tone-1: #eef5fd;
+  --tone-2: #dcebfa;
+  --tone-3: #b9d5f2;
+  --tone-ink: #2a5599;
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-tone='sky'] {
+  --tone-1: #eef5fd;
+  --tone-2: #dcebfa;
+  --tone-3: #b9d5f2;
+  --tone-ink: #2a5599;
+}
+[data-tone='peach'] {
+  --tone-1: #fff4ef;
+  --tone-2: #fce3d8;
+  --tone-3: #f6c4ae;
+  --tone-ink: #9c4a2f;
+}
+[data-tone='butter'] {
+  --tone-1: #fff9e8;
+  --tone-2: #fdf0c8;
+  --tone-3: #f7dd8c;
+  --tone-ink: #775800;
+}
+[data-tone='sage'] {
+  --tone-1: #f0f8f2;
+  --tone-2: #dcefe2;
+  --tone-3: #b5dcc2;
+  --tone-ink: #2f6b47;
+}
+[data-tone='lilac'] {
+  --tone-1: #f5f3fd;
+  --tone-2: #e6e0fa;
+  --tone-3: #c9bef2;
+  --tone-ink: #54479e;
+}
+/* The house has six areas to the creek's five pastel families: the
+   children's room gets a sixth */
+[data-tone='rose'] {
+  --tone-1: #fdf2f5;
+  --tone-2: #f9e0e7;
+  --tone-3: #f0bccb;
+  --tone-ink: #983658;
+}
+
+.house [hidden] {
+  display: none !important;
+}
+
+/* Buttons take the type and colour of the page. The selector is kept this
+   weak on purpose: with `.house` in front of it, it outranks the size, weight
+   and colour that every kind of button below sets for itself. */
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.house :focus-visible {
+  outline: 3px solid rgba(53, 101, 176, 0.6);
+  outline-offset: 3px;
+}
+
+.house :focus:not(:focus-visible) {
+  outline: none;
+}
+
+.icon {
+  display: block;
+  flex: none;
+}
+
+.sticker {
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---------- The picture ---------- */
+.house__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  cursor: grab;
+  outline-offset: -4px;
+}
+
+.house__canvas.is-grabbing {
+  cursor: grabbing;
+}
+
+/* ---------- Shared pieces ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: var(--tone-2);
+  color: var(--tone-ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.pill--sky {
+  background: #dcebfa;
+  color: #2a5599;
+}
+
+.serif-accent {
+  position: relative;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--primary);
+}
+
+.scribble {
+  position: absolute;
+  left: 2%;
+  bottom: -0.02em;
+  width: 94%;
+  height: 0.2em;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.scribble path {
+  fill: none;
+  stroke: #f4a98c;
+  stroke-width: 5px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 420;
+  stroke-dashoffset: 420;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--text);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34), inset 0 1px rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-out), border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.icon-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s ease;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+  color: #fff !important;
+  box-shadow: 0 4px 20px rgba(74, 127, 212, 0.25);
+}
+
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(74, 127, 212, 0.35);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+}
+
+/* ---------- Top of the page ---------- */
+.top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: calc(var(--gutter) + env(safe-area-inset-top, 0px)) calc(var(--gutter) + env(safe-area-inset-right, 0px)) 0
+    calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.top__lead {
+  position: relative;
+  min-width: 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.brand__mark {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+/* By night the sky behind the page is dark, and what is written straight on
+   it turns light. The scene says when: the light takes its time to go. */
+.brand,
+.hero__title,
+.hero__lede,
+.serif-accent {
+  transition: color 0.8s ease, text-shadow 0.8s ease;
+}
+
+.house[data-sky='dark'] .brand,
+.house[data-sky='dark'] .hero__title {
+  color: #f6f8ff;
+  text-shadow: 0 1px 18px rgba(14, 22, 58, 0.45);
+}
+
+.house[data-sky='dark'] .hero__lede {
+  color: rgba(236, 241, 255, 0.9);
+  text-shadow: 0 1px 12px rgba(14, 22, 58, 0.5);
+}
+
+.house[data-sky='dark'] .serif-accent {
+  color: #bcd3ff;
+}
+
+.hero {
+  max-width: 34rem;
+  margin-top: clamp(12px, 3.4vh, 40px);
+  transition: opacity 0.5s ease, transform 0.6s var(--ease-out);
+}
+
+/* While a card is open the picture and the idea have the page to themselves */
+.house[data-card='open'] .hero {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.hero__title {
+  margin: 14px 0 16px;
+  font-size: clamp(40px, 5.6vw, 80px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.hero__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.hero__line > span {
+  display: inline-block;
+  transform: translateY(110%);
+}
+
+.hero__lede {
+  max-width: 17.5em;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: clamp(15px, 1.3vw, 18px);
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+.hero__pill,
+.hero__lede {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.house[data-state='ready'] .hero__line > span {
+  animation: rise 0.9s var(--ease-out) 0.35s forwards;
+}
+
+.house[data-state='ready'] .hero__line:nth-child(2) > span {
+  animation-delay: 0.47s;
+}
+
+.house[data-state='ready'] .hero__pill {
+  animation: fade-up 0.7s var(--ease-out) 0.25s forwards;
+}
+
+.house[data-state='ready'] .hero__lede {
+  animation: fade-up 0.8s var(--ease-out) 0.75s forwards;
+}
+
+.house[data-state='ready'] .scribble path {
+  animation: draw-line 1.1s var(--ease-out) 1.2s forwards;
+}
+
+.top__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.6s ease 0.5s, transform 0.7s var(--ease-out) 0.5s;
+}
+
+.house[data-state='ready'] .top__tools {
+  opacity: 1;
+  transform: none;
+}
+
+.progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 14px 0 8px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34), inset 0 1px rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-out), border-color 0.2s ease;
+}
+
+.progress:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.progress__ring {
+  transform: rotate(-90deg);
+}
+
+.progress__track,
+.progress__arc {
+  fill: none;
+  stroke-width: 3.2;
+}
+
+.progress__track {
+  stroke: var(--border-light);
+}
+
+.progress__arc {
+  stroke: var(--primary);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s var(--ease-out), stroke 0.4s ease;
+}
+
+.progress.is-done .progress__arc {
+  stroke: #4ba775;
+}
+
+.progress__caret {
+  color: var(--text-tertiary);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.progress[aria-expanded='true'] .progress__caret {
+  transform: rotate(180deg);
+}
+
+/* ---------- The list of places ---------- */
+.places {
+  position: absolute;
+  z-index: 35;
+  top: calc(var(--gutter) + env(safe-area-inset-top, 0px) + 54px);
+  right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  width: min(320px, calc(100% - 2 * var(--gutter)));
+  max-height: calc(100% - var(--gutter) * 2 - 70px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 10px 10px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 30px 60px -24px rgba(30, 42, 58, 0.4), 0 2px 8px rgba(30, 42, 58, 0.06);
+  animation: pop-in 0.35s var(--ease-out);
+  transform-origin: 85% 0;
+}
+
+.places__title {
+  margin: 0 10px 8px;
+  color: var(--text-tertiary);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.places__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.places__row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.places__row:hover,
+.places__row:focus-visible {
+  background: var(--primary-ultralight);
+}
+
+.places__art {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 46% 54% 58% 42% / 48% 42% 58% 52%;
+  background: var(--tone-2);
+}
+
+.places__art .sticker {
+  width: 34px;
+  height: 34px;
+}
+
+.places__name {
+  align-self: end;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.places__count {
+  grid-column: 2;
+  align-self: start;
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+}
+
+.places__check {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #dcefe2;
+  color: #2f6b47;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.3s ease, transform 0.4s var(--ease-spring);
+}
+
+.places__row.is-visited .places__check {
+  opacity: 1;
+  transform: none;
+}
+
+/* Each area heads its own spots, which sit a step in under it */
+.places__group + .places__group {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-light);
+}
+
+.places__row--area .places__name {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.places__row--area .places__count {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.places__spots {
+  margin: 0;
+  padding: 0 0 0 22px;
+  list-style: none;
+}
+
+.places__spots .places__row {
+  grid-template-columns: 34px 1fr auto;
+  padding: 4px 10px;
+}
+
+.places__spots .places__art {
+  width: 34px;
+  height: 34px;
+}
+
+.places__spots .places__art .sticker {
+  width: 26px;
+  height: 26px;
+}
+
+.places__spots .places__name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.places__spots .places__count {
+  font-size: 12px;
+}
+
+/* ---------- Markers ---------- */
+.spots {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.spot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+  transition: opacity 0.35s ease;
+}
+
+.spot.is-off,
+.spots:not(.is-ready) .spot {
+  visibility: hidden;
+}
+
+.spot.is-dim {
+  opacity: 0.62;
+}
+
+.spot__stem {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 1px;
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.96);
+  transform-origin: 0 50%;
+  filter: drop-shadow(0 1px 1px rgba(30, 42, 58, 0.25));
+}
+
+.spot__dot {
+  position: absolute;
+  left: -4.5px;
+  top: -4.5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--tone-3), 0 3px 8px rgba(30, 42, 58, 0.35);
+}
+
+.spot__btn {
+  position: absolute;
+  left: -27px;
+  top: -27px;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: scale 0.35s var(--ease-spring);
+}
+
+.spot__btn::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+}
+
+.spots.is-ready .spot__btn {
+  animation: spot-in 0.7s var(--ease-spring) calc(var(--i) * 70ms) backwards;
+}
+
+.spot__btn:hover,
+.spot__btn:focus-visible {
+  scale: 1.1;
+}
+
+.spot.is-active .spot__btn {
+  scale: 1.16;
+}
+
+.spot__badge {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #fff 0 55%, var(--tone-1) 100%);
+  box-shadow: 0 0 0 2.5px #fff, 0 0 0 4.5px var(--tone-3), 0 14px 26px -8px rgba(30, 42, 58, 0.42), 0 3px 8px rgba(30, 42, 58, 0.14);
+  animation: spot-bob 4.6s ease-in-out calc(var(--i) * -0.63s) infinite;
+  transition: box-shadow 0.3s ease, scale 0.42s var(--ease-spring), opacity 0.2s ease;
+}
+
+/* A new season: the badge ducks out while its picture is changed */
+.spot.is-turning .spot__badge {
+  scale: 0.35;
+  opacity: 0;
+  transition: box-shadow 0.3s ease, scale 0.18s ease-in calc(var(--i) * 26ms), opacity 0.16s ease calc(var(--i) * 26ms);
+}
+
+.spot.is-active .spot__badge {
+  box-shadow: 0 0 0 2.5px #fff, 0 0 0 5px var(--primary), 0 16px 30px -8px rgba(30, 42, 58, 0.5), 0 3px 8px rgba(30, 42, 58, 0.14);
+}
+
+.spot__badge .sticker {
+  width: 40px;
+  height: 40px;
+}
+
+.spot__ring {
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--tone-3);
+  border-radius: 50%;
+  opacity: 0;
+  animation: spot-pulse 2.8s var(--ease-out) calc(var(--i) * -0.41s) infinite;
+}
+
+.spot.is-visited .spot__ring,
+.spot.is-active .spot__ring {
+  animation: none;
+}
+
+.spot__check {
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #4ba775;
+  color: #fff;
+  transform: scale(0);
+  transition: transform 0.45s var(--ease-spring) 0.2s;
+}
+
+.spot__check .icon {
+  stroke-width: 3.4;
+}
+
+.spot.is-visited .spot__check {
+  transform: scale(1);
+}
+
+.spot__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  padding: 7px 13px;
+  border-radius: 9999px;
+  background: var(--text);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -8px rgba(30, 42, 58, 0.45);
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.3s var(--ease-out);
+}
+
+.spot__btn:hover .spot__label,
+.spot__btn:focus-visible .spot__label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.spot.is-active .spot__label {
+  opacity: 0;
+}
+
+/* Only one set of markers is out at a time: the six areas, or the spots of
+   the area looked into. A set fades as it goes and comes. */
+.spots__set {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.spots__set.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s ease 0.15s, visibility 0s;
+}
+
+/* The markers come in one after another each time their set comes out */
+.spots.is-ready .spots__set:not(.is-shown) .spot__btn {
+  animation: none;
+}
+
+/* An area's marker is a little larger and always wears its name, with how
+   many of its spots have been found */
+.spot--area .spot__btn {
+  left: -32px;
+  top: -32px;
+  width: 64px;
+  height: 64px;
+}
+
+.spot--area .spot__badge .sticker {
+  width: 48px;
+  height: 48px;
+}
+
+.spot--area .spot__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  bottom: calc(100% + 9px);
+  padding: 6px 7px 6px 13px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--text);
+  box-shadow: 0 0 0 1.5px var(--tone-3), 0 12px 26px -10px rgba(30, 42, 58, 0.42);
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.spot--area .spot__btn:hover .spot__label,
+.spot--area .spot__btn:focus-visible .spot__label {
+  background: var(--text);
+  color: #fff;
+}
+
+.spot__count {
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: var(--tone-2);
+  color: var(--tone-ink);
+  font-size: 11.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.spot--area.is-visited .spot__count {
+  background: #dcefe2;
+  color: #2f6b47;
+}
+
+.spot--area .spot__check {
+  right: -2px;
+  top: -2px;
+}
+
+/* ---------- The room looked into ---------- */
+/* Stands where the title stood, in its place on the page */
+.house[data-area] .hero {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+/* On a frosted sheet of its own: a room fills the frame behind it, busy and
+   bright by day and dark by night, where the title had sky */
+.room {
+  position: absolute;
+  left: 0;
+  top: calc(44px + clamp(12px, 3.4vh, 40px));
+  max-width: 24rem;
+  padding: 14px 22px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.84);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 26px 54px -28px rgba(30, 42, 58, 0.45), 0 2px 8px rgba(30, 42, 58, 0.05);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.5s var(--ease-out);
+}
+
+.house[data-area] .room {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition: opacity 0.5s ease 0.15s, transform 0.6s var(--ease-out) 0.15s;
+}
+
+/* While a card is open the picture and the idea have the page to themselves */
+.house[data-area][data-card='open'] .room {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.room__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin-left: -6px;
+  padding: 0 14px 0 9px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34);
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-out), border-color 0.2s ease;
+}
+
+.room__back:hover {
+  border-color: var(--primary);
+  transform: translateX(-2px);
+}
+
+.room__title {
+  margin: 16px 0 10px;
+  color: var(--text);
+  font-size: clamp(30px, 3vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.room__title::after {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 9999px;
+  background: var(--tone-3);
+}
+
+.room__lede {
+  max-width: 21em;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: clamp(14.5px, 1.15vw, 16.5px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ---------- The idea card ---------- */
+.card {
+  position: absolute;
+  z-index: 30;
+  top: calc(var(--gutter) + env(safe-area-inset-top, 0px));
+  right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--gutter) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  width: min(408px, 38vw);
+  pointer-events: none;
+}
+
+.card__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 40px 80px -30px rgba(30, 42, 58, 0.5), 0 4px 14px rgba(30, 42, 58, 0.08);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translate3d(36px, 0, 0) scale(0.985);
+  transition: transform 0.55s var(--ease-out), opacity 0.3s ease;
+}
+
+.card.is-open .card__panel {
+  opacity: 1;
+  transform: none;
+}
+
+.card__grab {
+  display: none;
+}
+
+.card__close {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+}
+
+.card__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  /* The last lines fade out, so it is plain there is more to scroll to */
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 26px), transparent);
+  transition: opacity 0.15s ease;
+}
+
+.card__scroll.is-swapping {
+  opacity: 0;
+}
+
+.card__banner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 156px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--tone-1), var(--tone-2));
+  isolation: isolate;
+  transition: background 0.5s ease;
+}
+
+.card__blob {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  aspect-ratio: 1;
+  margin: -75px 0 0 -75px;
+  border-radius: 46% 54% 58% 42% / 48% 42% 58% 52%;
+  background: var(--tone-3);
+  opacity: 0.75;
+  animation: blob-drift 14s ease-in-out infinite alternate;
+}
+
+.card__sticker {
+  width: 124px;
+  height: 124px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 14px rgba(30, 42, 58, 0.2));
+  transform: rotate(-4deg);
+  animation: sticker-float 5.5s ease-in-out infinite;
+  transition: opacity 0.25s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.card__sticker.is-loading {
+  opacity: 0;
+  transition: none;
+}
+
+.card__body {
+  padding: 18px 22px 30px;
+}
+
+.card__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.card__count {
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.card__title:focus-visible {
+  outline: none;
+}
+
+.card__title {
+  margin: 0 0 12px;
+  font-size: clamp(24px, 2.1vw, 29px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 9999px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chip--area {
+  padding-left: 10px;
+  background: #f1f3f8;
+  background: color-mix(in srgb, var(--ink) 11%, #fff);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.card__why {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.card__label {
+  margin: 0 0 10px;
+  color: var(--text-tertiary);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.steps {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.steps__item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.steps__n {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 46% 54% 58% 42% / 48% 42% 58% 52%;
+  background: var(--tone-2);
+  color: var(--tone-ink);
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.steps__text {
+  padding-top: 2px;
+}
+
+.ask {
+  margin-bottom: 20px;
+}
+
+.ask__bubble {
+  display: inline-block;
+  margin: 0;
+  padding: 12px 17px;
+  border-radius: 18px 18px 18px 6px;
+  background: #ffe9a8;
+  color: var(--text);
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  box-shadow: 0 14px 30px -14px rgba(119, 88, 0, 0.45), inset 0 0 0 1px rgba(30, 42, 58, 0.04);
+  transform: rotate(-0.8deg);
+}
+
+.needs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.needs__item {
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* A word of care under an idea: the stove, the tools, the candle */
+.card__note {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin: 18px 0 0;
+  padding: 11px 13px;
+  border-radius: 16px;
+  background: #fff4ef;
+  color: #9c4a2f;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.card__note .icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* An idea only one season brings wears that season's chip */
+.chip--season {
+  padding: 2px 11px 2px 4px;
+  background: var(--tone-2);
+  color: var(--tone-ink);
+  font-weight: 700;
+}
+
+.chip--season .sticker {
+  width: 24px;
+  height: 24px;
+}
+
+.card__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--border-light);
+  background: #fff;
+}
+
+.card__again {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-inline: 14px;
+  white-space: nowrap;
+}
+
+.card__pips {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.card__pips i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition: background-color 0.3s ease, transform 0.3s var(--ease-spring);
+}
+
+.card__pips i.is-on {
+  background: #fff;
+  transform: scale(1.25);
+}
+
+.card__nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.card__nav .icon-btn {
+  box-shadow: none;
+}
+
+.card__where {
+  min-width: 46px;
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ---------- The dock: the hint, and under it the seasons, the hours and the weather ---------- */
+/* It lies across the foot of the page and lets the picture be taken hold of
+   through it: only what stands on it answers to the pointer */
+.dock {
+  --edge: clamp(12px, 3vh, 28px);
+  position: absolute;
+  z-index: 22;
+  left: calc(var(--gutter) + env(safe-area-inset-left, 0px));
+  right: calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--edge) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease 0.7s, transform 0.7s var(--ease-out) 0.7s, right 0.55s var(--ease-out);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.house[data-state='ready'] .dock {
+  opacity: 1;
+  transform: none;
+}
+
+/* Side by side while there is room; in a narrower window the sky goes above the year */
+.dock__row {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 10px;
+  max-width: 100%;
+}
+
+/* The hours and the weather keep together: both are asked of the sky */
+.sky {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.seasons,
+.hours,
+.weather {
+  pointer-events: auto;
+}
+
+/* ---------- The seasons and the hours ---------- */
+/* Each a choice of one out of four */
+.seasons,
+.hours {
+  --at: 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 4px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34), inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+/* The patch of its own colour under the one that is on */
+.seasons__thumb,
+.hours__thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 4);
+  border-radius: 9999px;
+  background: var(--tone-2);
+  box-shadow: inset 0 0 0 1px var(--tone-3);
+  transform: translateX(calc(var(--at) * 100%));
+  transition: transform 0.55s var(--ease-spring), background-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.seasons__opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 16px 0 11px;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.seasons__opt:hover {
+  color: var(--text);
+}
+
+.seasons__opt[aria-checked='true'] {
+  color: var(--tone-ink);
+}
+
+.seasons__opt .sticker {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  transition: transform 0.45s var(--ease-spring);
+}
+
+.seasons__opt:hover .sticker {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.seasons__opt[aria-checked='true'] .sticker {
+  transform: scale(1.16) rotate(-7deg);
+}
+
+/* ---------- The weather ---------- */
+/* Switches, not a choice of one: each stays on until it is switched off */
+.weather {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid rgba(213, 225, 240, 0.9);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 26px -12px rgba(39, 62, 94, 0.34), inset 0 1px rgba(255, 255, 255, 0.9);
+}
+
+/* An hour and a kind of weather are drawn alike: a line picture and a name */
+.hours__opt,
+.weather__opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 15px 0 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.hours__opt:hover,
+.weather__opt:hover {
+  color: var(--text);
+}
+
+.weather__opt[aria-pressed='true'] {
+  background: var(--tone-2);
+  box-shadow: inset 0 0 0 1px var(--tone-3);
+  color: var(--tone-ink);
+}
+
+/* The hour that is on has the sliding patch under it */
+.hours__opt[aria-checked='true'] {
+  color: var(--tone-ink);
+}
+
+.hours__opt .icon,
+.weather__opt .icon {
+  transition: transform 0.45s var(--ease-spring);
+}
+
+.hours__opt:hover .icon,
+.weather__opt:hover .icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.hours__opt[aria-checked='true'] .icon,
+.weather__opt[aria-pressed='true'] .icon {
+  transform: scale(1.14) rotate(-7deg);
+}
+
+/* ---------- Hint and toast ---------- */
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  margin: 0;
+  padding: 10px 16px 10px 14px;
+  border-radius: 9999px;
+  background: var(--text);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 12px 28px -8px rgba(30, 42, 58, 0.45);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.7s var(--ease-out);
+}
+
+.hint.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+.hint__dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f7dd8c;
+  animation: hint-blink 1.8s ease-in-out infinite;
+}
+
+.toast {
+  position: absolute;
+  z-index: 40;
+  left: 50%;
+  top: calc(var(--gutter) + env(safe-area-inset-top, 0px) + 60px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: min(440px, calc(100% - 2 * var(--gutter)));
+  padding: 10px 18px 10px 12px;
+  border: 1px solid rgba(213, 225, 240, 0.86);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 24px 50px -20px rgba(39, 62, 94, 0.45), inset 0 1px rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translate(-50%, -16px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.6s var(--ease-spring);
+}
+
+.toast.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.toast .sticker {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+
+/* Centred over what is left of the picture while a card is open */
+@media (min-width: 761px) {
+  .house[data-card='open'] .toast {
+    left: calc(50% - min(408px, 38vw) / 2 - 12px);
+  }
+
+  .house[data-card='open'] .dock {
+    right: calc(var(--gutter) + env(safe-area-inset-right, 0px) + min(408px, 38vw) + 24px);
+  }
+
+  /* The card takes the corner, so the tools and their list step aside with it */
+  .house[data-card='open'] .top__tools {
+    transform: translateX(calc(-1 * (min(408px, 38vw) + 14px)));
+    transition: transform 0.55s var(--ease-out);
+  }
+
+  .house[data-card='open'] .places {
+    right: calc(var(--gutter) + env(safe-area-inset-right, 0px) + min(408px, 38vw) + 14px);
+  }
+}
+
+/* A narrow window leaves little beside the card and little inside it: the pill
+   drops its word, the card its place counter */
+@media (min-width: 761px) and (max-width: 940px) {
+  .house[data-card='open'] .progress__word,
+  .card__where {
+    display: none;
+  }
+
+  .card__again {
+    padding-inline: 10px;
+  }
+}
+
+/* Three rows of switches do not fit side by side in every window. The
+   weather is the first to go by its pictures alone, and with that the three
+   share a row down to a small laptop's width; in a narrower window the hours
+   and the weather go above the seasons. Whatever goes by its picture keeps
+   its name for a screen reader and as a tooltip. */
+@media (min-width: 761px) and (max-width: 1369px) {
+  .weather__opt {
+    padding: 0;
+  }
+
+  .weather__name {
+    display: none;
+  }
+}
+
+/* Beside an open card there is less room still, and the switches are not what
+   the visitor is looking at: they keep to one row for as long as they can.
+   The weather goes by its pictures alone, then the hours do too, then the
+   seasons go by their names alone. */
+@media (min-width: 761px) and (max-width: 1859px) {
+  .house[data-card='open'] .weather__opt {
+    padding: 0;
+  }
+
+  .house[data-card='open'] .weather__name {
+    display: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1615px) {
+  .house[data-card='open'] .hours__opt {
+    padding: 0;
+  }
+
+  .house[data-card='open'] .hours__name {
+    display: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1359px) {
+  .house[data-card='open'] .seasons__opt {
+    padding: 0 13px;
+  }
+
+  .house[data-card='open'] .seasons__opt .sticker {
+    display: none;
+  }
+}
+
+/* ---------- Loader ---------- */
+.loader {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: radial-gradient(120% 90% at 50% 0%, #e6f0fb 0%, #f4f7fc 55%, #fbf1e6 100%);
+  transition: opacity 0.9s ease, visibility 0s linear 0.9s;
+}
+
+.house[data-state='ready'] .loader,
+.house[data-state='unsupported'] .loader,
+.house[data-state='error'] .loader {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader__mark {
+  width: 64px;
+  height: auto;
+  animation: sticker-float 3.2s ease-in-out infinite;
+}
+
+.loader__text {
+  max-width: 30em;
+  margin: 0;
+  padding: 0 var(--gutter);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.loader__bar {
+  width: 148px;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--border);
+}
+
+.loader__bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--teal));
+  transform: scaleX(0.04);
+  transform-origin: 0 50%;
+  transition: transform 0.5s var(--ease-out);
+}
+
+/* ---------- Without WebGL: the ideas as plain pages ---------- */
+.house[data-state='unsupported'],
+.house[data-state='error'] {
+  overflow-y: auto;
+  background: radial-gradient(120% 60% at 50% 0%, #e6f0fb 0%, #f4f7fc 60%);
+}
+
+.house[data-state='unsupported'] .house__canvas,
+.house[data-state='error'] .house__canvas,
+.house[data-state='unsupported'] .spots,
+.house[data-state='error'] .spots,
+.house[data-state='unsupported'] .top__tools,
+.house[data-state='error'] .top__tools,
+.house[data-state='unsupported'] .hero,
+.house[data-state='error'] .hero,
+.house[data-state='unsupported'] .dock,
+.house[data-state='error'] .dock {
+  display: none;
+}
+
+.house[data-state='unsupported'] .top,
+.house[data-state='error'] .top {
+  position: relative;
+}
+
+.fallback {
+  width: min(1040px, 100% - 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 28px 0 64px;
+}
+
+.fallback__title {
+  margin: 14px 0 12px;
+  font-size: clamp(36px, 6vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.fallback__lede {
+  max-width: 38em;
+  margin: 0 0 22px;
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.fallback__jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.fallback__jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px 0 10px;
+  border: 1px solid var(--tone-3);
+  border-radius: 9999px;
+  background: var(--tone-2);
+  color: var(--tone-ink) !important;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fallback__jump .sticker {
+  width: 28px;
+  height: 28px;
+}
+
+.fallback__season {
+  margin-bottom: 56px;
+  scroll-margin-top: 16px;
+}
+
+.fallback__year {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 26px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--tone-3);
+  font-size: clamp(28px, 4.4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.fallback__year .places__art {
+  width: 60px;
+  height: 60px;
+}
+
+.fallback__year .places__art .sticker {
+  width: 46px;
+  height: 46px;
+}
+
+.fallback__place {
+  margin-bottom: 36px;
+}
+
+.fallback__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 14px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.fallback__head .places__art {
+  width: 48px;
+  height: 48px;
+}
+
+.fallback__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.fallback__idea {
+  padding: 20px 20px 22px;
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(30, 42, 58, 0.05), 0 26px 44px -30px rgba(30, 42, 58, 0.4);
+}
+
+.fallback__idea .card__title {
+  font-size: 21px;
+}
+
+.fallback__idea .steps {
+  margin-bottom: 16px;
+}
+
+.noscript {
+  position: fixed;
+  inset: auto 16px 16px;
+  z-index: 60;
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: #1e2a3a;
+  color: #fff;
+  font: 600 15px/1.5 'Inter', system-ui, sans-serif;
+  text-align: center;
+}
+
+.noscript a {
+  color: #b9d5f2;
+}
+
+/* ---------- Phones ---------- */
+/* Up to 760.98 and not 760: on a scaled display a window can be a fraction of
+   a pixel wide, and one of 760 and a half has to be one or the other too */
+@media (max-width: 760.98px) {
+  .top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 8px;
+  }
+
+  .top__lead {
+    display: contents;
+  }
+
+  .hero {
+    grid-area: 2 / 1 / 3 / -1;
+  }
+
+  /* Six names round a small house: each wears only its name, and smaller */
+  .spot--area .spot__label {
+    bottom: calc(100% + 6px);
+    padding: 4px 10px;
+    font-size: 11.5px;
+  }
+
+  .spot--area .spot__count {
+    display: none;
+  }
+
+  /* The room shares the title's cell, one over the other */
+  .room {
+    position: static;
+    grid-area: 2 / 1 / 3 / -1;
+    align-self: start;
+    max-width: none;
+    margin-top: 10px;
+    padding: 10px 16px 14px;
+    border-radius: 22px;
+  }
+
+  .room__title {
+    margin: 10px 0 6px;
+    font-size: clamp(28px, 8.4vw, 36px);
+  }
+
+  .room__title::after {
+    width: 44px;
+    height: 5px;
+    margin-top: 8px;
+  }
+
+  .room__lede {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .top__tools {
+    grid-area: 1 / 2;
+  }
+
+  .brand {
+    grid-area: 1 / 1;
+    justify-self: start;
+    font-size: 20px;
+  }
+
+  .brand__mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hero {
+    margin-top: 8px;
+  }
+
+  .hero__title {
+    margin: 10px 0 10px;
+    font-size: clamp(36px, 11vw, 52px);
+  }
+
+  .hero__lede {
+    max-width: 21em;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .top__tools {
+    gap: 8px;
+  }
+
+  .progress {
+    padding: 0 12px 0 7px;
+    font-size: 13.5px;
+  }
+
+  .progress__word {
+    display: none;
+  }
+
+  .progress__caret {
+    display: none;
+  }
+
+  .card {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    align-items: flex-end;
+  }
+
+  .card__panel {
+    max-height: min(68vh, 600px);
+    max-height: min(68dvh, 600px);
+    border-width: 1px 0 0;
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -24px 60px -24px rgba(30, 42, 58, 0.45);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transform: translate3d(0, 104%, 0);
+    transition: transform 0.6s var(--ease-out), opacity 0.2s ease;
+  }
+
+  .card__panel.is-pulled {
+    transition: none;
+  }
+
+  .card__grab {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: block;
+    height: 26px;
+    touch-action: none;
+  }
+
+  .card__grab::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 9px;
+    width: 40px;
+    height: 5px;
+    margin-left: -20px;
+    border-radius: 9999px;
+    background: rgba(30, 42, 58, 0.2);
+  }
+
+  .card__banner {
+    height: 112px;
+    touch-action: none;
+  }
+
+  .card__blob {
+    width: 112px;
+    margin: -56px 0 0 -56px;
+  }
+
+  .card__sticker {
+    width: 92px;
+    height: 92px;
+  }
+
+  .card__body {
+    padding: 16px 18px 18px;
+  }
+
+  .card__where {
+    display: none;
+  }
+
+  /* The seasons become a bar across the foot of the page, each a sticker over
+     its name. Above them the sky has a lower bar of its own, the hours and
+     the weather side by side in it, each switch a picture over its name:
+     seven names do not fit in one line on a phone, and as many switches the
+     same width do. */
+  .dock {
+    --edge: 10px;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .dock__row {
+    flex-direction: column-reverse;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .seasons {
+    border-radius: 22px;
+  }
+
+  .sky {
+    gap: 6px;
+  }
+
+  .hours,
+  .weather {
+    border-radius: 20px;
+  }
+
+  .hours {
+    flex: 4 1 0;
+    min-width: 0;
+  }
+
+  .weather {
+    flex: 3 1 0;
+    min-width: 0;
+    gap: 0;
+  }
+
+  .hours__opt,
+  .weather__opt {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    height: 46px;
+    padding: 0 1px;
+    border-radius: 16px;
+    font-size: 10.5px;
+    letter-spacing: -0.015em;
+  }
+
+  /* Should a name ever not fit, it is cut short and does not spill over */
+  .hours__name,
+  .weather__name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hours__opt .icon,
+  .weather__opt .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .seasons__thumb {
+    border-radius: 18px;
+  }
+
+  .hours__thumb {
+    border-radius: 16px;
+  }
+
+  .seasons__opt {
+    flex-direction: column;
+    gap: 1px;
+    height: 54px;
+    padding: 0 2px;
+    border-radius: 18px;
+    font-size: 11.5px;
+  }
+
+  .seasons__opt .sticker {
+    width: 27px;
+    height: 27px;
+  }
+
+  .hint {
+    align-self: center;
+    padding: 9px 14px 9px 12px;
+    border-radius: 18px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    text-align: left;
+  }
+
+  .toast {
+    top: calc(var(--gutter) + env(safe-area-inset-top, 0px) + 56px);
+  }
+}
+
+@media (max-width: 374px) {
+  /* The mark alone carries the brand when the row gets tight */
+  .brand span {
+    display: none;
+  }
+}
+
+@media (max-width: 349px) {
+  /* ...and the names under the sky's switches go down a size to stay whole */
+  .hours__opt,
+  .weather__opt {
+    font-size: 9px;
+  }
+}
+
+/* A phone that is not a tall one has no room for the lede between the title
+   and the picture */
+@media (max-width: 760.98px) and (max-height: 699px) {
+  .hero__lede {
+    display: none;
+  }
+}
+
+/* ...and a small one lying on its side is too low for two bars, one over the
+   other: there they share a row, every switch as wide as the next */
+@media (max-width: 760.98px) and (max-height: 480px) {
+  .dock__row {
+    flex-direction: row;
+  }
+
+  .seasons {
+    flex: 4 1 0;
+    min-width: 0;
+  }
+
+  .sky {
+    flex: 7 1 0;
+    min-width: 0;
+  }
+}
+
+/* Short landscape screens: keep the title out of the house's way */
+@media (max-height: 520px) and (min-width: 761px) {
+  .hero__title {
+    font-size: clamp(32px, 9vh, 48px);
+  }
+
+  .hero__lede {
+    display: none;
+  }
+}
+
+/* ---------- Motion ---------- */
+@keyframes rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+}
+
+@keyframes spot-in {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+}
+
+@keyframes spot-bob {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes spot-pulse {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.94);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes sticker-float {
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@keyframes blob-drift {
+  to {
+    border-radius: 56% 44% 46% 54% / 44% 56% 44% 56%;
+    transform: rotate(18deg) scale(1.06);
+  }
+}
+
+@keyframes hint-blink {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .house *,
+  .house *::before,
+  .house *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  .spot__ring {
+    display: none;
+  }
+}

@@ -2110,8 +2110,8 @@ html:not(.js) .m-dock {
 }
 
 .m-rule__icon svg {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="635" height="565" viewBox="310 295 635 565" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Laviju logo</title>
+  <desc id="desc">Six rounded blue gradient segments arranged in a symmetrical abstract mark.</desc>
+  <defs>
+    <linearGradient id="upperBlue" x1="365" y1="325" x2="885" y2="480" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3779F6"/><stop offset="0.5" stop-color="#2F71F2"/><stop offset="1" stop-color="#3477F5"/></linearGradient>
+    <linearGradient id="middleBlue" x1="510" y1="470" x2="745" y2="585" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#87A7F6"/><stop offset="0.48" stop-color="#789BF1"/><stop offset="1" stop-color="#A8BCF9"/></linearGradient>
+    <linearGradient id="lowerBlue" x1="420" y1="590" x2="820" y2="825" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3476ED"/><stop offset="0.5" stop-color="#2D68E4"/><stop offset="1" stop-color="#2A62DF"/></linearGradient>
+    <linearGradient id="innerBlue" x1="525" y1="690" x2="735" y2="795" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#A6BCFA"/><stop offset="0.52" stop-color="#8FABF5"/><stop offset="1" stop-color="#A7BBF9"/></linearGradient>
+  </defs>
+  <g stroke-linecap="round" stroke-linejoin="round" shape-rendering="geometricPrecision">
+    <path d="M385 364 C443 370 498 399 528 438" stroke="url(#upperBlue)" stroke-width="67"/><path d="M728 438 C767 393 820 370 867 364" stroke="url(#upperBlue)" stroke-width="67"/><path d="M496 541 C570 498 682 494 759 541" stroke="url(#middleBlue)" stroke-width="67"/><path d="M380 787 C400 693 475 627 583 612" stroke="url(#lowerBlue)" stroke-width="70"/><path d="M672 612 C779 628 854 694 875 787" stroke="url(#lowerBlue)" stroke-width="70"/><path d="M502 756 C566 701 690 699 753 756" stroke="url(#innerBlue)" stroke-width="66"/>
+  </g>
+</svg>
