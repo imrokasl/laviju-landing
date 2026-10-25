@@ -3,7 +3,7 @@ import { stylized, yearGLSL } from '../core/materials.js';
 import { season } from '../core/season.js';
 import { popByThing } from '../core/models.js';
 import { clamp, smoothstep } from '../core/math.js';
-import { HOUSE, GARAGE, ROOMS, LAMPS, YARD } from './layout.js';
+import { HOUSE, GARAGE, BATH, ROOMS, LAMPS, YARD } from './layout.js';
 
 // The house, as it was modelled in Blender: walls and floors, every room's
 // furniture, the terrace and the yard's made things. Seen from outside it is
@@ -12,8 +12,8 @@ import { HOUSE, GARAGE, ROOMS, LAMPS, YARD } from './layout.js';
 // front of a doll's house swung open. Where a wall or a floor is cut, its
 // inside shows as a clean section the colour of paper.
 //
-// The cut is told per zone (outside, the house, the garage) and per wall or
-// roof slope (front, back, right, left, the two slopes, the partitions): each
+// The cut is told per zone (outside, the house, the garage, the bathroom) and
+// per wall or roof slope (front, back, right, left, the two slopes, the partitions): each
 // pair has a height above which nothing of it is drawn, and each zone a height
 // above which nothing at all is. Every height is kept twice, once for either
 // side of the line between the rooms, so a room opens alone and the one
@@ -24,16 +24,17 @@ import { HOUSE, GARAGE, ROOMS, LAMPS, YARD } from './layout.js';
 // nothing beyond its walls, and their windows glow from outside. Things that
 // belong to a season come up out of the floor or the ground when it comes.
 
-const ZONES = { outside: 0, house: 1, garage: 2 };
+const ZONES = { outside: 0, house: 1, garage: 2, bath: 3 };
+const N_ZONES = 4;
 const GROUP = { front: 1, back: 2, right: 3, left: 4, roofFront: 5, roofBack: 6, partition: 7 };
 // What a wall of an open room keeps standing, over the floor of the storey looked into
 const STUB = 0.5;
 // Nothing is drawn above this; a wall that is not cut stands well under it
 const TOP = 40;
-const SLOTS = 3 * 8;
+const SLOTS = N_ZONES * 8;
 // The line between the rooms on the left (the living room, the parents' room
 // and, past them, the garage) and the rooms on the right (the kitchen, the
-// children's room). Each side is cut on its own.
+// children's room and, past them, the bathroom). Each side is cut on its own.
 const SPLIT = HOUSE.split;
 
 const f0 = HOUSE.floor0;
@@ -46,6 +47,9 @@ const W = HOUSE.wall;
 // The lamps that light: one to each lamp of the rooms, then the yard's string
 // lights over the terrace, on the balcony and by the front door. Each lights
 // what lies in its box and nothing else, so no lamp shines through a wall.
+// What glows with a lamp is marked in the model with 1 + its index, and the
+// yard's string lights with YARD_GLOW (blender/rooms.py's L_YARD).
+const YARD_GLOW = 10;
 const pad = 0.03;
 const roomBox = (id) => {
   const b = ROOMS[id].box;
@@ -54,12 +58,12 @@ const roomBox = (id) => {
 const { terrace, porch } = YARD;
 const LIGHTS = [
   ...LAMPS.map((l, i) => ({ ...l, glow: i + 1, box: roomBox(l.room) })),
-  { at: [(terrace.x0 + terrace.x1) / 2, terrace.top + 2.0, (terrace.z0 + terrace.z1) / 2], color: '#FFD9A0', reach: 4.2, power: 0.75, glow: 9, box: [terrace.x0 - 0.6, terrace.top - 0.8, terrace.z0 - 0.1, terrace.x1 + 0.6, terrace.top + 2.8, terrace.z1 + 0.8] },
-  { at: [(GARAGE.x0 + GARAGE.x1) / 2, GARAGE.deck + 1.6, (GARAGE.z0 + GARAGE.z1) / 2], color: '#FFD9A0', reach: 4.6, power: 0.7, glow: 9, box: [GARAGE.x0 - 0.3, GARAGE.deck - 0.1, GARAGE.z0 - 0.3, GARAGE.x1 + 0.05, GARAGE.deck + 2.6, GARAGE.z1 + 0.3] },
-  { at: [YARD.frontDoor[0] + 0.8, f0 + 1.9, HOUSE.z1 + 0.3], color: '#FFD9A0', reach: 2.6, power: 0.7, glow: 9, box: [porch.x0 - 0.8, f0 - 1.2, HOUSE.z1 - 0.02, porch.x1 + 0.8, f0 + 2.6, porch.z1 + porch.step + 1.2] },
+  { at: [(terrace.x0 + terrace.x1) / 2, terrace.top + 2.0, (terrace.z0 + terrace.z1) / 2], color: '#FFD9A0', reach: 4.2, power: 0.75, glow: YARD_GLOW, box: [terrace.x0 - 0.6, terrace.top - 0.8, terrace.z0 - 0.1, terrace.x1 + 0.6, terrace.top + 2.8, terrace.z1 + 0.8] },
+  { at: [(GARAGE.x0 + GARAGE.x1) / 2, GARAGE.deck + 1.6, (GARAGE.z0 + GARAGE.z1) / 2], color: '#FFD9A0', reach: 4.6, power: 0.7, glow: YARD_GLOW, box: [GARAGE.x0 - 0.3, GARAGE.deck - 0.1, GARAGE.z0 - 0.3, GARAGE.x1 + 0.05, GARAGE.deck + 2.6, GARAGE.z1 + 0.3] },
+  { at: [YARD.frontDoor[0] + 0.8, f0 + 1.9, HOUSE.z1 + 0.3], color: '#FFD9A0', reach: 2.6, power: 0.7, glow: YARD_GLOW, box: [porch.x0 - 0.8, f0 - 1.2, HOUSE.z1 - 0.02, porch.x1 + 0.8, f0 + 2.6, porch.z1 + porch.step + 1.2] },
 ];
 const N_LIGHTS = LIGHTS.length;
-const N_GLOWS = 10;
+const N_GLOWS = YARD_GLOW + 1;
 
 // What each of the house's materials does over the common paint
 const KINDS = {
@@ -108,7 +112,7 @@ const SURFACE = {
 const CUT_PARS = /* glsl */ `
   attribute float aCut;
   uniform vec2 uCutY[ ${SLOTS} ];
-  uniform vec2 uClip[ 3 ];
+  uniform vec2 uClip[ ${N_ZONES} ];
   varying vec2 vCutY;
   varying float vZone;
   varying float vSheet;
@@ -150,19 +154,30 @@ const LIGHT_PARS = /* glsl */ `
   uniform vec3 uLightHi[ ${N_LIGHTS} ];
   uniform float uGlow[ ${N_GLOWS} ];
   uniform vec3 uCap;
-  // The inside of the house and of the garage, where no snow falls and no rain
-  // wets: the rooms under the roof's slopes, and the garage under its deck
+  // The inside of the house, the garage and the bathroom, where no snow falls
+  // and no rain wets: the rooms under the roof's slopes, the garage under its
+  // deck and the bathroom under its ceiling
   uniform vec4 uRooms; // x0, z0, x1, z1 inside the walls
   uniform vec4 uRoofIn; // the floor, the knee of the roof, the middle of its ridge, its slope
   uniform vec4 uGarageIn; // x0, z0, x1, z1
   uniform vec2 uGarageY; // its floor and its ceiling
+  uniform vec4 uBathIn; // x0, z0, x1, z1
+  uniform vec2 uBathY; // its floor and its ceiling
+  // How far the sun reaches into the bathroom past the house's shadow, 0..1
+  uniform float uSunIn;
+  // The bathroom, its walls taken \`grow\` further out
+  float houseBath( vec3 p, float grow ) {
+    vec4 b = uBathIn + vec4( - grow, - grow, grow, grow );
+    float bath = step( b.x, p.x ) * step( p.x, b.z ) * step( b.y, p.z ) * step( p.z, b.w );
+    return bath * step( uBathY.x - 0.15, p.y ) * step( p.y, uBathY.y );
+  }
   float houseInside( vec3 p ) {
     float rooms = step( uRooms.x, p.x ) * step( p.x, uRooms.z ) * step( uRooms.y, p.z ) * step( p.z, uRooms.w );
     float under = uRoofIn.y + ( ( uRooms.w - uRooms.y ) * 0.5 - abs( p.z - uRoofIn.z ) ) * uRoofIn.w + 0.06;
     rooms *= step( uRoofIn.x - 0.15, p.y ) * step( p.y, under );
     float garage = step( uGarageIn.x, p.x ) * step( p.x, uGarageIn.z ) * step( uGarageIn.y, p.z ) * step( p.z, uGarageIn.w );
     garage *= step( uGarageY.x - 0.15, p.y ) * step( p.y, uGarageY.y );
-    return max( rooms, garage );
+    return max( max( rooms, garage ), houseBath( p, 0.0 ) );
   }
   // The light of the first \`count\` lamps that reach this spot. \`grow\` widens
   // their boxes: glass stands in the middle of a wall, outside the room
@@ -200,6 +215,13 @@ const LIGHT_PARS = /* glsl */ `
   }
 `;
 
+// The bathroom is built on in the lee of the house, which shades it from noon
+// on. Opened, it takes the sun the way a room of the house does once its walls
+// are down: inside it the house's shadow lifts as its own walls sink.
+const SUN_SHADOW = /(\? )(getShadow\( directionalShadowMap\[ i \][^;]*?\))( : 1\.0;)/;
+const SUN_IN = SUN_SHADOW.test(THREE.ShaderChunk.lights_fragment_begin) ? THREE.ShaderChunk.lights_fragment_begin.replace(SUN_SHADOW, '$1mix( $2, 1.0, houseSun )$3') : null;
+if (!SUN_IN) console.warn('[house] bathroom sun patch skipped: three.js shader chunk changed');
+
 export function createHouse(model, textures) {
   const group = new THREE.Group();
   group.name = 'house';
@@ -207,7 +229,7 @@ export function createHouse(model, textures) {
   // ---------- The cut ----------
   // Each slot's height and each zone's, left of the line between the rooms and right of it
   const cutY = { value: Array.from({ length: SLOTS }, () => new THREE.Vector2(TOP, TOP)) };
-  const clip = { value: Array.from({ length: 3 }, () => new THREE.Vector2(TOP, TOP)) };
+  const clip = { value: Array.from({ length: N_ZONES }, () => new THREE.Vector2(TOP, TOP)) };
   // How open each slot is on each side (left, then right), 0..1, where it is
   // headed, and how high it stands open: the stub over the floor of the
   // storey looked into
@@ -219,12 +241,14 @@ export function createHouse(model, textures) {
   // looked into is lifted off, the underside of the ceiling with it (left
   // in, it would show from above as one big section over the whole room).
   // The garage's goes under the balcony's fascia too, which reaches down
-  // over the tops of its walls.
-  const lid = new Float32Array(3 * 2);
-  const lidTo = new Float32Array(3 * 2);
-  const lidAt = [TOP, ceil0 - 0.03, GARAGE.ceiling - 0.12];
+  // over the tops of its walls, and the bathroom's under its ceiling.
+  const lid = new Float32Array(N_ZONES * 2);
+  const lidTo = new Float32Array(N_ZONES * 2);
+  const lidAt = [TOP, ceil0 - 0.03, GARAGE.ceiling - 0.12, BATH.ceiling - 0.12];
+  // The sun in the bathroom comes with its lid
+  const sunIn = { value: 0 };
   // A slot's walls reach this high: it sinks from there, not from the sky
-  const tops = [YARD.terrace.top + 3, HOUSE.ridge + 0.5, GARAGE.deck + GARAGE.rail + 0.3];
+  const tops = [YARD.terrace.top + 3, HOUSE.ridge + 0.5, GARAGE.deck + GARAGE.rail + 0.3, BATH.high + BATH.roof + 0.5];
 
   // ---------- The lamps ----------
   const lightAt = { value: LIGHTS.map((l) => new THREE.Vector4(l.at[0], l.at[1], l.at[2], l.reach)) };
@@ -247,6 +271,9 @@ export function createHouse(model, textures) {
     uRoofIn: { value: new THREE.Vector4(f0, knee, HOUSE.ridgeZ, tan) },
     uGarageIn: { value: new THREE.Vector4(GARAGE.x0 + W, GARAGE.z0 + W, GARAGE.x1, GARAGE.z1 - W) },
     uGarageY: { value: new THREE.Vector2(GARAGE.floor, GARAGE.ceiling) },
+    uBathIn: { value: new THREE.Vector4(BATH.x0, BATH.z0 + W, BATH.x1 - W, BATH.z1 - W) },
+    uBathY: { value: new THREE.Vector2(f0, BATH.ceiling) },
+    uSunIn: sunIn,
     uGrain: { value: textures.woodgrain },
     uPlanks: { value: textures.planks },
     uRoof: { value: textures.roof },
@@ -285,6 +312,7 @@ export function createHouse(model, textures) {
       ${LIGHT_PARS}
       float houseIn;
       float houseCap;
+      float houseSun;
     `;
     const fragmentAlbedo = /* glsl */ `
       if ( vWorldPos.y > ( vWorldPos.x < ${SPLIT.toFixed(3)} ? vCutY.x : vCutY.y ) ) discard;
@@ -292,6 +320,8 @@ export function createHouse(model, textures) {
       // The ends left standing beside an open room show through it the same way.
       houseCap = ( ! gl_FrontFacing && min( vCutY.x, vCutY.y ) < ${(TOP - 1).toFixed(1)} && vSheet < 0.5 ) ? 1.0 : 0.0;
       houseIn = houseInside( vWorldPos );
+      // Its walls' inner faces stand on the bathroom's edge: a hair more takes them in
+      houseSun = uSunIn * houseBath( vWorldPos, 0.01 );
       ${textured ? SURFACE[kind] : ''}
       if ( houseCap > 0.5 ) diffuseColor.rgb = uCap;
       // Indoors no snow settles and no rain wets; out of doors, a sheltered
@@ -349,7 +379,9 @@ export function createHouse(model, textures) {
         // A section is lit as the top of the wall it cuts through
         .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n  if ( houseCap > 0.5 ) normal = normalize( viewMatrix[ 1 ].xyz );')
         // Indoors no mist hangs
-        .replace('gl_FragColor.rgb = creekMisted( gl_FragColor.rgb, uHazeColor, vWorldPos );', 'if ( houseIn < 0.5 ) gl_FragColor.rgb = creekMisted( gl_FragColor.rgb, uHazeColor, vWorldPos );');
+        .replace('gl_FragColor.rgb = creekMisted( gl_FragColor.rgb, uHazeColor, vWorldPos );', 'if ( houseIn < 0.5 ) gl_FragColor.rgb = creekMisted( gl_FragColor.rgb, uHazeColor, vWorldPos );')
+        // The open bathroom takes the sun
+        .replace('#include <lights_fragment_begin>', SUN_IN ?? '#include <lights_fragment_begin>');
     };
     if (!uPop) materials.set(key, m);
     return m;
@@ -454,7 +486,11 @@ export function createHouse(model, textures) {
     };
   }
   let state = STATES.closed;
-  const centres = { house: new THREE.Vector2((HOUSE.x0 + HOUSE.x1) / 2, (HOUSE.z0 + HOUSE.z1) / 2), garage: new THREE.Vector2((GARAGE.x0 + GARAGE.x1) / 2, (GARAGE.z0 + GARAGE.z1) / 2) };
+  const centres = {
+    house: new THREE.Vector2((HOUSE.x0 + HOUSE.x1) / 2, (HOUSE.z0 + HOUSE.z1) / 2),
+    garage: new THREE.Vector2((GARAGE.x0 + GARAGE.x1) / 2, (GARAGE.z0 + GARAGE.z1) / 2),
+    bath: new THREE.Vector2((BATH.x0 + BATH.x1) / 2, (BATH.z0 + BATH.z1) / 2),
+  };
   const _d = new THREE.Vector2();
 
   // `room` is one of ROOMS (see world/layout.js)
@@ -465,16 +501,18 @@ export function createHouse(model, textures) {
   function aim(camera) {
     openTo.fill(0);
     lidTo.fill(0);
-    for (const zoneName of ['house', 'garage']) {
+    for (const zoneName of ['house', 'garage', 'bath']) {
       const want = state[zoneName];
       if (!want) continue;
       const zone = ZONES[zoneName];
       _d.set(camera.position.x, camera.position.z).sub(centres[zoneName]).normalize();
+      // Where a wing meets the house it has no wall of its own: the house's
+      // gable stands there, and stays
       const facing = [
         [GROUP.front, _d.y > 0.3],
         [GROUP.back, _d.y < -0.3],
-        [GROUP.right, _d.x > 0.3 && zoneName === 'house'],
-        [GROUP.left, _d.x < -0.3],
+        [GROUP.right, _d.x > 0.3 && zoneName !== 'garage'],
+        [GROUP.left, _d.x < -0.3 && zoneName !== 'bath'],
         [GROUP.roofFront, _d.y > 0.05],
         [GROUP.roofBack, _d.y < -0.05],
       ];
@@ -518,7 +556,7 @@ export function createHouse(model, textures) {
       const top = tops[Math.floor(i / 16)];
       cutY.value[i >> 1].setComponent(i & 1, k > 0 ? top + (openAt[i] - top) * k : TOP);
     }
-    for (let i = 0; i < 3 * 2; i++) {
+    for (let i = 0; i < N_ZONES * 2; i++) {
       const to = lidTo[i];
       if (lid[i] !== to) {
         lid[i] = to > lid[i] ? Math.min(to, lid[i] + dt / 0.85) : Math.max(to, lid[i] - dt / 1.1);
@@ -528,6 +566,7 @@ export function createHouse(model, textures) {
       const k = smoothstep(0, 1, lid[i]);
       clip.value[z].setComponent(i & 1, k > 0 ? tops[z] + (lidAt[z] - tops[z]) * k : TOP);
     }
+    sunIn.value = smoothstep(0, 1, Math.max(lid[ZONES.bath * 2], lid[ZONES.bath * 2 + 1]));
 
     // The lamps: lit from dusk, and on a dark day of rain or mist
     const dark = clamp(season.dusk * 0.9 + season.night + season.dawn * 0.3, 0, 1);
@@ -542,8 +581,8 @@ export function createHouse(model, textures) {
     const indoors = 0.9 + 0.6 * season.night;
     for (let i = 0; i < N_LIGHTS; i++) {
       const l = LIGHTS[i];
-      const on = l.fire ? fire : l.glow === 9 ? dark : rooms;
-      lightColor.value[i].copy(hues[i]).multiplyScalar(on * (l.glow === 9 ? 0.9 : indoors));
+      const on = l.fire ? fire : l.glow === YARD_GLOW ? dark : rooms;
+      lightColor.value[i].copy(hues[i]).multiplyScalar(on * (l.glow === YARD_GLOW ? 0.9 : indoors));
       glow.value[l.glow] = on;
     }
   }

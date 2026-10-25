@@ -7327,3 +7327,65 @@ html:not(.js) .finder {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* =============================================
+   IN THE LAVIJU APP
+   blog.js marks /blog/<post>/?app with .in-app: the app shows the post
+   under its own header and back button, so the site's menu, breadcrumbs,
+   share buttons, app banner and footer step aside.
+   ============================================= */
+html.in-app .nav,
+html.in-app .mobile-menu,
+html.in-app .crumbs,
+html.in-app [data-share],
+html.in-app .b-cta,
+html.in-app .footer {
+  display: none !important;
+}
+
+/* The phone app opens no print dialog */
+html.in-app--phone [data-bingo-print] {
+  display: none !important;
+}
+
+/* The app's back and share buttons float over the top of the post (10px down,
+   44px tall). Every hero keeps room for the site's fixed menu; the post starts
+   just under the buttons instead. */
+html.in-app {
+  --app-bar: 0px;
+}
+
+/* blog.js: the buttons show (at the top, and while scrolling back up) */
+html.in-app--bar {
+  --app-bar: 64px;
+}
+
+html.in-app .blog main {
+  margin-top: calc(48px - var(--nav-h));
+}
+
+/* What stays on screen while reading sits where the menu was, below the buttons while they show */
+html.in-app .toc {
+  top: calc(24px + var(--app-bar));
+  transition: top 0.2s ease;
+}
+
+html.in-app .why__stage-wrap {
+  top: max(calc(24px + var(--app-bar)), calc(50vh - 270px));
+  transition: top 0.2s ease;
+}
+
+html.in-app .day.is-pinned .day__sticky {
+  padding-top: var(--app-bar);
+  transition: padding-top 0.2s ease;
+}
+
+@media (max-width: 1024px) {
+  html.in-app.js .toc {
+    top: calc(4px + var(--app-bar));
+  }
+
+  html.in-app .why__stage-wrap {
+    top: calc(-6px + var(--app-bar));
+  }
+}

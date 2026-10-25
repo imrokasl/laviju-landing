@@ -45,6 +45,76 @@ export default {
           needs: ['Nuotraukų albumas'],
         },
       ],
+      seasons: {
+        pavasaris: [
+          {
+            title: 'Verbų rytas',
+            sticker: 'pussy-willow',
+            area: 'bendruomene',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Verbų sekmadienio rytą, likus savaitei iki Velykų, pirmas atsikėlęs švelniai paplaka miegalius verba – sena linksma tradicija.',
+            steps: [
+              'Iš vakaro pamerkite į vandenį kelias gluosnio šakeles su pūkuotais kačiukais.',
+              'Rytą vaikas su verba ateina prie didžiosios lovos ir švelniai paplaka miegančius: „Ne aš mušu, verba muša…“',
+              'Paskui kartu paglostykite kačiukus ir suskaičiuokite, kiek dienų liko iki Velykų.',
+            ],
+            ask: 'Kodėl gluosnio pumpurai vadinami kačiukais?',
+            needs: ['Gluosnio šakelės', 'Vaza su vandeniu'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Lova – plaustas',
+            sticker: 'paper-boat',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Vasarą traukia ežeras, o didžioji lova gali virsti plaustu, kuriuo plaukiama per pasakų ežerą.',
+            steps: [
+              'Paskelbkite, kad lova – plaustas, o grindys aplink – ežeras.',
+              'Kartu „irkluokite“ pagalvėmis ir pasakokite, ką matote: vandens lelijas, žuvis, salą.',
+              'Iškelkite burę iš paklodės ir išsilaipinkite saloje – ant kilimo.',
+            ],
+            ask: 'Kas gyvena tavo ežere?',
+            needs: ['Pagalvės', 'Paklodė'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Pyragas ant nugaros',
+            sticker: 'apple',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Rudens vakarą ramina švelnus prisilietimas, o „kepdamas pyragą“ ant jūsų nugaros vaikas mokosi būti švelnus.',
+            steps: [
+              'Vaikas atsigula ant pilvo, o jūs ant jo nugaros „minkote tešlą“ – švelniai spaudote delnais.',
+              'Pirštais „dėliojate obuolius“, „barstote cinamoną“, o šiltais delnais „kepate“.',
+              'Pasikeiskite: dabar pyragą ant jūsų nugaros kepa vaikas.',
+            ],
+            ask: 'Kas buvo maloniausia, kai kepėme pyragą?',
+            needs: ['Nieko'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Sniego kalnas lovoje',
+            sticker: 'snowman',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Kai lauke per šalta, sniego kalną galima sukrauti iš antklodžių, o žaislai jame čiuožia ir kopia.',
+            steps: [
+              'Sukraukite ant lovos antklodes ir pagalves į didelį baltą kalną.',
+              'Vaikas su žaislais kopia į viršų ir „čiuožia“ nuo šlaito.',
+              'Sugalvokite, kas gyvena kalno viršūnėje, ir surenkite pas jį žygį.',
+            ],
+            ask: 'Kaip žaislas nusileis nuo kalno greičiausiai?',
+            needs: ['Antklodės ir pagalvės', 'Žaislai'],
+          },
+        ],
+      },
     },
     {
       id: 'spinta',
@@ -83,6 +153,40 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Pavasario spalvų diena',
+            sticker: 'dandelion',
+            area: 'kalba',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Pavasaris grąžina spalvas, o rinkdamasis vienos spalvos aprangą vaikas mokosi derinti ir pavadinti atspalvius.',
+            steps: [
+              'Kartu nuspręskite, kuri bus dienos spalva – žalia kaip žolė ar geltona kaip pienė.',
+              'Vaikas ieško spintoje tos spalvos drabužių sau ir jums.',
+              'Išėję į lauką paieškokite gamtoje tos pačios spalvos.',
+            ],
+            ask: 'Kiek atspalvių turi žalia spalva?',
+            needs: ['Įvairių spalvų drabužiai'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Lagaminas atostogoms',
+            sticker: 'wardrobe',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 20,
+            why: 'Krauname drabužius kelionei: vaikas skaičiuoja dienas ir galvoja, ko prireiks, jei lis ar kaitins saulė.',
+            steps: [
+              'Pasakykite, kiek dienų keliausite, ir padėkite lagaminą ant lovos.',
+              'Vaikas skaičiuoja: po marškinėlius ir porą kojinių kiekvienai dienai.',
+              'Kartu pagalvokite, ko reikės, jei lis, ir ko – jei bus karšta.',
+            ],
+            ask: 'Kiek porų kojinių reikės trims dienoms?',
+            needs: ['Lagaminas', 'Vasaros drabužiai'],
+          },
+        ],
         ruduo: [
           {
             title: 'Šiltų drabužių diena',
@@ -98,6 +202,23 @@ export default {
             ],
             ask: 'Kurie drabužiai tau jau per maži?',
             needs: ['Šiltų drabužių dėžė'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Iš kur atkeliavo šalikas?',
+            sticker: 'scarf',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Šiltas vilnonis šalikas kadaise buvo avies vilna – vaikas sužino, kaip iš jos atsiranda siūlai ir drabužiai.',
+            steps: [
+              'Išimkite iš spintos vilnonį šaliką, kepurę ir pirštines ir pačiupinėkite, kokie jie šilti.',
+              'Papasakokite, kad avis nukerpama, vilna susukama į siūlus, o iš jų numezgama.',
+              'Pabandykite kartu supinti kasytę iš trijų storų siūlų.',
+            ],
+            ask: 'Kodėl vilnonis šalikas šildo?',
+            needs: ['Vilnonis šalikas', 'Stori siūlai'],
           },
         ],
       },
@@ -138,6 +259,78 @@ export default {
           needs: ['Šukos', 'Segtukai', 'Gumytės'],
         },
       ],
+      seasons: {
+        pavasaris: [
+          {
+            title: 'Pavasario veidukai',
+            sticker: 'mirror',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Piešti ant veido smagu, o žiūrėdamas į veidrodį vaikas mato, kaip keičiasi, ir vis tiek atpažįsta save.',
+            steps: [
+              'Pasodinkite vaiką prieš veidrodį ir paklauskite, kuo jis nori būti: zuikiu, paukšteliu ar drugeliu.',
+              'Veido dažais nupieškite ūsus, nosytę ar sparnelius, o vaikas stebi veidrodyje.',
+              'Pasikeiskite: dabar vaikas piešia ant jūsų skruosto.',
+            ],
+            ask: 'Kas tu dabar – zuikis ar drugelis?',
+            needs: ['Veido dažai', 'Teptukas', 'Drėgnos servetėlės'],
+            note: 'Rinkitės vaikams skirtus veido dažus ir pirmiausia išbandykite juos ant rankos.',
+          },
+        ],
+        vasara: [
+          {
+            title: 'Pusė drugelio',
+            sticker: 'butterfly',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Drugelio sparnai vienodi iš abiejų pusių, o padėjęs veidrodėlį ant pusės piešinio vaikas pamato visą drugelį.',
+            steps: [
+              'Nupieškite pusę drugelio ir padėkite veidrodėlį statmenai ant vidurio linijos.',
+              'Vaikas pažiūri į veidrodėlį ir pamato visą drugelį.',
+              'Paskui vaikas pats piešia pusę lapo ar veido ir tikrina veidrodėliu, kas išėjo.',
+            ],
+            ask: 'Kas gamtoje dar vienoda iš abiejų pusių?',
+            needs: ['Mažas veidrodėlis', 'Popierius', 'Pieštukai'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Lapų karūna',
+            sticker: 'oak-leaf',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Iš rudens lapų sukurta karūna paverčia vaiką rudens karaliumi, o veidrodyje jis pasigrožės savo darbu.',
+            steps: [
+              'Iš kartono juostos padarykite lanką pagal vaiko galvos dydį.',
+              'Vaikas priklijuoja prie jo spalvingų lapų, gilių ir šermukšnių kekių.',
+              'Užsidėjęs karūną prie veidrodžio, vaikas paskelbia savo pirmąjį karališką įsakymą.',
+            ],
+            ask: 'Koks būtų tavo pirmasis įsakymas?',
+            needs: ['Kartono juosta', 'Lapai', 'Klijai'],
+            note: 'Šermukšnių uogos ir gilės – ne valgyti.',
+          },
+        ],
+        ziema: [
+          {
+            title: 'Šalčio skruostai',
+            sticker: 'mirror',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 5,
+            why: 'Grįžus iš šalčio skruostai raudoni – veidrodyje vaikas pastebi, kaip kūnas atsiliepia į šaltį ir šilumą.',
+            steps: [
+              'Prieš išeidami į lauką pažiūrėkite į veidrodį: kokios spalvos skruostai ir nosis?',
+              'Grįžę iš šalčio vėl atsistokite prie veidrodžio ir palyginkite.',
+              'Paaiškinkite, kad kūnas šildo sušalusį veidą, pripildydamas jį šilto kraujo.',
+            ],
+            ask: 'Kokios spalvos tavo nosis po pasivaikščiojimo?',
+            needs: ['Veidrodis', 'Pasivaikščiojimas šaltyje'],
+          },
+        ],
+      },
     },
     {
       id: 'fotelis',
@@ -175,6 +368,76 @@ export default {
           needs: ['Paveikslėlių knyga'],
         },
       ],
+      seasons: {
+        pavasaris: [
+          {
+            title: 'Aš – sėklytė',
+            sticker: 'seedling',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Ramus vaizduotės žaidimas padeda nusiraminti, o vaikas pajunta, kaip iš sėklos auga augalas.',
+            steps: [
+              'Vaikas susiriečia fotelyje ar šalia jo kaip maža sėklytė žemėje.',
+              'Tyliai pasakokite: lyja šiltas lietus, šviečia saulė, sėklytė leidžia šaknis.',
+              'Vaikas lėtai tiesiasi, kol išsiskleidžia kaip žiedas, o jūs jį „palaistote“ delnais.',
+            ],
+            ask: 'Kokia gėle tu išaugai?',
+            needs: ['Nieko'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Paparčio žiedas',
+            sticker: 'daisy',
+            area: 'kalba',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Joninių naktį, sakoma, pražysta stebuklingas paparčio žiedas – padavimas, kurį smagu pasekti ir pratęsti.',
+            steps: [
+              'Papasakokite padavimą: kas Joninių naktį randa paparčio žiedą, tas supranta paukščių kalbą ir randa lobius.',
+              'Paklauskite, ką vaikas darytų, jei žiedą rastų jis.',
+              'Vaikas nupiešia savo paparčio žiedą – tokio dar niekas nėra matęs.',
+            ],
+            ask: 'Ką darytum, jei suprastum paukščių kalbą?',
+            needs: ['Popierius', 'Pieštukai'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Rudens mįslės',
+            sticker: 'armchair',
+            area: 'kalba',
+            age: '3–6 m.',
+            minutes: 10,
+            why: 'Lietuviškos mįslės moko galvoti vaizdais, o ilgais rudens vakarais spėlioti jas ypač jauku.',
+            steps: [
+              'Užminkite paprastą mįslę: „Be rankų, be kojų, o vartus atidaro.“ (Vėjas.)',
+              'Duokite vaikui laiko pagalvoti ir, jei reikia, pasufleruokite.',
+              'Pasikeiskite: vaikas sugalvoja mįslę apie daiktą kambaryje, o jūs spėjate.',
+            ],
+            ask: 'Apie ką būtų tavo mįslė?',
+            needs: ['Nieko'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Virė, virė košę',
+            sticker: 'pot',
+            area: 'kalba',
+            age: '1–4 m.',
+            minutes: 5,
+            why: 'Senas lietuviškas pirštukų žaidimas sušildo rankas ir išmoko eilėraštuko, kurį mokėjo dar seneliai.',
+            steps: [
+              'Pasisodinkite vaiką ant kelių fotelyje ir ištieskite jo delniuką.',
+              'Pirštu „maišykite košę“ delne: „Virė, virė košę…“ – ir lenkite po pirštuką kiekvienam valgytojui.',
+              'Pabaigoje pirštais „nubėkite“ rankute aukštyn ir pakutenkite.',
+            ],
+            ask: 'Kuriam pirštukui košės neliko?',
+            needs: ['Nieko'],
+          },
+        ],
+      },
     },
     {
       id: 'spintele',
@@ -213,6 +476,40 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Tulpė užsimerkia',
+            sticker: 'daisy',
+            area: 'aplinka',
+            age: '2–6 m.',
+            minutes: 5,
+            why: 'Tulpės žiedas vakare susiglaudžia, o rytą vėl atsiskleidžia – vaikas atranda, kad augalai irgi turi savo dienos ritmą.',
+            steps: [
+              'Pamerkite vazelėje kelias tulpes ir pastatykite ant naktinės spintelės.',
+              'Vakare prieš miegą pažiūrėkite, ar žiedai susiglaudę.',
+              'Rytą patikrinkite dar kartą ir kartu nupieškite tulpę dieną ir naktį.',
+            ],
+            ask: 'Kodėl tulpė naktį užsimerkia?',
+            needs: ['Tulpės', 'Vazelė', 'Pieštukai'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Naktiniai svečiai',
+            sticker: 'butterfly',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 10,
+            why: 'Vasaros vakarą prie šviesaus lango susirenka naktiniai drugiai – vaikas sužino, kad gamta nemiega ir naktį.',
+            steps: [
+              'Sutemus uždekite spintelės lempą prie uždaryto lango.',
+              'Po kelių minučių pažiūrėkite, kas prisiglaudė prie stiklo iš lauko pusės.',
+              'Suskaičiuokite drugius ir pro stiklą apžiūrėkite jų sparnus bei ūselius.',
+            ],
+            ask: 'Kodėl drugiai skrenda prie šviesos?',
+            needs: ['Naktinė lempa', 'Uždarytas langas'],
+          },
+        ],
         ruduo: [
           {
             title: 'Žvakelė prisiminimams',
@@ -229,6 +526,23 @@ export default {
             ask: 'Ko norėtum paklausti savo prosenelio?',
             needs: ['Žvakė', 'Šeimos nuotraukos'],
             note: 'Degančią žvakę laikykite toliau nuo vaiko ir nepalikite be priežiūros.',
+          },
+        ],
+        ziema: [
+          {
+            title: 'Naujieji metai vidurdienį',
+            sticker: 'lamp',
+            area: 'bendruomene',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Vidurnaktis mažiesiems per vėlus, o Naujųjų metų sutikimą galima surengti ir vidurdienį – vaikas skaičiuoja atgal ir pajunta šventę.',
+            steps: [
+              'Pastatykite ant spintelės laikrodį ar žadintuvą ir susitarkite, kad šventė prasidės vidurdienį.',
+              'Paskutinę minutę kartu skaičiuokite atgal nuo dešimties iki vieno.',
+              'Suskambus žadintuvui apsikabinkite ir kiekvienas pasakykite po naujų metų norą.',
+            ],
+            ask: 'Ko palinkėtum sau naujiems metams?',
+            needs: ['Laikrodis ar žadintuvas'],
           },
         ],
       },
@@ -270,6 +584,23 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Dėmių detektyvas',
+            sticker: 'laundry',
+            area: 'kalba',
+            age: '3–6 m.',
+            minutes: 10,
+            why: 'Pavasarį drabužiai grįžta su purvo ir žolės dėmėmis, o atspėdamas, iš kur jos, vaikas prisimena dieną ir pasakoja.',
+            steps: [
+              'Išimkite iš krepšio kelis dėmėtus drabužius.',
+              'Vaikas apžiūri kiekvieną dėmę ir spėja: purvas, žolė, uogos ar dažai?',
+              'Kartu prisiminkite, kur dėmė atsirado, ir sudėkite drabužį skalbti.',
+            ],
+            ask: 'Kurios dėmės istorija įdomiausia?',
+            needs: ['Dėmėti drabužiai'],
+          },
+        ],
         vasara: [
           {
             title: 'Džiauname lauke',
@@ -285,6 +616,40 @@ export default {
             ],
             ask: 'Kodėl vėjuotą dieną skalbiniai išdžiūsta greičiau?',
             needs: ['Skalbiniai', 'Segtukai', 'Virvė'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Kišenių lobiai',
+            sticker: 'chestnuts',
+            area: 'aplinka',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Rudenį vaikų kišenėse slepiasi kaštonai, gilės ir akmenukai – prieš skalbiant juos verta surasti ir apžiūrėti.',
+            steps: [
+              'Prieš skalbdami kartu patikrinkite visas kišenes.',
+              'Rastus lobius išdėliokite ant stalo ir pavadinkite: kaštonas, gilė, kankorėžis.',
+              'Gražiausius sudėkite į rudens dėžutę, o kitus grąžinkite gamtai.',
+            ],
+            ask: 'Kur radai šį lobį?',
+            needs: ['Drabužiai su kišenėmis', 'Dėžutė'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Pirštinių džiovykla',
+            sticker: 'mitten',
+            area: 'aplinka',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Po sniego pirštinės ir kojinės šlapios – vaikas sužino, kad šiluma džiovina, ir išmoksta pasirūpinti savo drabužiais.',
+            steps: [
+              'Grįžę iš lauko suraskite visus šlapius drabužius: pirštines, kepures, kojines.',
+              'Vaikas vienas pirštines padeda prie radiatoriaus, o kitas – toliau nuo jo.',
+              'Po valandos patikrinkite, kurios išdžiūvo greičiau.',
+            ],
+            ask: 'Kodėl prie šilumos drabužiai džiūsta greičiau?',
+            needs: ['Šlapios pirštinės ir kojinės'],
           },
         ],
       },

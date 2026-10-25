@@ -110,7 +110,7 @@ export function createCard(el, { onClose, onStep, onNextIdea }) {
       art.classList.add('is-loading');
       art.src = src;
     }
-    placePill.textContent = `${place.areaName} · ${place.name}`;
+    placePill.textContent = `${place.areaName} · ${idea.place ?? place.name}`;
     ideaCount.textContent = place.ideas.length > 1 ? TEXT.ideaIn(ideaIndex + 1, place.ideas.length) : '';
     title.textContent = idea.title;
 

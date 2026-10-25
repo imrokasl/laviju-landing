@@ -52,12 +52,32 @@ export const GARAGE = {
 GARAGE.deck = HOUSE.floor1 - 0.04;
 GARAGE.ceiling = GARAGE.deck - GARAGE.slab;
 
+// The bathroom is a storey built on at the right gable, behind the kitchen's
+// side window, its floor the kitchen's and its door (from z to z) through the
+// gable into the kitchen. Its roof leans away from the house: its underside
+// is `high` over the gable and `low` over the far wall, and it reaches `eave`
+// past that wall and `verge` past the front and the back.
+export const BATH = {
+  x0: HOUSE.x1,
+  x1: 8.1,
+  z0: HOUSE.z0,
+  z1: -3.45,
+  door: [-5.35, -4.6],
+  high: HOUSE.floor0 + 3.15,
+  low: HOUSE.floor0 + 2.62,
+  eave: 0.3,
+  verge: 0.15,
+  roof: 0.2,
+};
+BATH.ceiling = HOUSE.floor0 + 2.45;
+
 // The stairs climb from the back of the living room towards the front,
 // against the line between the living room and the kitchen
 export const STAIRS = { x0: 0.08, x1: 0.9, zFoot: -5.3, zHead: -1.0, hole: -4.6 };
 
 // The rooms as the light and the camera know them: the space inside the walls.
-// `floor` is 0 downstairs, 1 upstairs; the garage is its own `zone`.
+// `floor` is 0 downstairs, 1 upstairs; the garage and the bathroom are each a
+// `zone` of their own.
 const inner = HOUSE.wall;
 export const ROOMS = {
   svetaine: { zone: 'house', floor: 0, box: [HOUSE.x0 + inner, HOUSE.floor0, HOUSE.z0 + inner, HOUSE.split, HOUSE.floor0 + HOUSE.storey, HOUSE.z1 - inner] },
@@ -65,6 +85,7 @@ export const ROOMS = {
   tevu: { zone: 'house', floor: 1, box: [HOUSE.x0 + inner, HOUSE.floor1, HOUSE.z0 + inner, HOUSE.split - HOUSE.partition / 2, HOUSE.ridge, HOUSE.z1 - inner] },
   vaiku: { zone: 'house', floor: 1, box: [HOUSE.split + HOUSE.partition / 2, HOUSE.floor1, HOUSE.z0 + inner, HOUSE.x1 - inner, HOUSE.ridge, HOUSE.z1 - inner] },
   garazas: { zone: 'garage', floor: 0, box: [GARAGE.x0 + inner, GARAGE.floor, GARAGE.z0 + inner, GARAGE.x1, GARAGE.ceiling, GARAGE.z1 - inner] },
+  vonia: { zone: 'bath', floor: 0, box: [BATH.x0, HOUSE.floor0, BATH.z0 + inner, BATH.x1 - inner, BATH.ceiling, BATH.z1 - inner] },
 };
 
 const f0 = HOUSE.floor0;
@@ -111,6 +132,16 @@ export const FURNITURE = {
   shelves: [-4.73, g0, -3.4, -Math.PI / 2],
   gardenTools: [-4.85, g0, -0.4, -Math.PI / 2],
   sledHook: [-8.7, g0 + 1.75, -4.4, Math.PI / 2],
+  // Bathroom: the bath along the back wall under the window, whose sill is
+  // its shelf, a towel rail over its end on the gable, the washing machine in
+  // the corner beyond it, the basin on the gable past the door, the toilet
+  // and the potty on the far wall
+  bathtub: [6.37, f0, -5.83, 0],
+  bathShelf: [6.6, f0 + 1.4, -6.24, 0],
+  towelRail: [5.52, f0 + 0.95, -5.85, Math.PI / 2],
+  washer: [7.52, f0, -5.92, 0],
+  basin: [5.52, f0, -4.12, Math.PI / 2],
+  toilet: [7.84, f0, -4.75, -Math.PI / 2],
   // The balcony on the garage roof, out through the parents' glass door
   balconyTable: [-5.75, gd, -0.95, 0],
   balconySofa: [-7.2, gd, -5.8, 0],
@@ -118,7 +149,8 @@ export const FURNITURE = {
 };
 
 // Lamps that light the rooms (no shadows): where each hangs or stands, the room
-// it may light, its colour and how far it reaches. The page holds at most eight.
+// it may light, its colour and how far it reaches. The page holds at most nine:
+// the model marks the yard's string lights as the tenth (see world/house.js).
 export const LAMPS = [
   { room: 'virtuve', at: [3.05, f0 + 2.05, -2.65], color: '#FFD9A0', reach: 4.2, power: 1.0 },
   { room: 'virtuve', at: [3.85, f0 + 1.45, -5.8], color: '#FFE2B8', reach: 3.0, power: 0.55 },
@@ -128,6 +160,7 @@ export const LAMPS = [
   { room: 'vaiku', at: [3.85, f1 + 1.2, -5.7], color: '#FFE6B0', reach: 4.2, power: 0.75 },
   { room: 'vaiku', at: [4.55, f1 + 0.8, -0.6], color: '#FFC98A', reach: 3.0, power: 0.7 },
   { room: 'garazas', at: [-6.75, g0 + 2.45, -2.6], color: '#FFF0D0', reach: 4.6, power: 0.8 },
+  { room: 'vonia', at: [6.65, f0 + 2.15, -4.95], color: '#FFEBC8', reach: 3.6, power: 0.8 },
 ];
 
 // The yard: deck, sandbox, beds, greenhouse, the apple tree with its swing,
@@ -139,12 +172,14 @@ export const YARD = {
   // The porch before the front door, a bench on it, and a step down to the path
   porch: { x0: 3.0, x1: 5.4, z0: 0.5, z1: 1.3, step: 0.4 },
   sandbox: { x: 2.95, z: 5.9, size: 2.1, yaw: 0.12 },
+  // The beds keep a path's width from the bathroom's wall, the compost
+  // beyond the last of them
   beds: [
-    { x: 7.6, z: -3.6, w: 1.1, l: 2.7 },
     { x: 9.25, z: -3.6, w: 1.1, l: 2.7 },
-    { x: 10.9, z: -3.6, w: 1.1, l: 2.7 },
+    { x: 10.75, z: -3.6, w: 1.1, l: 2.7 },
+    { x: 12.25, z: -3.6, w: 1.1, l: 2.7 },
   ],
-  compost: { x: 12.6, z: -1.9, yaw: -0.3 },
+  compost: { x: 13.5, z: -1.0, yaw: -0.3 },
   greenhouse: { x: 11.4, z: -7.9, w: 2.6, l: 3.4, yaw: 0.06 },
   doghouse: { x: -3.2, z: 6.9, yaw: 0.55 },
   apple: { x: 9.1, z: 3.6 },
@@ -234,7 +269,7 @@ export const CLEARINGS = [
   [YARD.compost.x, YARD.compost.z, 0.55, 0.55, YARD.compost.yaw],
 ];
 
-// The six areas and their spots: where each marker floats and how the camera
+// The seven areas and their spots: where each marker floats and how the camera
 // looks at it. An area's view frames the whole room (`target`, a turn from the
 // home azimuth or an `azimuth` of its own, a polar angle and a zoom as a share
 // of the overview); a spot is looked at from its area's angle, a little closer,
@@ -316,13 +351,28 @@ export const AREAS = {
       roges: [-8.6, g0 + 2.15, -4.4],
     },
   },
+  // From the front and the right, over the walls let down on those sides:
+  // the bath and the gable stand facing the camera
+  vonia: {
+    room: 'vonia',
+    marker: [6.75, BATH.high + 0.9, -4.9],
+    view: { target: [6.6, f0 + 0.8, -4.95], turn: 0.3, polar: 0.95, zoom: 0.26 },
+    spots: {
+      vonia: [6.5, f0 + 0.95, -5.6],
+      praustuvas: [5.62, f0 + 1.5, -4.12],
+      puodukas: [7.4, f0 + 0.7, -4.25],
+      skalbykle: [7.52, f0 + 1.15, -5.9],
+      rankslosciai: [5.62, f0 + 1.45, -5.85],
+      lentynele: [6.6, f0 + 1.62, -6.12],
+    },
+  },
   lauke: {
     room: null,
     marker: [7.6, 4.2, 2.6],
     view: { target: [5.6, 0.8, 2.4], turn: 0.1, polar: 0.92, zoom: 0.58 },
     spots: {
       terasa: [-1.75, f0 + 1.2, 1.75],
-      darzas: [9.25, 1.1, -3.6],
+      darzas: [10.75, 1.1, -3.6],
       siltnamis: [11.4, 2.7, -7.9],
       smelis: [2.95, 0.95, 5.9],
       obelis: [7.75, 2.1, 4.55],

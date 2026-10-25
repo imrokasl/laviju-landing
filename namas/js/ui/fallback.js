@@ -1,7 +1,7 @@
 import { h, icon, sticker } from './dom.js';
 import { AREAS, SEASONS, SKILLS, TEXT } from '../data/house.js';
 
-// When the picture cannot be drawn the ideas are still worth having: the six
+// When the picture cannot be drawn the ideas are still worth having: the seven
 // areas of the house, each spot with its ideas of all year and then those of
 // the seasons, the season at hand first.
 
@@ -72,7 +72,7 @@ export function renderFallback(container, opening) {
       h(
         'p',
         { class: 'fallback__lede' },
-        'Šis įrenginys trimačio namo neparodys, bet idėjos niekur nedingo. Štai virtuvė, svetainė, abu kambariai, garažas ir kiemas, o juose – ką veikti kartu su vaiku ištisus metus.'
+        'Šis įrenginys trimačio namo neparodys, bet idėjos niekur nedingo. Štai virtuvė, svetainė, abu kambariai, vonios kambarys, garažas ir kiemas, o juose – ką veikti kartu su vaiku ištisus metus.'
       ),
       h('nav', { class: 'fallback__jumps', 'aria-label': TEXT.spots }, jumps),
       ...sections

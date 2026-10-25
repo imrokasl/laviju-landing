@@ -14,7 +14,7 @@ import { createChrome } from './chrome.js';
 // stored or sent anywhere.
 //
 // It goes two levels deep. The whole house, shut, shows a marker for each of
-// its six areas; an area, once entered, has the camera fly in and its room
+// its seven areas; an area, once entered, has the camera fly in and its room
 // alone opened (the garden needs nothing opened), and its spots come out,
 // each opening a card of ideas.
 
@@ -246,7 +246,7 @@ export function createExperience(root, { season: opening, onCelebrate = () => {}
   }
 
   // The visitor stepped into an area: the camera flies to it, its room opens
-  // (see world/house.js), and its spots come out in place of the six areas.
+  // (see world/house.js), and its spots come out in place of the seven areas.
   function enterArea(id, from, { aim = true } = {}) {
     const area = areaOf(id);
     if (!area || !rig) return;

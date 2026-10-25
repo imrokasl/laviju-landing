@@ -88,13 +88,19 @@ body {
   --tone-3: #c9bef2;
   --tone-ink: #54479e;
 }
-/* The house has six areas to the creek's five pastel families: the
-   children's room gets a sixth */
+/* The house has seven areas to the creek's five pastel families: the
+   children's room gets a sixth, the bathroom a seventh */
 [data-tone='rose'] {
   --tone-1: #fdf2f5;
   --tone-2: #f9e0e7;
   --tone-3: #f0bccb;
   --tone-ink: #983658;
+}
+[data-tone='aqua'] {
+  --tone-1: #edf8f8;
+  --tone-2: #d6f0ef;
+  --tone-3: #a9dcd9;
+  --tone-ink: #1b5f5c;
 }
 
 .house [hidden] {
@@ -784,7 +790,7 @@ button {
   opacity: 0;
 }
 
-/* Only one set of markers is out at a time: the six areas, or the spots of
+/* Only one set of markers is out at a time: the seven areas, or the spots of
    the area looked into. A set fades as it goes and comes. */
 .spots__set {
   position: absolute;

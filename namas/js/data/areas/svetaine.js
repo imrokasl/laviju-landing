@@ -45,6 +45,40 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Velykės lizdas',
+            sticker: 'nest',
+            area: 'bendruomene',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Lietuvoje margučius vaikams atneša Velykė – senutė, kuri ieško gražiausiai susuktų lizdų.',
+            steps: [
+              'Papasakokite apie Velykę, kuri Velykų rytą lanko vaikus su margučių krepšiu.',
+              'Vaikas iš krepšelio, šieno ar skudurėlių susuka lizdą ir paslepia jį prie sofos.',
+              'Velykų rytą kartu patikrinkite lizdą – gal Velykė paliko margutį?',
+            ],
+            ask: 'Kur Velykė galėtų rasti tavo lizdą?',
+            needs: ['Krepšelis', 'Šienas ar skudurėliai', 'Margutis'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Perkūnija už lango',
+            sticker: 'cloud',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Vasaros perkūnija gali gąsdinti, bet skaičiuojant sekundes tarp žaibo ir griaustinio baimė virsta žaidimu.',
+            steps: [
+              'Kai prasideda perkūnija, įsitaisykite ant sofos po pledu ir stebėkite langą.',
+              'Pamatę žaibą, kartu skaičiuokite iki griaustinio: vienas, du, trys…',
+              'Jei skaičius vis didėja, perkūnija tolsta, o jei mažėja – artėja.',
+            ],
+            ask: 'Ar perkūnija artėja, ar tolsta?',
+            needs: ['Pledas', 'Vasaros perkūnija'],
+          },
+        ],
         ruduo: [
           {
             title: 'Šešėlių teatras',
@@ -60,6 +94,23 @@ export default {
             ],
             ask: 'Kas nutinka šešėliui, kai ranka priartėja prie šviesos?',
             needs: ['Žibintuvėlis', 'Šviesi siena'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Laiškas Kalėdų Seneliui',
+            sticker: 'candle',
+            area: 'kalba',
+            age: '3–6 m.',
+            minutes: 20,
+            why: 'Vaikas sako, o jūs užrašote – taip jis pamato, kad jo žodžiai virsta raidėmis.',
+            steps: [
+              'Įsitaisykite ant sofos su lapu ir paklauskite, ką vaikas norėtų papasakoti Kalėdų Seneliui.',
+              'Užrašykite jo žodžius tiksliai taip, kaip jis sako, o jis šalia nupiešia piešinį.',
+              'Perskaitykite laišką kartu ir prirašykite, ką gero vaikas šiais metais nuveikė.',
+            ],
+            ask: 'Ką gero šiais metais padarei kitiems?',
+            needs: ['Lapas', 'Pieštukai', 'Vokas'],
           },
         ],
       },
@@ -101,6 +152,40 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Kas parskrido?',
+            sticker: 'bird',
+            area: 'aplinka',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Pavasarį grįžta paukščiai, o knygoje su paveikslėliais vaikas mokosi juos atpažinti ir pavadinti.',
+            steps: [
+              'Susiraskite lentynoje knygą su paukščių paveikslėliais.',
+              'Pavartykite ją ir suraskite gandrą, varnėną ir kregždę – jie pavasarį grįžta iš šiltųjų kraštų.',
+              'Išėję į lauką pabandykite bent vieną iš jų pamatyti ar išgirsti.',
+            ],
+            ask: 'Kodėl paukščiai rudenį išskrenda, o pavasarį sugrįžta?',
+            needs: ['Knyga su paukščių paveikslėliais'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Vasaros dienoraštis',
+            sticker: 'books',
+            area: 'kalba',
+            age: '3–6 m.',
+            minutes: 20,
+            why: 'Bilietai, lapeliai ir piešiniai iš vasaros išvykų virsta knyga, kurią vaikas vartys dar ne kartą.',
+            steps: [
+              'Iš kelių lapų susekite knygelę, o vaikas nupiešia jai viršelį.',
+              'Po kiekvienos išvykos įklijuokite po atminimą: bilietą, lapelį ar nuotrauką.',
+              'Vaikas pasakoja, o jūs užrašote po sakinį prie kiekvieno puslapio.',
+            ],
+            ask: 'Kurį puslapį norėtum parodyti močiutei?',
+            needs: ['Popieriaus lapai', 'Klijai', 'Pieštukai'],
+          },
+        ],
         ruduo: [
           {
             title: 'Lapų knyga',
@@ -116,6 +201,23 @@ export default {
             ],
             ask: 'Nuo kurio medžio šis lapas?',
             needs: ['Lapai', 'Stora knyga', 'Popierius', 'Klijai'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Knygų eglutė',
+            sticker: 'christmas-tree',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 25,
+            why: 'Iš knygų sudėta eglutė – žaidimas su formomis ir dydžiais, o kartu proga prisiminti mėgstamas knygas.',
+            steps: [
+              'Kartu išimkite iš lentynos daug knygų ir surikiuokite jas nuo didžiausios iki mažiausios.',
+              'Dėliokite jas ratu ant grindų: didžiausios – apačioje, mažiausios – viršuje.',
+              'Viršūnėje padėkite vaiko nupieštą žvaigždę, o aplink – popierinių žaisliukų.',
+            ],
+            ask: 'Kurią iš šių knygų norėtum perskaityti per šventes?',
+            needs: ['Daug knygų', 'Popierius', 'Pieštukai'],
           },
         ],
       },
@@ -158,6 +260,41 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Pelenai daržui',
+            sticker: 'bucket',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Pavasarį židinys atiduoda daržui tai, kas liko po žiemos: pelenai maitina žemę.',
+            steps: [
+              'Iš visiškai atvėsusio židinio pelenus į kibirėlį susemiate jūs.',
+              'Vaikas su pirštinėmis pabarsto po saują pelenų aplink serbentų krūmus ar ant lysvės.',
+              'Paaiškinkite, kad lietus pelenus nuneš į žemę, o augalai juos „suvalgys“.',
+            ],
+            ask: 'Ką dar galima atiduoti daržui, kad augalai augtų?',
+            needs: ['Atvėsę pelenai', 'Kibirėlis', 'Pirštinės'],
+            note: 'Pelenai ilgai lieka karšti – semkite tik visiškai atvėsusius ir barstykite pavėjui.',
+          },
+        ],
+        vasara: [
+          {
+            title: 'Teatras prie židinio',
+            sticker: 'fireplace',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 25,
+            why: 'Vasarą židinys šaltas ir ramus, o prie jo galima įrengti sceną lėlių teatrui.',
+            steps: [
+              'Prieš židinį ištieskite virvutę su skarele – tai bus uždanga.',
+              'Vaikas išsirenka lėles ar minkštus žaislus ir sugalvoja, kas jiems nutiks.',
+              'Atitraukite uždangą ir suvaidinkite spektaklį visai šeimai.',
+            ],
+            ask: 'Kas buvo tavo spektaklio herojus?',
+            needs: ['Skarelė', 'Virvutė', 'Lėlės ar žaislai'],
+          },
+        ],
         ruduo: [
           {
             title: 'Vasaros arbata',
@@ -232,6 +369,57 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Margučių ridenimas',
+            sticker: 'easter-egg',
+            area: 'bendruomene',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Lietuviškas Velykų žaidimas: ridenant margučius lavėja taiklumas, o kiekvienas susidūrimas – maža šventė.',
+            steps: [
+              'Atremkite lentelę ar kartono gabalą į pagalvę – tai bus lovelis.',
+              'Išdėliokite ant kilimo kelis margučius, o vaikas paeiliui ridena savąjį lovelio.',
+              'Kieno margutis paliečia kitą, tas jį ir laimi.',
+            ],
+            ask: 'Kaip paleisti margutį, kad jis nuriedėtų toliausiai?',
+            needs: ['Margučiai', 'Lentelė ar kartonas', 'Pagalvė'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Piknikas ant kilimo',
+            sticker: 'basket',
+            area: 'bendruomene',
+            age: '2–6 m.',
+            minutes: 30,
+            why: 'Lietinga vasaros diena nesugadina iškylos – ją galima surengti ir svetainėje.',
+            steps: [
+              'Patieskite ant kilimo pledą ir kartu sukraukite krepšį: vaisių, sumuštinių, vandens.',
+              'Vaikas pakviečia į iškylą žaislus ir susodina juos ratu.',
+              'Pavaišinkite visus ir sugalvokite, ką veiktumėte, jei sėdėtumėte prie ežero.',
+            ],
+            ask: 'Kur norėtum surengti tikrą iškylą?',
+            needs: ['Pledas', 'Užkandžiai', 'Žaislai'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Rudens mankšta',
+            sticker: 'hedgehog',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Rudenį dažnai lyja, o vaizduodamas lapą, voverę ir ežį vaikas mankštinasi žaisdamas.',
+            steps: [
+              'Pasakokite trumpą istoriją apie rudens mišką, o vaikas ją vaidina judesiais.',
+              'Lapas sukasi ir lėtai krinta, voverė šokinėja, ežys susiriečia į kamuoliuką.',
+              'Pasikeiskite: dabar istoriją pasakoja vaikas, o judate jūs.',
+            ],
+            ask: 'Kokį rudens žvėrelį dar galėtume pavaizduoti?',
+            needs: ['Nieko'],
+          },
+        ],
         ziema: [
           {
             title: 'Popierinės gniūžtės',
@@ -289,6 +477,77 @@ export default {
           note: 'Virvę prižiūrite jūs, o po žaidimo ją paslėpkite.',
         },
       ],
+      seasons: {
+        pavasaris: [
+          {
+            title: 'Varlės šuolis',
+            sticker: 'stairs',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Pavasarį prie tvenkinių pabunda varlės, o šuoliai nuo žemiausios pakopos stiprina kojas ir drąsą.',
+            steps: [
+              'Papasakokite, kad pavasarį varlės pabunda ir šokinėja prie tvenkinių.',
+              'Vaikas atsitupia ant žemiausios pakopos ir šoka ant pagalvės kaip varlė – su garsu „kva!“',
+              'Pažymėkite, kur nusileido, ir pabandykite nušokti dar toliau.',
+            ],
+            ask: 'Kaip toli tu nušoki, kai esi varlė?',
+            needs: ['Pagalvė', 'Žemiausia laiptų pakopa'],
+            note: 'Šokinėti galima tik nuo žemiausios pakopos, o jūs stovite šalia.',
+          },
+        ],
+        vasara: [
+          {
+            title: 'Galerija ant laiptų',
+            sticker: 'palette',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Laiptinėje iškabinti vasaros piešiniai kasdien primena, ką vaikas sukūrė, o pasakoti apie juos – smagi kalbos pamoka.',
+            steps: [
+              'Kartu išsirinkite kelis vasaros piešinius – apie jūrą, sodą ar išvyką.',
+              'Lipnia juosta pritvirtinkite juos prie sienos palei laiptus, vaiko akių aukštyje.',
+              'Surenkite atidarymą: vaikas veda ekskursiją ir pasakoja apie kiekvieną piešinį.',
+            ],
+            ask: 'Apie kurį piešinį galėtum papasakoti ilgiausiai?',
+            needs: ['Vaiko piešiniai', 'Lipni juosta'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Kas krinta lėčiausiai?',
+            sticker: 'oak-leaf',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Rudenį lapai krinta sukdamiesi, o nuo laiptų vaikas gali patikrinti, kas leidžiasi lėčiausiai.',
+            steps: [
+              'Surinkite kelis daiktus: sausą lapą, plunksną, lygų ir suglamžytą popieriaus lapą.',
+              'Jūs stovite laiptų viršuje ir paleidžiate du daiktus vienu metu.',
+              'Vaikas apačioje stebi ir sako, kuris nusileido pirmas.',
+            ],
+            ask: 'Kodėl lygus lapas krinta lėčiau nei suglamžytas?',
+            needs: ['Sausi lapai', 'Plunksna', 'Popierius'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Popierinė grandinė',
+            sticker: 'stairs',
+            area: 'kuryba',
+            age: '3–6 m.',
+            minutes: 30,
+            why: 'Karpyti juosteles ir jas jungti – kantrybės darbas, o ilga grandinė papuoš turėklus visoms šventėms.',
+            steps: [
+              'Sukarpykite spalvoto popieriaus juostelių – vaikas karpo vaikiškomis žirklėmis.',
+              'Suklijuokite pirmą juostelę į žiedą, kitą perverkite pro jį ir taip pat suklijuokite.',
+              'Apvyniokite grandinę aplink turėklus ir suskaičiuokite, kiek pakopų ji pasiekė.',
+            ],
+            ask: 'Kiek žiedų reikės, kad grandinė pasiektų viršų?',
+            needs: ['Spalvotas popierius', 'Vaikiškos žirklės', 'Klijai'],
+          },
+        ],
+      },
     },
     {
       id: 'muzika',
@@ -327,6 +586,40 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Lašelių melodija',
+            sticker: 'drum',
+            area: 'kuryba',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Pavasarį nuo stogo laša tirpstantis sniegas, o atkartodamas lašų ritmą vaikas lavina klausą.',
+            steps: [
+              'Atverkite langą ir paklausykite, kaip nuo stogo laša varvekliai.',
+              'Vaikas tą ritmą paskambina vienu aukštu klavišu – lėtai ar greitai, kaip krinta lašai.',
+              'Grokite dviese: jūs – dideli lašai žemais klavišais, vaikas – smulkūs aukštais.',
+            ],
+            ask: 'Kaip skamba didelis lašas, o kaip – mažas?',
+            needs: ['Pianinas ar kitas instrumentas'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Koncertas svečiams',
+            sticker: 'drum',
+            area: 'bendruomene',
+            age: '3–6 m.',
+            minutes: 20,
+            why: 'Vasarą dažnai lankosi giminės, o trumpas koncertas jiems moko drąsos pasirodyti.',
+            steps: [
+              'Kartu išsirinkite vieną dainelę ar melodiją ir kelis kartus ją pakartokite.',
+              'Vaikas nupiešia bilietus ir išdalija juos svečiams.',
+              'Surenkite koncertą: pasisveikinimas, daina, nusilenkimas ir plojimai.',
+            ],
+            ask: 'Kaip jauteisi, kai visi plojo?',
+            needs: ['Popierius bilietams', 'Pianinas ar dainelė'],
+          },
+        ],
         ruduo: [
           {
             title: 'Lietaus lazda',
@@ -343,6 +636,23 @@ export default {
             ask: 'Kaip skamba stiprus lietus, o kaip – silpnas?',
             needs: ['Kartoninis ritinys', 'Dantų krapštukai', 'Ryžiai', 'Lipni juosta'],
             note: 'Krapštukus smaigstote jūs.',
+          },
+        ],
+        ziema: [
+          {
+            title: 'Varpelių daina',
+            sticker: 'snowflake',
+            area: 'kalba',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Žiemos šventėms skamba varpeliai, o skambindamas išgirdęs sutartą žodį vaikas mokosi įdėmiai klausytis.',
+            steps: [
+              'Pririškite kelis varpelius prie juostelės arba paimkite bet kokį skambantį daiktą.',
+              'Jūs dainuojate žiemos dainelę, o vaikas suskambina kaskart, kai išgirsta sutartą žodį, pavyzdžiui, „sniegas“.',
+              'Pasikeiskite: dabar dainuoja vaikas, o skambinate jūs.',
+            ],
+            ask: 'Kurį žodį dainoje buvo sunkiausia pagauti?',
+            needs: ['Varpeliai', 'Žiemos dainelė'],
           },
         ],
       },

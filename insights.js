@@ -110,6 +110,8 @@
   if (PRODUCTION_HOSTS.indexOf(window.location.hostname) === -1) return;
   if (isOptedOut() || nav.webdriver) return;
   if (/bot|crawl|spider|headless|lighthouse/i.test(nav.userAgent || '')) return;
+  // A post read inside the Laviju app (/blog/<post>/?app) is not a site visit.
+  if (/[?&]app(?:[=&]|$)/.test(window.location.search || '')) return;
 
   // ---------------------------------------------
   // Helpers

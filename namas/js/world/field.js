@@ -1,6 +1,6 @@
 import * as THREE from '../core/three.js';
 import { TAU, clamp, lerp, saturate, smoothstep, createNoise } from '../core/math.js';
-import { ISLAND, GROUND, HOUSE, GARAGE, YARD, KNOLLS } from './layout.js';
+import { ISLAND, GROUND, HOUSE, GARAGE, BATH, YARD, KNOLLS } from './layout.js';
 
 // The field is the plot as numbers: where the rim is, how high the ground
 // stands, where the path, the drive and the yard's paving run. Meshes, plants,
@@ -11,10 +11,11 @@ import { ISLAND, GROUND, HOUSE, GARAGE, YARD, KNOLLS } from './layout.js';
 const CELL = 0.1; // grid spacing of the baked height map
 const MARGIN = 1.2;
 
-// The ground the house, the garage and the terrace stand on, with the yard
-// paved or gravelled round them, as [x0, z0, x1, z1]
+// The ground the house, the garage, the bathroom and the terrace stand on,
+// with the yard paved or gravelled round them, as [x0, z0, x1, z1]
 const FOOTPRINTS = [
   [Math.min(HOUSE.x0, GARAGE.x0), Math.min(HOUSE.z0, GARAGE.z0), HOUSE.x1, HOUSE.z1],
+  [BATH.x0, BATH.z0, BATH.x1, BATH.z1],
   [YARD.terrace.x0, YARD.terrace.z0, YARD.terrace.x1, YARD.terrace.z1],
 ];
 

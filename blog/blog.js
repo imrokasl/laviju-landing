@@ -13,6 +13,68 @@
   let reduceMotion = reduceQuery.matches;
   const hasIO = 'IntersectionObserver' in window;
 
+  // ---------------------------------------------
+  // In the Laviju app (/blog/<post>/?app): the app shows the post in its own
+  // screen, a WebView on phones and a frame on admin.laviju.lt/app, under its
+  // own header, so blog.css hides the site's menu, footer and app banner.
+  // Links that leave the post go to the app, which opens posts itself and
+  // everything else outside.
+  // ---------------------------------------------
+  const inApp = /[?&]app(?:[=&]|$)/.test(window.location.search);
+  const phoneApp = window.ReactNativeWebView;
+  if (inApp) {
+    doc.classList.add('in-app');
+    if (phoneApp) doc.classList.add('in-app--phone');
+  }
+  // The messages are only the address of a link the reader tapped and whether
+  // the app's buttons show, so any frame may hear them; frame-ancestors in
+  // /_headers decides which frames exist.
+  const tellApp = !inApp ? null
+    : phoneApp ? (message) => phoneApp.postMessage(JSON.stringify(message))
+      : window.parent !== window ? (message) => window.parent.postMessage(message, '*')
+        : null;
+  if (tellApp) {
+    document.addEventListener('click', (event) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+      if (!link || link.hasAttribute('download')) return;
+      const url = new URL(link.href, window.location.href);
+      // The post's own parts stay in the page.
+      if (url.origin === window.location.origin && url.pathname === window.location.pathname && url.hash) return;
+      event.preventDefault();
+      tellApp({ type: 'laviju:open', url: url.href });
+    });
+
+    // The app's back and share buttons float over the top of the post. They
+    // step aside while the reader scrolls down and come back on the way up;
+    // html.in-app--bar moves what sticks to the top out of their way.
+    // A jump to a part before the reader has scrolled keeps them.
+    let barShown = true;
+    let reading = false;
+    let lastY = window.scrollY;
+    const showBar = (shown) => {
+      if (shown === barShown) return;
+      barShown = shown;
+      doc.classList.toggle('in-app--bar', shown);
+      tellApp({ type: 'laviju:bar', shown });
+    };
+    doc.classList.add('in-app--bar');
+    ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach((type) => {
+      window.addEventListener(type, () => { reading = true; }, { passive: true });
+    });
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (y < 64) {
+        showBar(true);
+        lastY = y;
+      } else if (Math.abs(y - lastY) > 8) {
+        if (reading) showBar(y < lastY);
+        lastY = y;
+      }
+    }, { passive: true });
+  }
+
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = (edge0, edge1, x) => {

@@ -46,6 +46,24 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Vasarinės padangos',
+            sticker: 'car',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Pavasarį žieminės padangos keičiamos vasarinėmis – palyginęs jų raštus vaikas sužino, kodėl žiemai reikia kitokių ratų.',
+            steps: [
+              'Kai keisite padangas, pastatykite žieminę ir vasarinę padangą greta.',
+              'Vaikas apčiuopia raštus pirštais ir pasako, kuo jie skiriasi.',
+              'Uždėkite ant kiekvienos padangos popieriaus lapą ir vaškine kreidele perbraukite raštą.',
+            ],
+            ask: 'Kurios padangos raštas geriau laikosi slidaus kelio?',
+            needs: ['Žieminė ir vasarinė padanga', 'Popierius', 'Vaškinės kreidelės'],
+            note: 'Automobilį kelia ir ratus suka tik suaugęs, o vaikas stebi iš šalies.',
+          },
+        ],
         vasara: [
           {
             title: 'Didžioji plovykla',
@@ -62,6 +80,41 @@ export default {
             ask: 'Kuri automobilio vieta buvo purviniausia?',
             needs: ['Kibiras', 'Kempinės', 'Laistytuvas'],
             note: 'Plaukite tik stovintį ir išjungtą automobilį, o raktelius laikykite pas save.',
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Atšvaitų patikra',
+            sticker: 'flashlight',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 10,
+            why: 'Rudenį sutemsta anksti, o atšvaitas padeda vairuotojui pastebėti pėsčiąjį – tamsiame garaže vaikas pats pamato, kaip jis sužiba.',
+            steps: [
+              'Užtemdykite garažą ir prisisekite atšvaitus prie striukių.',
+              'Pašvieskite žibintuvėliu iš toliau – kaip automobilio žibintai.',
+              'Palyginkite: kas matyti geriau – tamsi striukė ar atšvaitas?',
+            ],
+            ask: 'Kur prisisegsi atšvaitą, kad tave matytų vairuotojai?',
+            needs: ['Atšvaitai', 'Žibintuvėlis', 'Striukės'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Sniego šluotelė',
+            sticker: 'snowflake',
+            area: 'bendruomene',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Žiemos rytą automobilį reikia nuvalyti nuo sniego – vaikas jaučiasi tikru pagalbininku.',
+            steps: [
+              'Duokite vaikui minkštą šepetį ir parodykite, ką valyti: langus, žibintus, numerį.',
+              'Vaikas valo tai, ką pasiekia, o jūs – stogą ir priekinį stiklą.',
+              'Iš nuvalyto sniego kartu nulipdykite mažą senį besmegenį.',
+            ],
+            ask: 'Kodėl prieš važiuojant reikia nuvalyti žibintus?',
+            needs: ['Minkštas šepetys', 'Šilti drabužiai'],
+            note: 'Valykite tik stovintį ir išjungtą automobilį.',
           },
         ],
       },
@@ -137,6 +190,40 @@ export default {
             needs: ['Kaspinai', 'Spalvotas popierius', 'Lipni juosta'],
           },
         ],
+        ruduo: [
+          {
+            title: 'Rudens slalomas',
+            sticker: 'bike',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Rudenį kiemas pilnas kankorėžių ir lapų – iš jų sudėliota trasa moko vairuoti ir laiku stabdyti.',
+            steps: [
+              'Kieme išdėliokite kankorėžius ar lapų krūveles gyvatėle.',
+              'Vaikas važiuoja paspirtuku ar balansiniu dviratuku tarp jų, nė vieno nekliudydamas.',
+              'Pratęskite trasą stotele: prie jos reikia sustoti ir paskambinti skambučiu.',
+            ],
+            ask: 'Kada reikia pradėti stabdyti, kad sustotum laiku?',
+            needs: ['Dviratukas ar paspirtukas', 'Kankorėžiai', 'Šalmas'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Dviračiai eina žiemoti',
+            sticker: 'bike',
+            area: 'bendruomene',
+            age: '3–6 m.',
+            minutes: 15,
+            why: 'Kai iškrenta sniegas, dviračiai keliauja žiemoti, o juos paruošdamas vaikas mokosi rūpintis savo daiktais.',
+            steps: [
+              'Kartu nuvalykite dviratį skuduru: rėmą, ratus ir sėdynę.',
+              'Grandinę patepate jūs, o vaikas suka pedalą, kad tepalas pasiskirstytų.',
+              'Pastatykite dviratį į žiemos vietą ir palinkėkite jam labos nakties iki pavasario.',
+            ],
+            ask: 'Kada vėl važiuosime dviračiu?',
+            needs: ['Skuduras', 'Grandinės tepalas'],
+          },
+        ],
       },
     },
     {
@@ -195,6 +282,23 @@ export default {
             needs: ['Lentelės', 'Plaktukas', 'Vinys', 'Švitrinis popierius'],
           },
         ],
+        vasara: [
+          {
+            title: 'Vabzdžių viešbutis',
+            sticker: 'ladybug',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 40,
+            why: 'Iš šakelių, kankorėžių ir stiebelių sukaltas viešbutis tampa namais bitėms ir boružėms, o vaikas pamato, kad ir maži padarai svarbūs.',
+            steps: [
+              'Iš lentelių sukalkite dėžutę be priekinės sienelės – kalate jūs, vaikas laiko.',
+              'Vaikas prikaišo į ją tuščiavidurių stiebelių, kankorėžių, žievės ir šakelių.',
+              'Pakabinkite viešbutį saulėtoje sodo vietoje ir stebėkite, kas jame apsigyvens.',
+            ],
+            ask: 'Kas apsigyvens mūsų viešbutyje?',
+            needs: ['Lentelės', 'Šakelės ir kankorėžiai', 'Tuščiaviduriai stiebeliai'],
+          },
+        ],
         ruduo: [
           {
             title: 'Lesyklėlė',
@@ -210,6 +314,23 @@ export default {
             ],
             ask: 'Kas pirmas atskris palesti?',
             needs: ['Pieno pakelis ar lentelės', 'Sėklos', 'Virvė'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Dovana iš medžio',
+            sticker: 'tools',
+            area: 'kuryba',
+            age: '3–6 m.',
+            minutes: 30,
+            why: 'Pačių pagaminta dovana brangesnė už pirktą, o šlifuodamas medį vaikas pajunta, kaip šiurkštu virsta lygu.',
+            steps: [
+              'Išsirinkite medžio gabalėlį ar rąstelio griežinėlį.',
+              'Vaikas šlifuoja jį švitriniu popieriumi, kol paviršius tampa lygus.',
+              'Nupieškite ant jo žvaigždę ar eglutę ir padovanokite seneliams.',
+            ],
+            ask: 'Kaip pasikeitė medis po šlifavimo?',
+            needs: ['Medžio griežinėlis', 'Švitrinis popierius', 'Dažai'],
           },
         ],
       },
@@ -251,6 +372,57 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Medžiagos lizdams',
+            sticker: 'nest',
+            area: 'aplinka',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Pavasarį paukščiai ieško, iš ko susukti lizdą, o vaikas gali jiems padėti ir stebėti, kas atskrenda pasiimti.',
+            steps: [
+              'Paieškokite dėžėse vilnos siūlų galiukų, žiemą iššukuotų šuns plaukų ir sausos žolės.',
+              'Vaikas sukiša viską į tinklinį maišelį ar seną lesyklėlę.',
+              'Pakabinkite ją ant šakos ir stebėkite, kurie paukščiai atskrenda pasiimti medžiagų.',
+            ],
+            ask: 'Kuris paukštis pasiėmė daugiausia?',
+            needs: ['Vilnos galiukai', 'Sausa žolė', 'Tinklinis maišelis'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Saulės krosnelė',
+            sticker: 'box',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 40,
+            why: 'Folija išklota dėžė surenka saulės šilumą – karštą dieną joje ištirpsta šokoladas, o vaikas pamato saulės jėgą.',
+            steps: [
+              'Išklokite dėžės šonus folija, o dugną – juodu popieriumi.',
+              'Įdėkite lėkštutę su šokolado gabalėliu ir uždenkite dėžę permatoma plėvele.',
+              'Pastatykite krosnelę saulėje ir kas dešimt minučių patikrinkite, kas vyksta.',
+            ],
+            ask: 'Kodėl šokoladas ištirpo be ugnies?',
+            needs: ['Dėžė', 'Folija', 'Juodas popierius', 'Šokoladas'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Obuoliai žiemai',
+            sticker: 'apple',
+            area: 'aplinka',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Rudenį obuoliai sudedami į dėžes žiemai, o kiekvieną įvyniodamas į popierių vaikas sužino, kaip saugomas derlius.',
+            steps: [
+              'Kartu atrinkite sveikus, nesumuštus obuolius – sumuštus suvalgysite dabar.',
+              'Vaikas įvynioja kiekvieną obuolį į laikraščio lapą ir sudeda į dėžę vienu sluoksniu.',
+              'Pastatykite dėžę vėsioje vietoje ir susitarkite, kada ją pirmą kartą patikrinsite.',
+            ],
+            ask: 'Kodėl sumuštas obuolys negali gulėti su kitais?',
+            needs: ['Obuoliai', 'Laikraščiai', 'Dėžė'],
+          },
+        ],
         ziema: [
           {
             title: 'Švenčių dėžė',
@@ -308,6 +480,40 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Pavasario talka',
+            sticker: 'wheelbarrow',
+            area: 'bendruomene',
+            age: '2–6 m.',
+            minutes: 30,
+            why: 'Pavasarį visa šeima išeina tvarkyti kiemo, o vaikas su savo įrankiais – tikras talkininkas.',
+            steps: [
+              'Išneškite iš garažo grėblius, kastuvėlius ir karutį ir patikrinkite, ar visi sveiki.',
+              'Vaikas grėbia pernykščius lapus ir šakeles nuo vejos, o jūs juos vežate į kompostą.',
+              'Po darbų nusiplaukite rankas ir pasidžiaukite švariu kiemu.',
+            ],
+            ask: 'Ką radome po pernykščiais lapais?',
+            needs: ['Vaikiškas grėblys', 'Karutis', 'Pirštinės'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Ravėjimo detektyvai',
+            sticker: 'carrot',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 20,
+            why: 'Ravėdamas vaikas mokosi atskirti daigą nuo piktžolės ir supranta, kodėl daržovėms reikia vietos augti.',
+            steps: [
+              'Parodykite lysvėje, kaip atrodo morkų ar burokėlių lapeliai.',
+              'Vaikas ieško visko, kas į juos nepanašu, ir ištraukia su šaknimis.',
+              'Ištrauktas piktžoles sudėkite į kibirėlį ir nuneškite į kompostą.',
+            ],
+            ask: 'Kaip atskiri piktžolę nuo morkos?',
+            needs: ['Kibirėlis', 'Pirštinės'],
+          },
+        ],
         ruduo: [
           {
             title: 'Lapų grėbėjai',
@@ -323,6 +529,23 @@ export default {
             ],
             ask: 'Kaip šnara sausi lapai?',
             needs: ['Grėbliai', 'Karutis'],
+          },
+        ],
+        ziema: [
+          {
+            title: 'Takų kasėjai',
+            sticker: 'snowman',
+            area: 'sveikata',
+            age: '2–6 m.',
+            minutes: 20,
+            why: 'Po pūgos takus reikia nukasti – vaikui tai ir darbas, ir mankšta.',
+            steps: [
+              'Pasiimkite vaikišką kastuvą ir šiltai aprenkite vaiką.',
+              'Kartu nukaskite takelį nuo durų iki šuns būdos ar lesyklėlės.',
+              'Nukastą sniegą sumeskite į vieną krūvą – iš jos išeis kalnelis ar sniego pilis.',
+            ],
+            ask: 'Kur sniego daugiausia – prie namo ar kiemo viduryje?',
+            needs: ['Vaikiškas kastuvas', 'Šilti drabužiai'],
           },
         ],
       },
@@ -364,6 +587,58 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Iki kitos žiemos!',
+            sticker: 'sled',
+            area: 'kalba',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Pavasarį rogės keliauja ant kablio, o atsisveikindamas su žiema vaikas prisimena, kas buvo smagiausia.',
+            steps: [
+              'Kartu nuvalykite ir nusausinkite roges, kad nesurūdytų.',
+              'Pakabinkite jas ant kablio garaže – vaikas paduoda virvę.',
+              'Prisiminkite tris smagiausius žiemos nuotykius ir nupieškite juos.',
+            ],
+            ask: 'Ko labiausiai pasiilgsi iki kitos žiemos?',
+            needs: ['Skuduras', 'Popierius', 'Pieštukai'],
+          },
+        ],
+        vasara: [
+          {
+            title: 'Čiuožimas be sniego',
+            sticker: 'sled',
+            area: 'sveikata',
+            age: '3–6 m.',
+            minutes: 20,
+            why: 'Sniego nėra, bet nuo žolėto šlaito galima nučiuožti ant kartono – smagu ir lavina pusiausvyrą.',
+            steps: [
+              'Suraskite nestatų žolėtą šlaitą be akmenų ir medžių apačioje.',
+              'Vaikas atsisėda ant didelio kartono gabalo ir nučiuožia, o jūs laukiate apačioje.',
+              'Pabandykite nučiuožti ir rogėmis – kas čiuožia greičiau?',
+            ],
+            ask: 'Kodėl žole čiuožiama lėčiau nei sniegu?',
+            needs: ['Didelis kartonas', 'Žolėtas šlaitas'],
+            note: 'Rinkitės nestatų šlaitą, o apačioje visada stovite jūs.',
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Kada pirmas sniegas?',
+            sticker: 'sled',
+            area: 'aplinka',
+            age: '3–6 m.',
+            minutes: 10,
+            why: 'Rudenį visi laukia pirmojo sniego, o spėliodamas jo dieną vaikas mokosi skaičiuoti dienas ir laukti.',
+            steps: [
+              'Nukelkite roges nuo kablio ir patikrinkite virvę bei pavažas.',
+              'Kiekvienas šeimos narys spėja, kurią dieną iškris pirmasis sniegas, ir pažymi tai kalendoriuje.',
+              'Kasryt pažiūrėkite pro langą – kieno spėjimas pasitvirtins?',
+            ],
+            ask: 'Kurią dieną, tavo manymu, pasnigs?',
+            needs: ['Kalendorius', 'Pieštukai'],
+          },
+        ],
         ziema: [
           {
             title: 'Rogių traukinys',

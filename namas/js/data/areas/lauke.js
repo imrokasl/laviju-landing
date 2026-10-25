@@ -605,6 +605,24 @@ export default {
         },
       ],
       seasons: {
+        pavasaris: [
+          {
+            title: 'Erkių paieška',
+            sticker: 'magnifier',
+            area: 'sveikata',
+            age: '3–6 m.',
+            minutes: 10,
+            why: 'Pavasarį pabunda erkės, o apžiūrėdamas šunį po pasivaikščiojimo vaikas išmoksta pasitikrinti ir save.',
+            steps: [
+              'Po pasivaikščiojimo atsisėskite šalia šuns ir apžiūrėkite jo ausis, kaklą ir pažastis.',
+              'Vaikas švelniai praskleidžia kailį, o jūs ieškote mažų tamsių taškelių.',
+              'Tada taip pat apžiūrėkite vaiko kojas, kaklą ir pakaušį.',
+            ],
+            ask: 'Kur erkės mėgsta slėptis?',
+            needs: ['Erkių replės'],
+            note: 'Rastą erkę ištraukiate jūs, specialiomis replėmis.',
+          },
+        ],
         vasara: [
           {
             title: 'Vėsus dubuo',
@@ -620,6 +638,23 @@ export default {
             ],
             ask: 'Kaip šuo atsivėsina, kai karšta?',
             needs: ['Dubuo vandens'],
+          },
+        ],
+        ruduo: [
+          {
+            title: 'Šilta būda',
+            sticker: 'hay',
+            area: 'bendruomene',
+            age: '2–6 m.',
+            minutes: 15,
+            why: 'Artėjant šalčiams šuns būdai reikia šiltos patalynės – vaikas mokosi pasirūpinti augintiniu prieš žiemą.',
+            steps: [
+              'Kartu iššluokite iš būdos senus šiaudus ir lapus.',
+              'Vaikas prikloja naujų sausų šiaudų ar seną pledą.',
+              'Patikrinkite, ar į būdą nelyja, ir pakvieskite šunį išbandyti naujo guolio.',
+            ],
+            ask: 'Kas šildo šunį žiemą?',
+            needs: ['Šiaudai ar senas pledas', 'Šluota'],
           },
         ],
         ziema: [

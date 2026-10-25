@@ -3,7 +3,7 @@ import { clamp } from '../core/math.js';
 import { h, icon, sticker, stickerUrl, prefersReducedMotion } from './dom.js';
 import { TEXT } from '../data/house.js';
 
-// A set of markers that float over the scene: the six areas of the house, or
+// A set of markers that float over the scene: the seven areas of the house, or
 // the spots of one area. Each is a real button pinned to a point in the
 // world: it is projected to the screen every frame, nudged clear of its
 // neighbours, and joined to its point by a short stem. Only one set is out at

@@ -1,4 +1,4 @@
-// What to do at home. Six areas of the house and its garden, each with its
+// What to do at home. Seven areas of the house and its garden, each with its
 // spots, and for every spot a few ideas a parent can try with a child of up
 // to six: some all year round, some only in one season. The wording follows
 // the rest of Laviju: short, practical, addressed to the grown-up, and every
@@ -6,6 +6,7 @@
 // js/data/areas/, one file to an area.
 import virtuve from './areas/virtuve.js';
 import svetaine from './areas/svetaine.js';
+import vonia from './areas/vonia.js';
 import vaiku from './areas/vaiku.js';
 import tevu from './areas/tevu.js';
 import garazas from './areas/garazas.js';
@@ -110,14 +111,15 @@ export const WEATHER = [
 // How a kind of weather reads in a season
 export const weatherIn = (kind, season) => ({ ...kind, ...(season?.cold ? kind.cold : null) });
 
-// The six areas, in the order of the list. Each file holds an area's name,
+// The seven areas, in the order of the list. Each file holds an area's name,
 // `of` (its name as it reads in „… vietos“), its `tone` (sky, peach, butter,
-// sage, lilac, rose), its marker's sticker, `lede` (what the page says as
+// sage, lilac, rose, aqua), its marker's sticker, `lede` (what the page says as
 // the camera comes in) and its spots. A spot has its year-round `ideas` and
 // `seasons`, the ideas only one season brings; `in` holds a name or a sticker
-// that is the spot's in one season only. Where each marker floats and how the
-// camera looks at it is in js/world/layout.js, under the same ids.
-export const AREAS = [virtuve, svetaine, vaiku, tevu, garazas, lauke];
+// that is the spot's in one season only, and an idea's `place` names the spot
+// on its card when that idea happens somewhere else. Where each marker floats
+// and how the camera looks at it is in js/world/layout.js, under the same ids.
+export const AREAS = [virtuve, svetaine, vonia, vaiku, tevu, garazas, lauke];
 
 // The house as one season has it: every area with its spots, and every spot
 // with that season's ideas first, then the ones of all year. A spot's id is
