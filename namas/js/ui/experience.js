@@ -13,18 +13,16 @@ import { createChrome } from './chrome.js';
 // season keeps its own finds. Progress lives in memory only: nothing is
 // stored or sent anywhere.
 //
-// It goes two levels deep. The whole house shows a marker for each of its
-// six areas; an area, once entered, has the camera fly in and the walls in
-// front of it sink, and its spots come out, each opening a card of ideas.
+// It goes two levels deep. The whole house, shut, shows a marker for each of
+// its six areas; an area, once entered, has the camera fly in and its room
+// alone opened (the garden needs nothing opened), and its spots come out,
+// each opening a card of ideas.
 
 // From the foot of the open spot's marker to the top of its badge, with a
 // little air above, in CSS pixels
 const MARKER_RISE = 90;
 // The air kept between the house and what stands over and under it on a phone
 const ROOM_GAP = 8;
-// How the house is cut open for each area: the storey looked into, the
-// garage, or nothing at all for the garden (see world/house.js)
-const CUTS = { virtuve: 'lower', svetaine: 'lower', vaiku: 'upper', tevu: 'upper', garazas: 'garage', lauke: 'closed' };
 // A spot is looked at from its area's angle, this much closer
 const SPOT_ZOOM = 0.78;
 
@@ -181,7 +179,7 @@ export function createExperience(root, { season: opening, onCelebrate = () => {}
     const height = root.clientHeight;
     if (wide.matches || height < width || roomHead.hidden) return view.zoom;
     const band = topOf(switches) - topOf(roomHead) - roomHead.offsetHeight - 2 * ROOM_GAP;
-    const az = rig.home.azimuth + view.turn;
+    const az = azimuthOf(area.id);
     forward.set(-Math.sin(view.polar) * Math.sin(az), -Math.cos(view.polar), -Math.sin(view.polar) * Math.cos(az));
     right.set(Math.cos(az), 0, -Math.sin(az));
     up.crossVectors(right, forward);
@@ -218,17 +216,27 @@ export function createExperience(root, { season: opening, onCelebrate = () => {}
     return zoom;
   }
 
+  // Which way the camera faces an area, or a spot in it: the area's own
+  // azimuth where it has one, else its turn from the home view, unless the
+  // spot has a turn of its own (see world/layout.js)
+  function azimuthOf(id, spot) {
+    const plan = PLAN[id];
+    const turn = spot ? plan.turns?.[spot] : undefined;
+    if (turn !== undefined) return rig.home.azimuth + turn;
+    return plan.view.azimuth ?? rig.home.azimuth + plan.view.turn;
+  }
+
   function aimArea(area) {
     const { view } = PLAN[area.id];
     aimed.set(...view.target);
     const zoom = frameBand(area, view);
-    rig.focus(aimed, { azimuth: rig.home.azimuth + view.turn, polar: view.polar, zoom }, 1.6);
+    rig.focus(aimed, { azimuth: azimuthOf(area.id), polar: view.polar, zoom }, 1.6);
     inputsAtAim = rig.inputs;
   }
 
   function aimSpot(spot) {
     const { view } = PLAN[spot.area];
-    rig.focus(sight(spot, view, aimed), { azimuth: rig.home.azimuth + view.turn, polar: view.polar, zoom: view.zoom * SPOT_ZOOM }, 1.4);
+    rig.focus(sight(spot, view, aimed), { azimuth: azimuthOf(spot.area, spot.spot), polar: view.polar, zoom: view.zoom * SPOT_ZOOM }, 1.4);
     inputsAtAim = rig.inputs;
   }
 
@@ -237,15 +245,15 @@ export function createExperience(root, { season: opening, onCelebrate = () => {}
     for (const area of year.areas) areaMarks.setCount(area.id, area.spots.filter((spot) => year.visited.has(spot.id)).length, area.spots.length);
   }
 
-  // The visitor stepped into an area: the camera flies to it, the walls in
-  // front of it sink, and its spots come out in place of the six areas.
+  // The visitor stepped into an area: the camera flies to it, its room opens
+  // (see world/house.js), and its spots come out in place of the six areas.
   function enterArea(id, from, { aim = true } = {}) {
     const area = areaOf(id);
     if (!area || !rig) return;
     if (card.isOpen) closeSpot({ fly: false });
     if (from) areaOpener = from;
     areaId = id;
-    house.view(CUTS[id]);
+    house.view(PLAN[id].room);
     areaMarks.setShown(false);
     for (const [key, marks] of spotMarks) marks.setShown(key === id);
     chrome.setArea(area);
@@ -256,13 +264,13 @@ export function createExperience(root, { season: opening, onCelebrate = () => {}
     history.replaceState(null, '', `#${id}`);
   }
 
-  // Back to the whole house, its walls up again and its areas' markers out
+  // Back to the whole house, shut again, and its areas' markers out
   function leaveArea() {
     closeSpot({ fly: false });
     if (!rig) return;
     const was = areaId;
     areaId = null;
-    house.view('overview');
+    house.view(null);
     for (const marks of spotMarks.values()) marks.setShown(false);
     areaMarks.setShown(true);
     chrome.setArea(null);

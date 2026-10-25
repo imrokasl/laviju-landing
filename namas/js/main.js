@@ -147,11 +147,11 @@ async function boot() {
   scene.add(trees.group);
   await built(0.74);
 
-  const meadow = createMeadow(field, terrain, kit, quality);
+  const meadow = createMeadow(field, terrain, quality, flora);
   scene.add(meadow.group);
   await built(0.86);
 
-  const critters = createCritters(field, kit, { meadow, trees }, quality);
+  const critters = createCritters(field, kit, { meadow, trees, flora }, quality);
   scene.add(critters.group);
   await built(0.93);
 

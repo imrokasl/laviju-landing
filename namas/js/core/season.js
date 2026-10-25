@@ -169,11 +169,12 @@ const NUMBERS = {
   reedDry: num([0.5, 0], [1.3, 0], [2, 0.7], [2.6, 1], [3.5, 1], [3.95, 0.25]),
 
   // ----- The garden's fruit -----
-  // Apples on the tree from midsummer until the leaves are going, the ones
-  // that came down in the grass through the autumn, red currants in summer
-  apples: num([1.0, 0], [1.45, 1], [2.4, 1], [2.62, 0]),
+  // Apples set as the blossom goes and hang on the tree all summer, until
+  // the leaves are going; the ones that came down in the grass through the
+  // autumn; red currants ripe by the height of summer
+  apples: num([0.55, 0], [0.92, 1], [2.4, 1], [2.62, 0]),
   windfall: num([1.75, 0], [2.05, 1], [2.55, 1], [2.78, 0]),
-  currants: num([0.85, 0], [1.1, 1], [1.62, 1], [1.86, 0]),
+  currants: num([0.62, 0], [0.92, 1], [1.62, 1], [1.86, 0]),
 
   // ----- Things and animals: each set belongs to its season -----
   setSpring: during(0),

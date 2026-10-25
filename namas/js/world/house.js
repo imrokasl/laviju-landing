@@ -15,8 +15,10 @@ import { HOUSE, GARAGE, ROOMS, LAMPS, YARD } from './layout.js';
 // The cut is told per zone (outside, the house, the garage) and per wall or
 // roof slope (front, back, right, left, the two slopes, the partitions): each
 // pair has a height above which nothing of it is drawn, and each zone a height
-// above which nothing at all is. They sink and rise over a moment, so a room
-// opens instead of blinking open.
+// above which nothing at all is. Every height is kept twice, once for either
+// side of the line between the rooms, so a room opens alone and the one
+// beside it stays shut. They sink and rise over a moment, so a room opens
+// instead of blinking open.
 //
 // The lamps of the rooms come on at dusk, light the room they stand in and
 // nothing beyond its walls, and their windows glow from outside. Things that
@@ -29,6 +31,10 @@ const STUB = 0.5;
 // Nothing is drawn above this; a wall that is not cut stands well under it
 const TOP = 40;
 const SLOTS = 3 * 8;
+// The line between the rooms on the left (the living room, the parents' room
+// and, past them, the garage) and the rooms on the right (the kitchen, the
+// children's room). Each side is cut on its own.
+const SPLIT = HOUSE.split;
 
 const f0 = HOUSE.floor0;
 const f1 = HOUSE.floor1;
@@ -93,18 +99,30 @@ const SURFACE = {
 };
 
 // Every part of the house knows its zone and its wall (aCut), and the cut
-// says how high each zone and wall is drawn
+// says how high each zone and wall is drawn: left of the line between the
+// rooms (x) and right of it (y). A thing of thin sheets (leaves,
+// petals) is marked with 8 over its wall: its backs are its own, never the
+// inside of something cut open. Over the zone, 64 for each third of the snow
+// a thing out of doors is kept from: all of it under a roof or glass (the
+// firewood, the greenhouse's beds), most of it on the balcony's boughs.
 const CUT_PARS = /* glsl */ `
   attribute float aCut;
-  uniform float uCutY[ ${SLOTS} ];
-  uniform float uClip[ 3 ];
-  varying float vCutY;
+  uniform vec2 uCutY[ ${SLOTS} ];
+  uniform vec2 uClip[ 3 ];
+  varying vec2 vCutY;
   varying float vZone;
+  varying float vSheet;
+  varying float vShelter;
 `;
 const CUT_MOVE = /* glsl */ `
   {
-    float zone = floor( aCut / 16.0 + 0.01 );
-    float wall = aCut - zone * 16.0;
+    float shelter = floor( aCut / 64.0 + 0.01 );
+    vShelter = shelter / 3.0;
+    float cut = aCut - 64.0 * shelter;
+    float zone = floor( cut / 16.0 + 0.01 );
+    float wall = cut - zone * 16.0;
+    vSheet = step( 7.5, wall );
+    wall -= 8.0 * vSheet;
     vZone = zone;
     vCutY = min( uCutY[ int( zone * 8.0 + wall + 0.5 ) ], uClip[ int( zone + 0.5 ) ] );
   }
@@ -187,21 +205,23 @@ export function createHouse(model, textures) {
   group.name = 'house';
 
   // ---------- The cut ----------
-  const cutY = { value: new Array(SLOTS).fill(TOP) };
-  const clip = { value: [TOP, TOP, TOP] };
-  // How open each slot is, 0..1, where it is headed, and how high it stands
-  // open: the stub over the floor of the storey looked into
-  const open = new Float32Array(SLOTS);
-  const openTo = new Float32Array(SLOTS);
-  const openAt = new Float32Array(SLOTS).fill(f1 + STUB);
-  const openAtTo = new Float32Array(SLOTS).fill(f1 + STUB);
+  // Each slot's height and each zone's, left of the line between the rooms and right of it
+  const cutY = { value: Array.from({ length: SLOTS }, () => new THREE.Vector2(TOP, TOP)) };
+  const clip = { value: Array.from({ length: 3 }, () => new THREE.Vector2(TOP, TOP)) };
+  // How open each slot is on each side (left, then right), 0..1, where it is
+  // headed, and how high it stands open: the stub over the floor of the
+  // storey looked into
+  const open = new Float32Array(SLOTS * 2);
+  const openTo = new Float32Array(SLOTS * 2);
+  const openAt = new Float32Array(SLOTS * 2).fill(f1 + STUB);
+  const openAtTo = new Float32Array(SLOTS * 2).fill(f1 + STUB);
   // ...and the same for the lid of each zone: everything over the storey
   // looked into is lifted off, the underside of the ceiling with it (left
   // in, it would show from above as one big section over the whole room).
   // The garage's goes under the balcony's fascia too, which reaches down
   // over the tops of its walls.
-  const lid = [0, 0, 0];
-  const lidTo = [0, 0, 0];
+  const lid = new Float32Array(3 * 2);
+  const lidTo = new Float32Array(3 * 2);
   const lidAt = [TOP, ceil0 - 0.03, GARAGE.ceiling - 0.12];
   // A slot's walls reach this high: it sinks from there, not from the sky
   const tops = [YARD.terrace.top + 3, HOUSE.ridge + 0.5, GARAGE.deck + GARAGE.rail + 0.3];
@@ -250,8 +270,10 @@ export function createHouse(model, textures) {
     const vertexPars = [CUT_PARS, uPop ? POP_PARS : '', 'attribute float aLamp; varying float vLamp; varying vec2 vHouseUv;'].join('\n');
     const vertexLocal = [CUT_MOVE, uPop ? POP_MOVE : '', 'vLamp = aLamp;', 'vHouseUv = uv;'].join('\n');
     const fragmentPars = /* glsl */ `
-      varying float vCutY;
+      varying vec2 vCutY;
       varying float vZone;
+      varying float vSheet;
+      varying float vShelter;
       varying float vLamp;
       varying vec2 vHouseUv;
       uniform sampler2D uGrain;
@@ -265,14 +287,16 @@ export function createHouse(model, textures) {
       float houseCap;
     `;
     const fragmentAlbedo = /* glsl */ `
-      if ( vWorldPos.y > vCutY ) discard;
-      // The inside of a wall or a floor that has been cut: a clean section
-      houseCap = ( ! gl_FrontFacing && vCutY < ${(TOP - 1).toFixed(1)} ) ? 1.0 : 0.0;
+      if ( vWorldPos.y > ( vWorldPos.x < ${SPLIT.toFixed(3)} ? vCutY.x : vCutY.y ) ) discard;
+      // The inside of a wall or a floor that has been cut: a clean section.
+      // The ends left standing beside an open room show through it the same way.
+      houseCap = ( ! gl_FrontFacing && min( vCutY.x, vCutY.y ) < ${(TOP - 1).toFixed(1)} && vSheet < 0.5 ) ? 1.0 : 0.0;
       houseIn = houseInside( vWorldPos );
       ${textured ? SURFACE[kind] : ''}
       if ( houseCap > 0.5 ) diffuseColor.rgb = uCap;
-      // Indoors no snow settles and no rain wets
-      creekSnowTake = 1.0 - houseIn;
+      // Indoors no snow settles and no rain wets; out of doors, a sheltered
+      // thing takes less of it, or none
+      creekSnowTake = ( 1.0 - houseIn ) * ( 1.0 - vShelter );
       creekWet *= 1.0 - houseIn;
     `;
     const fragmentFinal = /* glsl */ `
@@ -346,24 +370,24 @@ export function createHouse(model, textures) {
           `#include <common>
           ${CUT_PARS}
           ${uPop ? POP_PARS : ''}
-          varying float vHouseY;`
+          varying vec2 vHouseAt;`
         )
         .replace(
           '#include <begin_vertex>',
           `#include <begin_vertex>
           ${CUT_MOVE}
           ${uPop ? POP_MOVE : ''}
-          vHouseY = ( modelMatrix * vec4( transformed, 1.0 ) ).y;`
+          vHouseAt = ( modelMatrix * vec4( transformed, 1.0 ) ).xy;`
         );
       shader.fragmentShader = shader.fragmentShader
         .replace(
           '#include <common>',
           `#include <common>
-          varying float vCutY;
+          varying vec2 vCutY;
           varying float vZone;
-          varying float vHouseY;`
+          varying vec2 vHouseAt;`
         )
-        .replace('void main() {', 'void main() {\n  if ( vHouseY > vCutY ) discard;');
+        .replace('void main() {', `void main() {\n  if ( vHouseAt.y > ( vHouseAt.x < ${SPLIT.toFixed(3)} ? vCutY.x : vCutY.y ) ) discard;`);
     };
     m.customProgramCacheKey = () => `house-shadow:${uPop ? 'pop' : ''}`;
     depths.set(key, m);
@@ -413,24 +437,29 @@ export function createHouse(model, textures) {
   dress();
 
   // ---------- Which walls the camera looks through ----------
-  // The view asks for a state: which zone is opened, at which storey. Walls
-  // of that zone that face the camera sink, and so does whatever is above.
-  // `null` is the house from outside, whole.
-  const STATES = {
-    // The overview: the house with its roof off on the camera's side, so the
-    // rooms upstairs can be seen into, and the ground floor whole
-    overview: { house: { floor: f1, lid: false } },
-    upper: { house: { floor: f1, lid: false } },
-    lower: { house: { floor: f0, lid: true } },
-    garage: { garage: { floor: GARAGE.floor, lid: true } },
-    closed: {},
-  };
-  let state = STATES.overview;
+  // The view asks for a room. Walls of its zone that face the camera sink on
+  // its side of the line between the rooms, and so does whatever is above.
+  // Anything else, `null` among it, is the house from outside, whole: so it
+  // stands in the overview, and nothing inside is seen until a room is entered.
+  const STATES = { closed: {} };
+  for (const [id, room] of Object.entries(ROOMS)) {
+    const [x0, floor, , x1] = room.box;
+    STATES[id] = {
+      [room.zone]: {
+        floor,
+        // A room downstairs has the storey over it lifted off; upstairs the roof is the lid
+        lid: room.floor === 0,
+        sides: [...(x0 < SPLIT ? [0] : []), ...(x1 > SPLIT ? [1] : [])],
+      },
+    };
+  }
+  let state = STATES.closed;
   const centres = { house: new THREE.Vector2((HOUSE.x0 + HOUSE.x1) / 2, (HOUSE.z0 + HOUSE.z1) / 2), garage: new THREE.Vector2((GARAGE.x0 + GARAGE.x1) / 2, (GARAGE.z0 + GARAGE.z1) / 2) };
   const _d = new THREE.Vector2();
 
-  function view(name) {
-    state = STATES[name] || STATES.closed;
+  // `room` is one of ROOMS (see world/layout.js)
+  function view(room) {
+    state = STATES[room] || STATES.closed;
   }
 
   function aim(camera) {
@@ -441,7 +470,6 @@ export function createHouse(model, textures) {
       if (!want) continue;
       const zone = ZONES[zoneName];
       _d.set(camera.position.x, camera.position.z).sub(centres[zoneName]).normalize();
-      const slot = (g) => zone * 8 + g;
       const facing = [
         [GROUP.front, _d.y > 0.3],
         [GROUP.back, _d.y < -0.3],
@@ -450,15 +478,17 @@ export function createHouse(model, textures) {
         [GROUP.roofFront, _d.y > 0.05],
         [GROUP.roofBack, _d.y < -0.05],
       ];
-      for (const [g, on] of facing) {
-        if (!on) continue;
-        const s = slot(g);
-        openAtTo[s] = want.floor + STUB;
-        // A wall that opens from shut opens straight to its height
-        if (open[s] < 0.02) openAt[s] = openAtTo[s];
-        openTo[s] = 1;
+      for (const side of want.sides) {
+        for (const [g, on] of facing) {
+          if (!on) continue;
+          const i = (zone * 8 + g) * 2 + side;
+          openAtTo[i] = want.floor + STUB;
+          // A wall that opens from shut opens straight to its height
+          if (open[i] < 0.02) openAt[i] = openAtTo[i];
+          openTo[i] = 1;
+        }
+        if (want.lid) lidTo[zone * 2 + side] = 1;
       }
-      if (want.lid) lidTo[zone] = 1;
     }
   }
 
@@ -473,29 +503,30 @@ export function createHouse(model, textures) {
     aim(camera);
     moving = false;
     // Walls sink in a little under a second, and rise a touch slower
-    for (let s = 0; s < SLOTS; s++) {
-      const to = openTo[s];
-      if (open[s] !== to) {
-        open[s] = to > open[s] ? Math.min(to, open[s] + dt / 0.85) : Math.max(to, open[s] - dt / 1.1);
+    for (let i = 0; i < SLOTS * 2; i++) {
+      const to = openTo[i];
+      if (open[i] !== to) {
+        open[i] = to > open[i] ? Math.min(to, open[i] + dt / 0.85) : Math.max(to, open[i] - dt / 1.1);
         moving = true;
       }
       // ...and one already open sinks further, or rises, to the storey now looked into
-      if (Math.abs(openAtTo[s] - openAt[s]) > 0.002) {
-        openAt[s] += (openAtTo[s] - openAt[s]) * (1 - Math.exp(-dt / 0.3));
+      if (Math.abs(openAtTo[i] - openAt[i]) > 0.002) {
+        openAt[i] += (openAtTo[i] - openAt[i]) * (1 - Math.exp(-dt / 0.3));
         moving = true;
-      } else openAt[s] = openAtTo[s];
-      const k = smoothstep(0, 1, open[s]);
-      const top = tops[Math.floor(s / 8)];
-      cutY.value[s] = k > 0 ? top + (openAt[s] - top) * k : TOP;
+      } else openAt[i] = openAtTo[i];
+      const k = smoothstep(0, 1, open[i]);
+      const top = tops[Math.floor(i / 16)];
+      cutY.value[i >> 1].setComponent(i & 1, k > 0 ? top + (openAt[i] - top) * k : TOP);
     }
-    for (let z = 0; z < 3; z++) {
-      const to = lidTo[z];
-      if (lid[z] !== to) {
-        lid[z] = to > lid[z] ? Math.min(to, lid[z] + dt / 0.85) : Math.max(to, lid[z] - dt / 1.1);
+    for (let i = 0; i < 3 * 2; i++) {
+      const to = lidTo[i];
+      if (lid[i] !== to) {
+        lid[i] = to > lid[i] ? Math.min(to, lid[i] + dt / 0.85) : Math.max(to, lid[i] - dt / 1.1);
         moving = true;
       }
-      const k = smoothstep(0, 1, lid[z]);
-      clip.value[z] = k > 0 ? tops[z] + (lidAt[z] - tops[z]) * k : TOP;
+      const z = i >> 1;
+      const k = smoothstep(0, 1, lid[i]);
+      clip.value[z].setComponent(i & 1, k > 0 ? tops[z] + (lidAt[z] - tops[z]) * k : TOP);
     }
 
     // The lamps: lit from dusk, and on a dark day of rain or mist

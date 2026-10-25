@@ -1,14 +1,12 @@
 import * as THREE from '../core/three.js';
 import { TAU, createRng, lerp, saturate, smoothstep } from '../core/math.js';
-import { palette, col } from '../core/palette.js';
 import { stylized, yearGLSL, GRASS_SHADE, GRASS_WET } from '../core/materials.js';
 import { season } from '../core/season.js';
-import { icoSphere, tube, lathe, place, paint, merge } from '../core/geo.js';
-import { part } from './kit.js';
 import { TREES, YARD, CLEARINGS } from './layout.js';
 
 // Everything that grows low: the lawn's tufts and the flowers in it, and
-// what comes up only in spring or autumn.
+// what comes up only in spring or autumn. Every kind is modelled once in
+// Blender (landing-web/namas/blender/meadow.py) and comes in flora.bin.
 // Each kind keeps its own season: it comes up plant by plant when its time
 // arrives and goes the same way.
 
@@ -24,16 +22,24 @@ const PLANT_NUMBER = /* glsl */ `
   #endif
   vec2 plantClock = creekClock( plantAt );
 `;
+// The paddling pool stands on the lawn in summer (`uPool`, told by every
+// clock of the year): what grows where it stands, out to the outside of its
+// ring, goes down as it comes out and is up again once it is put away
+const POOL_MOVE = /* glsl */ `
+  transformed *= 1.0 - smoothstep( 0.0, 0.3, creekOf( uPool, plantClock ) ) * step( distance( plantAt, vec2( ${YARD.pool.x.toFixed(2)}, ${YARD.pool.z.toFixed(2)} ) ), ${(YARD.pool.r + 0.15).toFixed(2)} );
+`;
 // Plants of one kind come up one after another as `uGrow` runs from 0 to 1:
 // it is told by every clock of the year
 const GROW_HOOKS = {
   vertexPars: /* glsl */ `
     ${yearGLSL}
     uniform float uGrow[ CREEK_CLOCKS ];
+    uniform float uPool[ CREEK_CLOCKS ];
   `,
   vertexLocal: /* glsl */ `
     ${PLANT_NUMBER}
     transformed *= smoothstep( plantNumber * 0.7, plantNumber * 0.7 + 0.3, creekOf( uGrow, plantClock ) );
+    ${POOL_MOVE}
   `,
 };
 
@@ -44,114 +50,20 @@ const _s = new THREE.Vector3();
 const _p = new THREE.Vector3();
 const _c = new THREE.Color();
 
-// A clump of tapering blades fanning out from one root.
-function tuftGeometry(rng, { blades = 6, height = 0.28, width = 0.04, spread = 0.05, lean = 0.38, rows = 4, root = 0.76, tip = 1.22, swayScale = 0.55 }) {
-  const position = [];
-  const normal = [];
-  const color = [];
-  const sway = [];
-  const index = [];
-  for (let b = 0; b < blades; b++) {
-    const a = (b / blades) * TAU + rng.range(-0.5, 0.5);
-    const dx = Math.cos(a);
-    const dz = Math.sin(a);
-    const bx = dx * spread * rng.range(0.2, 1);
-    const bz = dz * spread * rng.range(0.2, 1);
-    const h = height * rng.range(0.62, 1.18);
-    const l = lean * h * rng.range(0.35, 1.25);
-    const w = width * rng.range(0.8, 1.2);
-    // Blades are turned a little, so the tuft has body from every side
-    const turn = a + Math.PI / 2 + rng.range(-0.6, 0.6);
-    const sx = Math.cos(turn);
-    const sz = Math.sin(turn);
-    const base = position.length / 3;
-    for (let k = 0; k < rows; k++) {
-      const t = k / (rows - 1);
-      const cx = bx + dx * l * t * t;
-      const cz = bz + dz * l * t * t;
-      const cy = h * (t - 0.1 * t * t);
-      const hw = (w / 2) * (1 - Math.pow(t, 1.4) * 0.94);
-      position.push(cx - sx * hw, cy, cz - sz * hw, cx + sx * hw, cy, cz + sz * hw);
-      for (let v = 0; v < 2; v++) {
-        // Lit like the ground it grows from
-        const n = _p.set(dx * 0.22, 1, dz * 0.22).normalize();
-        normal.push(n.x, n.y, n.z);
-        const shade = lerp(root, tip, Math.pow(t, 0.8));
-        color.push(shade * (1 + t * 0.05), shade, shade * (1 - t * 0.16));
-        sway.push(t * t * h * swayScale);
-      }
-    }
-    for (let k = 0; k < rows - 1; k++) {
-      const i = base + k * 2;
-      index.push(i, i + 1, i + 2, i + 1, i + 3, i + 2);
-    }
-  }
+// One kind as meadow.py modelled it, standing on its root: a tuft's colours
+// are shades of the turf's, a flower's are its own, and `sway` is how far the
+// wind moves each point.
+function plantGeometry(flora, name) {
+  const part = flora.parts.get(name);
+  const a = part.attributes;
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
-  g.setAttribute('normal', new THREE.Float32BufferAttribute(normal, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(color, 3));
-  g.setAttribute('sway', new THREE.Float32BufferAttribute(sway, 1));
-  g.setIndex(index);
-  return g;
-}
-
-// A flower head seen from above: a ring of petals around a domed heart.
-function flowerGeometry({ petals = 8, radius = 0.08, notch = 0.5, cup = 0.1, height = 0.34, petal, heart, heartSize = 0.34, stem, double = false }) {
-  const parts = [];
-  const cPetal = col(petal);
-  const cHeart = col(heart);
-  const cStem = col(stem);
-
-  const ring = (r, y, lift, tintMix) => {
-    const position = [0, y, 0];
-    const color = [cPetal.r * 0.9, cPetal.g * 0.9, cPetal.b * 0.9];
-    const index = [];
-    const n = petals * 4;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * TAU;
-      // Scalloped outline: full at the middle of each petal, pinched between
-      const k = 0.5 + 0.5 * Math.cos(a * petals);
-      const rr = r * lerp(notch, 1, Math.pow(k, 0.6));
-      position.push(Math.cos(a) * rr, y + lift * (rr / r) * (rr / r), Math.sin(a) * rr);
-      const shade = lerp(0.9, 1.08, k) * tintMix;
-      color.push(cPetal.r * shade, cPetal.g * shade, cPetal.b * shade);
-      index.push(0, 1 + ((i + 1) % n), 1 + i);
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(color, 3));
-    g.setIndex(index);
-    g.computeVertexNormals();
-    return g;
-  };
-
-  parts.push(ring(radius, height, cup * radius * 2, 1));
-  if (double) parts.push(place(ring(radius * 0.66, height + radius * 0.12, cup * radius * 3.2, 1.06), { ry: Math.PI / petals }));
-  const centre = icoSphere(radius * heartSize, 1);
-  part(centre, cHeart, { y: height + radius * 0.08, sy: 0.6 });
-  parts.push(centre);
-
-  const stalk = tube(
-    [new THREE.Vector3(0, 0, 0), new THREE.Vector3(radius * 0.25, height * 0.5, 0), new THREE.Vector3(0, height, 0)],
-    radius * 0.09,
-    { radial: 4, capStart: false, capEnd: false }
-  );
-  part(stalk, cStem);
-  parts.push(stalk);
-
-  const g = merge(parts);
-  // The whole flower nods together
-  const pos = g.attributes.position;
-  const sway = new Float32Array(pos.count);
-  for (let i = 0; i < pos.count; i++) sway[i] = Math.pow(saturate(pos.getY(i) / height), 1.6) * 0.085;
-  g.setAttribute('sway', new THREE.BufferAttribute(sway, 1));
-  // Petals are lit like the meadow, so they stay bright from every angle
-  const nor = g.attributes.normal;
-  for (let i = 0; i < nor.count; i++) {
-    _p.fromBufferAttribute(nor, i);
-    _p.set(_p.x * 0.35, Math.abs(_p.y) * 0.4 + 0.75, _p.z * 0.35).normalize();
-    nor.setXYZ(i, _p.x, _p.y, _p.z);
-  }
+  g.setAttribute('position', new THREE.BufferAttribute(a.position, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(a.normal, 3));
+  g.normalizeNormals();
+  g.setAttribute('color', new THREE.BufferAttribute(a.color, 3));
+  g.setAttribute('sway', new THREE.BufferAttribute(a.sway, 1));
+  g.setIndex(new THREE.BufferAttribute(part.index, 1));
+  g.computeBoundingSphere();
   return g;
 }
 
@@ -185,7 +97,7 @@ function instanced(geometry, material, items, { colors = true, cast = false } = 
   return im;
 }
 
-export function createMeadow(field, terrain, kit, quality) {
+export function createMeadow(field, terrain, quality, flora) {
   const group = new THREE.Group();
   group.name = 'meadow';
   const noise = field.noise;
@@ -203,6 +115,8 @@ export function createMeadow(field, terrain, kit, quality) {
     return saturate(k * 1.6);
   };
 
+  // Where the pool stands, told for every clock of the year
+  const uPool = { value: season.row(0) };
   const blade = stylized({
     name: 'grass',
     side: THREE.DoubleSide,
@@ -216,8 +130,12 @@ export function createMeadow(field, terrain, kit, quality) {
     glow: 0.22,
     wet: GRASS_WET,
     shade: GRASS_SHADE,
+    uniforms: { uPool },
     hooks: {
-      vertexPars: yearGLSL,
+      vertexPars: /* glsl */ `
+        ${yearGLSL}
+        uniform float uPool[ CREEK_CLOCKS ];
+      `,
       vertexLocal: /* glsl */ `
         ${PLANT_NUMBER}
         {
@@ -226,6 +144,7 @@ export function createMeadow(field, terrain, kit, quality) {
           transformed.y *= creekOf( uGround, plantClock ).w;
           transformed *= 1.0 - buried;
         }
+        ${POOL_MOVE}
       `,
       fragmentPars: /* glsl */ `uniform vec4 uWind;`,
       // Exactly the turf's year, wind and wash, so a tuft is the colour of the ground under it
@@ -243,7 +162,7 @@ export function createMeadow(field, terrain, kit, quality) {
   const growers = [];
   const flowerMaterial = (track) => {
     const uGrow = { value: season.row(1) };
-    const material = stylized({ name: 'flower', side: THREE.DoubleSide, keepNormals: true, sway: true, rim: 0.05, ramp: 0.7, wrap: 0.3, cloud: true, snow: 0, wet: 0.2, shade: GRASS_SHADE, uniforms: { uGrow }, hooks: GROW_HOOKS });
+    const material = stylized({ name: 'flower', side: THREE.DoubleSide, keepNormals: true, sway: true, rim: 0.05, ramp: 0.7, wrap: 0.3, cloud: true, snow: 0, wet: 0.2, shade: GRASS_SHADE, uniforms: { uGrow, uPool }, hooks: GROW_HOOKS });
     growers.push({ uGrow, track, meshes: [] });
     return material;
   };
@@ -255,7 +174,8 @@ export function createMeadow(field, terrain, kit, quality) {
   // ---------- Grass ----------
   {
     const cell = lerp(0.3, 0.165, quality.density);
-    const variants = [0, 1, 2].map((v) => tuftGeometry(createRng(300 + v), { blades: 6 + v, height: 0.27 + v * 0.03, lean: 0.34 + v * 0.07 }));
+    // Three tufts of mown grass, and one gone to seed for where the mower does not go
+    const variants = ['tuft-a', 'tuft-b', 'tuft-c', 'tuft-seed'].map((name) => plantGeometry(flora, name));
     const lists = variants.map(() => []);
     const { minX, minZ, maxX, maxZ } = field.bounds;
     for (let z = minZ; z < maxZ; z += cell) {
@@ -273,7 +193,8 @@ export function createMeadow(field, terrain, kit, quality) {
         const s = (0.72 + rng() * 0.5 + wild * 0.7 + saturate(patch) * 0.42) * lerp(0.55, 1, smoothstep(0.5, 0.9, grass));
         _c.copy(ground).multiplyScalar(1.03 + rng.range(-0.05, 0.07));
         _c.offsetHSL(rng.range(-0.008, 0.012), 0, 0);
-        lists[rng.int(0, variants.length - 1)].push({ x: px, y: h - 0.015, z: pz, yaw: rng.range(0, TAU), s, sxz: rng.range(0.9, 1.25), color: _c.clone() });
+        const v = rng.int(0, 2);
+        lists[v === 2 && wild > 0.25 ? 3 : v].push({ x: px, y: h - 0.015, z: pz, yaw: rng.range(0, TAU), s, sxz: rng.range(0.9, 1.25), color: _c.clone() });
       }
     }
     lists.forEach((items, i) => {
@@ -291,13 +212,11 @@ export function createMeadow(field, terrain, kit, quality) {
         name: 'daisy',
         // Daisies are out from spring; the rest of the summer flowers follow
         season: (v) => Math.max(v.springFlowers * 0.55, v.summerFlowers),
-        geometry: flowerGeometry({ petals: 9, radius: 0.085, notch: 0.38, cup: 0.06, height: 0.33, petal: palette.white, heart: palette.butter, stem: palette.grassDeep }),
         count: 420,
         where: (x, z) => smoothstep(-0.15, 0.35, noise.fbm2(x * 0.22 + 4, z * 0.22 + 9, 2)),
       },
       {
         name: 'cornflower',
-        geometry: flowerGeometry({ petals: 7, radius: 0.08, notch: 0.3, cup: 0.22, height: 0.42, petal: palette.cornflower, heart: palette.lilac, stem: palette.grassDeep, double: true }),
         count: 220,
         where: (x, z) => smoothstep(0.05, 0.4, noise.fbm2(x * 0.2 - 12, z * 0.2 + 3, 2) + rim(x, z) * 0.3) * rim(x, z),
       },
@@ -305,19 +224,16 @@ export function createMeadow(field, terrain, kit, quality) {
         name: 'buttercup',
         // By the water they are the marsh marigolds of spring
         season: (v) => Math.max(v.springFlowers, v.summerFlowers),
-        geometry: flowerGeometry({ petals: 5, radius: 0.066, notch: 0.62, cup: 0.3, height: 0.27, petal: palette.butter, heart: '#EFB23A', stem: palette.grassMid, heartSize: 0.3 }),
         count: 300,
         where: (x, z) => smoothstep(0.0, 0.4, noise.fbm2(x * 0.3 + 20, z * 0.3 - 14, 2)) * (0.4 + 0.6 * rim(x, z)),
       },
       {
         name: 'clover',
-        geometry: flowerGeometry({ petals: 6, radius: 0.062, notch: 0.7, cup: 0.5, height: 0.22, petal: palette.pink, heart: '#F7D3DC', stem: palette.grassMid, heartSize: 0.72, double: true }),
         count: 300,
         where: (x, z) => smoothstep(0.0, 0.35, noise.fbm2(x * 0.28 - 3, z * 0.28 + 25, 2)) * (0.3 + 0.7 * smoothstep(1, -6, x)),
       },
       {
         name: 'poppy',
-        geometry: flowerGeometry({ petals: 4, radius: 0.1, notch: 0.74, cup: 0.36, height: 0.46, petal: palette.red, heart: palette.ink, stem: palette.grassDeep, heartSize: 0.26 }),
         count: 90,
         where: (x, z) => smoothstep(0.1, 0.45, noise.fbm2(x * 0.24 + 40, z * 0.24 + 40, 2) + 0.15) * rim(x, z),
       },
@@ -336,7 +252,7 @@ export function createMeadow(field, terrain, kit, quality) {
         items.push({ x, y: h - 0.01, z, yaw: rng.range(0, TAU), rx: rng.range(-0.22, 0.22), rz: rng.range(-0.22, 0.22), s: rng.range(0.82, 1.3), color: _c.setScalar(rng.range(0.93, 1.06)).clone() });
         if (kind.name === 'daisy' && items.length % 40 === 0) flowerSpots.push(new THREE.Vector3(x, h + 0.4, z));
       }
-      const im = instanced(kind.geometry, flowerMaterial(kind.season || ((v) => v.summerFlowers)), items);
+      const im = instanced(plantGeometry(flora, kind.name), flowerMaterial(kind.season || ((v) => v.summerFlowers)), items);
       im.name = kind.name;
       group.add(grown(im));
     }
@@ -357,57 +273,16 @@ export function createMeadow(field, terrain, kit, quality) {
       return saturate(k);
     };
 
-    // A mushroom: a domed cap on a stout stem
-    const mushroom = (cap, under, stem, { r = 0.07, h = 0.11, dots = false } = {}) => {
-      const parts = [];
-      const stalk = lathe(
-        [
-          [r * 0.34, 0],
-          [r * 0.26, h * 0.5],
-          [r * 0.22, h],
-        ],
-        7
-      );
-      part(stalk, stem);
-      parts.push(stalk);
-      const dome = lathe(
-        [
-          [r * 0.2, h * 0.92],
-          [r, h * 0.98],
-          [r * 0.9, h + r * 0.34],
-          [r * 0.52, h + r * 0.62],
-          [0.002, h + r * 0.7],
-        ],
-        10
-      );
-      const top = col(cap);
-      const below = col(under);
-      paint(dome, (p, n, i, out) => out.copy(n.y < -0.2 ? below : top).multiplyScalar(0.92 + 0.14 * saturate(n.y)));
-      parts.push(dome);
-      if (dots) {
-        for (let k = 0; k < 7; k++) {
-          const a = (k / 7) * TAU + 0.4;
-          const d = k === 0 ? 0 : r * (k % 2 ? 0.52 : 0.3);
-          const spot = icoSphere(r * 0.11, 0);
-          part(spot, palette.cream, { x: Math.cos(a) * d, y: h + r * (0.7 - (d / r) * (d / r) * 0.5), z: Math.sin(a) * d, sy: 0.5 });
-          parts.push(spot);
-        }
-      }
-      return merge(parts);
-    };
-
     const kinds = [
       {
         name: 'dandelion',
         season: (v) => v.springFlowers,
-        geometry: flowerGeometry({ petals: 13, radius: 0.07, notch: 0.72, cup: 0.14, height: 0.2, petal: '#F6C93E', heart: '#EDAE2E', stem: palette.grassMid, heartSize: 0.5, double: true }),
         count: 640,
         where: (x, z) => smoothstep(-0.25, 0.3, noise.fbm2(x * 0.24 + 61, z * 0.24 - 17, 2)),
       },
       {
         name: 'hepatica',
         season: (v) => v.springFlowers,
-        geometry: flowerGeometry({ petals: 6, radius: 0.056, notch: 0.5, cup: 0.14, height: 0.12, petal: '#8292E6', heart: palette.cream, stem: palette.grassDeep, heartSize: 0.3 }),
         count: 300,
         where: (x, z) => smoothstep(0.1, 0.75, near(trees, x, z)) * (0.55 + 0.45 * saturate(0.5 + noise.fbm2(x * 0.5 + 9, z * 0.5 + 9, 2))),
       },
@@ -415,21 +290,18 @@ export function createMeadow(field, terrain, kit, quality) {
         name: 'crocus',
         // The first to flower: up through the last of the snow, gone by full spring
         season: (v) => v.snowdrops,
-        geometry: flowerGeometry({ petals: 6, radius: 0.05, notch: 0.82, cup: 1.1, height: 0.12, petal: palette.lilac, heart: palette.butter, stem: palette.grassLight, heartSize: 0.34 }),
         count: 200,
         where: (x, z) => smoothstep(0.1, 0.5, noise.fbm2(x * 0.33 - 40, z * 0.33 + 12, 2)),
       },
       {
         name: 'snowdrop',
         season: (v) => v.snowdrops,
-        geometry: flowerGeometry({ petals: 3, radius: 0.045, notch: 0.86, cup: 1.3, height: 0.14, petal: palette.white, heart: '#BFE0A6', stem: palette.grassMid, heartSize: 0.4, double: true }),
         count: 260,
         where: (x, z) => smoothstep(0.0, 0.6, near(trees, x, z) * 0.7 + smoothstep(0.1, 0.5, noise.fbm2(x * 0.3 + 80, z * 0.3 - 33, 2)) * 0.5),
       },
       {
         name: 'fly-agaric',
         season: (v) => v.mushrooms,
-        geometry: mushroom('#E2604E', palette.cream, palette.cream, { r: 0.085, h: 0.12, dots: true }),
         count: 44,
         cast: true,
         where: (x, z) => smoothstep(0.15, 0.7, Math.max(near(spruces, x, z), near(trees.slice(1), x, z) * 0.8)),
@@ -437,7 +309,6 @@ export function createMeadow(field, terrain, kit, quality) {
       {
         name: 'bolete',
         season: (v) => v.mushrooms,
-        geometry: mushroom('#B07A4E', '#EAD9B0', '#E9DCC2', { r: 0.075, h: 0.1 }),
         count: 34,
         cast: true,
         where: (x, z) => smoothstep(0.2, 0.75, near(trees.slice(1), x, z)),
@@ -457,7 +328,7 @@ export function createMeadow(field, terrain, kit, quality) {
         const tilt = kind.cast ? 0.12 : 0.22;
         items.push({ x, y: h - 0.01, z, yaw: rng2.range(0, TAU), rx: rng2.range(-tilt, tilt), rz: rng2.range(-tilt, tilt), s: rng2.range(0.8, 1.35), color: _c.setScalar(rng2.range(0.93, 1.06)).clone() });
       }
-      const im = instanced(kind.geometry, flowerMaterial(kind.season), items, { cast: !!kind.cast });
+      const im = instanced(plantGeometry(flora, kind.name), flowerMaterial(kind.season), items, { cast: !!kind.cast });
       im.name = kind.name;
       group.add(grown(im));
     }
@@ -465,6 +336,8 @@ export function createMeadow(field, terrain, kit, quality) {
 
   // ---------- The year ----------
   function dress() {
+    // The pool comes out with the summer's things (see world/house.js)
+    season.across((v) => v.setSummer, uPool.value);
     for (const g of growers) {
       const shown = season.across(g.track, g.uGrow.value) > 0.004;
       for (const m of g.meshes) m.visible = shown;

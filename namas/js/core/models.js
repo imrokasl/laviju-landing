@@ -7,9 +7,10 @@ import * as THREE from './three.js';
 // out in one season (or all year), packed small: positions and texture
 // coordinates as 16-bit shares of their bounds, normals as signed bytes (none
 // for a part lit by its faces), colours as sRGB bytes, and two bytes of
-// bookkeeping per point: `cut`, the zone it belongs to (high four bits: 0
-// outside, 1 the house, 2 the garage) and the wall or roof it is part of (low
-// four), and `lamp`, the light that makes it glow.
+// bookkeeping per point: `cut`, where it belongs (in its top two bits how much
+// of the snow it is kept from, 0 to 3; in the two below its zone: 0 outside,
+// 1 the house, 2 the garage; 8 for a thin sheet; and in the low three the
+// wall or roof it is part of), and `lamp`, the light that makes it glow.
 
 const FILE = 'house.bin';
 const base = new URL('../../assets/models/', import.meta.url);
@@ -63,7 +64,8 @@ function parseParts(buffer) {
   return { header: head, parts };
 }
 
-// The garden: trees, bushes, and the templates of the lawn's tufts and flowers
+// The garden: trees, bushes, the templates of the lawn's tufts and flowers,
+// and the animals
 export async function loadFlora() {
   const response = await fetch(new URL('flora.bin', base));
   if (!response.ok) throw new Error(`flora.bin: ${response.status}`);

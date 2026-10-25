@@ -365,7 +365,10 @@ export function createTerrain(field, textures) {
           vec3 stone = texture2D( uPebbles, wuv * 1.1 ).rgb * mix( vec3( 1.0 ), diffuseColor.rgb * 1.5, 0.5 );
           diffuseColor.rgb = mix( diffuseColor.rgb, stone, saturate( vTerrain.y ) * 0.85 );
 
-          float dry = 1.0;
+          // Under the greenhouse's glass no snow lies and no leaves fall
+          vec2 ghAt = wuv - vec2( ${greenhouse.x.toFixed(3)}, ${greenhouse.z.toFixed(3)} );
+          vec2 ghIn = abs( vec2( ghAt.x * ${Math.cos(greenhouse.yaw).toFixed(4)} - ghAt.y * ${Math.sin(greenhouse.yaw).toFixed(4)}, ghAt.x * ${Math.sin(greenhouse.yaw).toFixed(4)} + ghAt.y * ${Math.cos(greenhouse.yaw).toFixed(4)} ) ) - vec2( ${(greenhouse.w / 2 - 0.05).toFixed(3)}, ${(greenhouse.l / 2 - 0.05).toFixed(3)} );
+          float dry = step( 0.0, max( ghIn.x, ghIn.y ) );
 
           // Fallen leaves: two loose layers, thick under the trees that shed them
           if ( creekGround.z > 0.002 && dry > 0.0 ) {

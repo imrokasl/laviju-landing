@@ -10,16 +10,12 @@ const TEXTURES = {
   bark: { file: 'bark.webp', data: true, repeat: true },
   rock: { file: 'rock.webp', data: true, repeat: true },
   pebbles: { file: 'pebbles.webp', repeat: true },
-  // Leaf sprites hold painted light and shade only; the shader supplies the hue
+  // Leaves painted over the soft body of a crown: light and shade only, the
+  // shader supplies the hue. The leaves themselves come modelled, in flora.bin.
   foliageOak: { file: 'foliage-oak.webp', data: true, sprite: true },
-  foliageBirch: { file: 'foliage-birch.webp', data: true, sprite: true },
-  spruceSprig: { file: 'spruce-sprig.webp', data: true, sprite: true },
-  // For the seasons: bare twigs (light and shade only) and sixteen fallen
-  // leaves on one sheet (colour)
-  twigs: { file: 'twigs.webp', data: true, sprite: true },
+  // Sixteen fallen leaves on one sheet (colour), for the autumn's lawn and
+  // the leaves the wind carries
   leaves: { file: 'leaves.webp', sprite: true },
-  // A cluster of blossom for the apple tree and the bushes in spring (colour)
-  blossom: { file: 'blossom.webp', sprite: true },
   // Cushions of moss for the stones, and the crumbly earth of paths and bare ground
   moss: { file: 'moss.webp', data: true, repeat: true },
   earth: { file: 'earth.webp', data: true, repeat: true },

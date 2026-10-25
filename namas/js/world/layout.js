@@ -236,8 +236,9 @@ export const CLEARINGS = [
 
 // The six areas and their spots: where each marker floats and how the camera
 // looks at it. An area's view frames the whole room (`target`, a turn from the
-// home azimuth, a polar angle and a zoom as a share of the overview); a spot is
-// looked at from its area's angle, a little closer.
+// home azimuth or an `azimuth` of its own, a polar angle and a zoom as a share
+// of the overview); a spot is looked at from its area's angle, a little closer,
+// or from a turn of its own in the area's `turns`.
 export const AREAS = {
   virtuve: {
     room: 'virtuve',
@@ -255,8 +256,16 @@ export const AREAS = {
   svetaine: {
     room: 'svetaine',
     marker: [-1.9, f0 + 2.3, -2.4],
-    // From a little right of the parasol, and steep enough to look over it
-    view: { target: [-1.9, f0 + 0.7, -3.1], turn: 0.15, polar: 0.85, zoom: 0.33 },
+    // From the front: the kitchen's half of the house stays shut, and seen
+    // from further right it would stand in front of the stairs and the
+    // piano. So it is an azimuth of its own, not a turn: a phone's home view
+    // comes from further right, and stands further back. Steep enough to
+    // look over the parasol.
+    view: { target: [-1.9, f0 + 0.7, -3.1], azimuth: 0.1, polar: 0.85, zoom: 0.33 },
+    // The fireplace and the bookshelf face into the room from its left wall,
+    // so they are looked at from the right: that far from the kitchen's half,
+    // it is not in the way
+    turns: { zidinys: 0.15, lentyna: 0.15 },
     spots: {
       sofa: [-2.6, f0 + 1.05, -5.7],
       lentyna: [-4.05, f0 + 2.15, -0.95],
