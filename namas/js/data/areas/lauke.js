@@ -8,6 +8,9 @@ export default {
   of: 'kiemo',
   tone: 'sage',
   sticker: 'tree-swing',
+  in: {
+    ziema: { sticker: 'tree-swing-winter' },
+  },
   lede: 'Kiemas – obelis su sūpynėmis, daržas, šiltnamis ir smėlio dėžė. Kiekvieną metų laiką jis vis kitoks.',
   spots: [
     {
@@ -402,6 +405,7 @@ export default {
       ],
       in: {
         ruduo: { sticker: 'apple' },
+        ziema: { sticker: 'tree-swing-winter' },
       },
       seasons: {
         pavasaris: [

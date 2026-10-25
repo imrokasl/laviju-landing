@@ -676,6 +676,9 @@ export default {
           note: 'Balkone vaikas būna tik su jumis.',
         },
       ],
+      in: {
+        ziema: { sticker: 'flower-box-winter' },
+      },
       seasons: {
         pavasaris: [
           {

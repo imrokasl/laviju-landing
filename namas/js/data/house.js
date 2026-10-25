@@ -116,9 +116,12 @@ export const weatherIn = (kind, season) => ({ ...kind, ...(season?.cold ? kind.c
 // sage, lilac, rose, aqua), its marker's sticker, `lede` (what the page says as
 // the camera comes in) and its spots. A spot has its year-round `ideas` and
 // `seasons`, the ideas only one season brings; `in` holds a name or a sticker
-// that is the spot's in one season only, and an idea's `place` names the spot
-// on its card when that idea happens somewhere else. Where each marker floats
-// and how the camera looks at it is in js/world/layout.js, under the same ids.
+// that is the spot's in one season only (an area's `in`, its marker's). A
+// marker keeps its sticker all year but out of doors, where a season changes
+// the thing itself: in winter the apple tree stands bare. An idea's `place`
+// names the spot on its card when that idea happens somewhere else. Where each
+// marker floats and how the camera looks at it is in js/world/layout.js, under
+// the same ids.
 export const AREAS = [virtuve, svetaine, vonia, vaiku, tevu, garazas, lauke];
 
 // The house as one season has it: every area with its spots, and every spot
@@ -131,7 +134,7 @@ export function areasIn(seasonId) {
     name: area.name,
     of: area.of,
     tone: area.tone,
-    sticker: area.sticker,
+    sticker: area.in?.[seasonId]?.sticker ?? area.sticker,
     lede: area.lede,
     season,
     spots: area.spots.map((spot) => {
