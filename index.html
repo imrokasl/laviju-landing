@@ -31,9 +31,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,72,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20260928-1" />
+  <link rel="stylesheet" href="/styles.css?v=20261027-1" />
   <link rel="stylesheet" href="/blog/blog.css?v=20261025-2" />
-  <link rel="stylesheet" href="/home.css?v=20261011-1" />
+  <link rel="stylesheet" href="/home.css?v=20261027-1" />
   <script>document.documentElement.classList.add('js');</script>
   <script type="application/ld+json">
     {
@@ -87,6 +87,7 @@
         <a href="/blog/" class="nav__link nav__link--strong" id="nav-blog"><span class="nav__perch">Tinklaraštis<img class="nav__bird" src="/blog/assets/stickers/bird-perched-64.webp" width="73" height="64" alt="" decoding="async" /><img class="nav__notes" src="/blog/assets/stickers/notes-36.webp" width="44" height="36" alt="" decoding="async" /></span></a>
         <a href="#contact" class="nav__link" id="nav-contact">Kontaktai</a>
         <a href="https://admin.laviju.lt" class="nav__link" id="nav-admin">Prisijungti</a>
+        <a href="https://admin.laviju.lt/register" class="nav__link nav__link--signup" id="nav-register">Sukurti paskyrą</a>
       </div>
       <button class="nav__menu-btn" id="nav-menu-btn" aria-label="Atidaryti meniu" aria-controls="mobile-menu" aria-expanded="false">
         <span></span>
@@ -104,6 +105,7 @@
     <a href="/blog/" class="mobile-menu__link mobile-menu__link--strong"><span class="nav__perch">Tinklaraštis<img class="nav__bird" src="/blog/assets/stickers/bird-perched-64.webp" width="73" height="64" alt="" decoding="async" /><img class="nav__notes" src="/blog/assets/stickers/notes-36.webp" width="44" height="36" alt="" decoding="async" /></span></a>
     <a href="#contact" class="mobile-menu__link">Kontaktai</a>
     <a href="https://admin.laviju.lt" class="mobile-menu__link">Prisijungti</a>
+    <a href="https://admin.laviju.lt/register" class="mobile-menu__link">Sukurti paskyrą</a>
   </div>
 
   <main id="main">
@@ -135,12 +137,21 @@
             vaiko ugdymosi pasiekimus bei pažangą, glaudžiai bendradarbiaujant su pedagogais.
           </p>
 
-          <div class="b-hero__actions" id="hero-actions">
-            <a href="mailto:info@laviju.lt?subject=Laviju%20demonstracija" class="btn btn--primary magnetic" id="hero-cta">
-              <span>Užsakyti demonstraciją</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-            <a href="#how-it-works" class="btn btn--ghost" id="hero-secondary">Kaip veikia Laviju?</a>
+          <div class="b-hero__actions h-audience" id="hero-actions">
+            <div class="h-audience__item">
+              <span class="h-audience__label" id="hero-kindergartens">Darželiams</span>
+              <a href="mailto:info@laviju.lt?subject=Laviju%20demonstracija" class="btn btn--primary magnetic" id="hero-cta" aria-describedby="hero-kindergartens">
+                <span>Užsakyti demonstraciją</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+            <div class="h-audience__item">
+              <span class="h-audience__label h-audience__label--family" id="hero-parents-label">Tėvams</span>
+              <a href="https://admin.laviju.lt/register" class="btn btn--family magnetic" id="hero-parents" aria-describedby="hero-parents-label">
+                <span>Sukurti paskyrą</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              </a>
+            </div>
           </div>
 
           <div class="store-links h-store" aria-label="Programėlės parduotuvės">
@@ -168,7 +179,7 @@
           </div>
 
           <ul class="h-trust" aria-label="Svarbiausia apie Laviju">
-            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Nemokama darželių šeimoms</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Nemokama tėvams</li>
             <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Be reklamų</li>
             <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pagal ugdymo gaires</li>
           </ul>
@@ -578,7 +589,7 @@
                 <span class="why-step__num">01</span>
                 <h3 class="why-step__title">Darželis susieja šeimą</h3>
                 <p>Administratorius <mark>pakviečia tėvus ir pedagogus</mark>, priskiria grupes bei užtikrina, kad kiekvienas matytų <mark>tik jam skirtą informaciją</mark>.</p>
-                <p class="why-step__hint">Tėvai neužsiregistruoja patys – pakvietimą el. paštu atsiunčia darželis. Taip saugomas vaikų duomenų privatumas.</p>
+                <p class="why-step__hint">Darželio informaciją mato tik darželio pakviesti tėvai. Jei darželis Laviju dar nenaudoja, tėvai gali susikurti nemokamą paskyrą patys ir susieti ją vėliau.</p>
               </div>
               <figure class="h-step-shot h-step-shot--family" data-reveal="up">
                 <div class="h-device">
@@ -937,7 +948,7 @@
         <img class="b-cta__stk b-cta__stk--sun" src="/blog/assets/stickers/sun.webp" width="480" height="475" alt="" loading="lazy" decoding="async" />
         <div class="cta__content">
           <h2 class="cta__title">Pradėkite ugdyti <em class="serif-accent">prasmingai</em></h2>
-          <p class="cta__subtitle">Laviju yra visiškai nemokama darželių šeimoms. Pasiteiraukite savo darželyje!</p>
+          <p class="cta__subtitle">Tėvams Laviju nemokama: susikurkite paskyrą patys, o kai jūsų darželis pradės naudoti Laviju, ją susiesite.</p>
           <div class="b-cta__actions">
             <a href="https://play.google.com/store/apps/details?id=com.laviju.app" class="store-badge b-cta__store magnetic" target="_blank" rel="noopener noreferrer" aria-label="Atsisiųsti Laviju iš Google Play">
               <svg class="store-badge__icon" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
@@ -950,6 +961,10 @@
                 <small>Atsisiųsti dabar</small>
                 Google Play
               </span>
+            </a>
+            <a href="https://admin.laviju.lt/register" class="btn btn--white magnetic" id="cta-parents">
+              <span>Tėvams: sukurti paskyrą</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
             </a>
             <a href="mailto:info@laviju.lt?subject=Laviju%20demonstracija" class="btn btn--white magnetic" id="cta-btn">
               <span>Darželiams: demonstracija</span>

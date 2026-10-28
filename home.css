@@ -66,6 +66,44 @@
   stroke-linejoin: round;
 }
 
+/* One button per audience: kindergartens book a demo, parents start on their own. */
+.h-audience {
+  align-items: flex-end;
+}
+
+.h-audience__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.h-audience__label {
+  padding-left: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.h-audience__label--family {
+  color: var(--sage-ink);
+}
+
+.btn--family {
+  background: #fff;
+  color: var(--sage-ink);
+  /* An inset ring, not a border, so it stays as tall as the demo button. */
+  box-shadow: inset 0 0 0 1.5px var(--sage-3), 0 6px 20px rgba(47, 107, 71, 0.12);
+}
+
+.btn--family:hover {
+  transform: translateY(-2px);
+  background: var(--sage-1);
+  box-shadow: inset 0 0 0 1.5px var(--sage-ink), 0 10px 28px rgba(47, 107, 71, 0.18);
+}
+
 .js .h-trust {
   opacity: 0;
   transform: translateY(18px);
@@ -2056,6 +2094,15 @@ img.h-float {
   .h-trust {
     gap: 8px 14px;
     font-size: 13px;
+  }
+
+  .h-audience__item {
+    flex: 1 1 100%;
+    align-items: stretch;
+  }
+
+  .h-audience .btn {
+    flex: none;
   }
 
   /* Narrow stage: the cards frame the phone instead of covering its screen */
