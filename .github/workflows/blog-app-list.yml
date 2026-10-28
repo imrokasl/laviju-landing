@@ -1,0 +1,93 @@
+# Keeps blog/app/posts.json, the list of posts the Laviju app shows in Veiklos,
+# in step with the "Turinys" card of blog/index.html: a post added to that card
+# reaches the app by itself. This rebuilds the list and commits it when it
+# changed, and GitHub Pages publishes that commit like any other.
+#
+# The reading below is appBlogPosts() from Kaviju's landing-web/blog/app-posts.js,
+# which writes the same file for the Cloudflare deploy; change both together.
+name: Blog list for the app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - blog/index.html
+      - .github/workflows/blog-app-list.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: blog-app-list
+  cancel-in-progress: false
+
+jobs:
+  posts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the posts from /blog/
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          // &nbsp; stays a no-break space, as it is on the page.
+          const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: String.fromCharCode(0xa0) };
+
+          /** The text of a bit of markup: tags dropped, entities read, spacing collapsed. */
+          function textOf(html = '') {
+            return html
+              .replace(/<[^>]*>/g, '')
+              .replace(/&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi, (entity, decimal, hex, name) => {
+                if (decimal) return String.fromCodePoint(Number(decimal));
+                if (hex) return String.fromCodePoint(parseInt(hex, 16));
+                return ENTITIES[name.toLowerCase()] ?? entity;
+              })
+              // Not \s, which would also eat the no-break spaces that keep "– " with its word.
+              .replace(/[ \t\r\n]+/g, ' ')
+              .trim();
+          }
+
+          /** { posts } in the order the card lists them, newest first. */
+          function appBlogPosts(indexHtml) {
+            const list = /<ol class="contents__list">([\s\S]*?)<\/ol>/.exec(indexHtml);
+            if (!list) throw new Error('/blog/ has no .contents__list to read the posts from');
+
+            const posts = [];
+            for (const [, attributes, body] of list[1].matchAll(/<a\b([^>]*\bclass="contents__item\b[^"]*"[^>]*)>([\s\S]*?)<\/a>/g)) {
+              const url = /\bhref="(\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*\/)"/.exec(attributes)?.[1];
+              const title = textOf(/<b>([\s\S]*?)<\/b>/.exec(body)?.[1]);
+              if (!url || !title) throw new Error(`A post in /blog/'s contents has no address or title: ${attributes.trim()}`);
+              posts.push({
+                url,
+                title,
+                kind: textOf(/\bclass="contents__kicker\b[^"]*">([\s\S]*?)<\/span>/.exec(body)?.[1]),
+                meta: textOf(/<small>([\s\S]*?)<\/small>/.exec(body)?.[1]),
+                image: /<img\b[^>]*\bsrc="([^"]+)"/.exec(body)?.[1] ?? null,
+                tint: /--thumb:\s*var\(--([a-z]+)-\d\)/.exec(attributes)?.[1] ?? null,
+              });
+            }
+            if (!posts.length) throw new Error('/blog/ lists no posts in its contents');
+            return { posts };
+          }
+
+          const feed = appBlogPosts(fs.readFileSync('blog/index.html', 'utf8'));
+          fs.mkdirSync('blog/app', { recursive: true });
+          fs.writeFileSync('blog/app/posts.json', `${JSON.stringify(feed, null, 2)}\n`);
+          console.log(`${feed.posts.length} posts: ${feed.posts.map((post) => post.url).join(', ')}`);
+          EOF
+
+      - name: Commit the list when it changed
+        run: |
+          git add blog/app/posts.json
+          if git diff --cached --quiet; then
+            echo "The list is up to date."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "chore(blog): update the app's list of posts"
+          # A push that landed meanwhile runs this again for its own blog/index.html.
+          git pull --rebase origin main
+          git push origin HEAD:main
