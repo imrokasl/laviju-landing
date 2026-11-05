@@ -1,0 +1,4593 @@
+/* =============================================
+   VĖLINĖS — /blog/velines/
+   A quiet evening page in full-width coloured sections, like the other
+   long posts: the header sits on a watercolor still life whose candles
+   glow, and each part of the advice is a small picture to look at or play
+   with: three lit cards, a calendar, cards that turn over, a door frame
+   with pencil marks, a conversation, puddles and the weather inside, the
+   way to the cemetery with a basket to pack, home rituals, a memory
+   candle at night, a bookshelf and four candles to end with.
+   Builds on /styles.css and /blog/blog.css (tokens, type, shared parts).
+   ============================================= */
+
+.vel {
+  /* a shade darker than the shared one, so small grey text keeps 4.5:1 on the warm tones */
+  --text-tertiary: #5E6C80;
+  --paper: #FAF7EE;
+  --candle: #F0A867;
+  --candle-ink: #9C4A2F;
+  --dusk: #54479E;
+  --dusk-1: #F5F3FD;
+  --dusk-2: #E6E0FA;
+  --dusk-3: #C9BEF2;
+  --night: #2E2A5C;
+  --kraft: #F1E0C4;
+  --kraft-ink: #5B4128;
+}
+
+.vel .section__tag {
+  background: var(--dusk-2);
+  color: var(--dusk);
+}
+
+.vel .scribble path {
+  stroke: var(--candle);
+}
+
+.v-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--dusk);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-kicker::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--candle);
+  box-shadow: 0 0 0 4px rgba(240, 168, 103, 0.22);
+}
+
+.js .v-no-js {
+  display: none;
+}
+
+html:not(.js) .v-needs-js {
+  display: none !important;
+}
+
+.v-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease, transform 0.3s var(--ease-out);
+}
+
+.v-link-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.v-link-btn[hidden] {
+  display: none;
+}
+
+.v-link-btn svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   HERO — words on the empty paper, the still life beside them
+   ============================================= */
+.v-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: calc(var(--nav-h) + clamp(28px, 5vw, 72px)) 0 0;
+  background: linear-gradient(var(--paper) 0 calc(100% - 140px), rgba(250, 247, 238, 0));
+}
+
+/* The painting keeps its 3:2 shape at the right edge; its left half is the same empty paper */
+.v-hero__scene {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 96px;
+  width: min(66vw, 1180px);
+  aspect-ratio: 3 / 2;
+  pointer-events: none;
+  /* faded at the top, bottom and left, so the painting's paper melts into the page's */
+  -webkit-mask-image: linear-gradient(transparent, #000 5%, #000 88%, transparent), linear-gradient(90deg, transparent, #000 14%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(transparent, #000 5%, #000 88%, transparent), linear-gradient(90deg, transparent, #000 14%);
+  mask-composite: intersect;
+}
+
+.v-hero__art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Warm light breathing over the two lanterns of the painting */
+.v-hero__glow {
+  position: absolute;
+  left: var(--gx);
+  top: var(--gy);
+  width: var(--gs, 9%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(circle, rgba(255, 226, 150, 0.85), rgba(255, 210, 130, 0.35) 38%, rgba(255, 200, 120, 0) 70%);
+  mix-blend-mode: screen;
+  animation: vFlicker 3.8s ease-in-out var(--gd, 0s) infinite;
+}
+
+@keyframes vFlicker {
+  0%, 100% { opacity: 0.55; scale: 1; }
+  18% { opacity: 0.85; scale: 1.06; }
+  32% { opacity: 0.6; scale: 0.98; }
+  55% { opacity: 0.9; scale: 1.08; }
+  70% { opacity: 0.65; scale: 1; }
+}
+
+.v-hero__leaf {
+  position: absolute;
+  left: var(--lx);
+  top: 0;
+  width: 40px;
+  height: auto;
+  opacity: 0;
+  filter: drop-shadow(0 8px 8px rgba(91, 65, 40, 0.14));
+  animation: vLeaf 17s linear var(--ld) infinite;
+}
+
+@keyframes vLeaf {
+  0% { opacity: 0; transform: translate(0, 40px) rotate(var(--lr)); }
+  8% { opacity: 0.8; }
+  35% { transform: translate(30px, 30vh) rotate(calc(var(--lr) + 40deg)); }
+  65% { transform: translate(-16px, 55vh) rotate(calc(var(--lr) - 10deg)); }
+  88% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(14px, 80vh) rotate(calc(var(--lr) + 30deg)); }
+}
+
+.is-idle .v-hero__glow,
+.is-idle .v-hero__leaf {
+  animation-play-state: paused;
+}
+
+.v-hero__inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.v-hero__copy {
+  max-width: min(600px, 46vw);
+  padding-bottom: clamp(40px, 5vw, 72px);
+}
+
+.v-hero__meta {
+  margin-bottom: 20px;
+}
+
+.v-hero__title {
+  margin-bottom: 22px;
+  color: var(--text);
+  font-size: clamp(38px, 4.6vw, 68px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.v-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--dusk);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.v-hero__eyebrow img {
+  width: 30px;
+  height: auto;
+}
+
+.v-hero__title .serif-accent {
+  padding-right: 0.06em;
+  font-size: 1.06em;
+  color: var(--dusk);
+}
+
+.v-hero__dek {
+  max-width: 31em;
+  margin-bottom: 26px;
+  color: var(--text-secondary);
+  font-size: clamp(17px, 1.4vw, 19px);
+  line-height: 1.7;
+}
+
+.v-hero__byline {
+  justify-content: flex-start;
+  margin: 0 0 28px;
+}
+
+.v-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+/* The chips to the main parts, on the bottom edge of the header */
+.v-hero__steps {
+  position: relative;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-lg) 28px;
+}
+
+.v-hero__steps a:focus-visible {
+  outline-offset: -3px;
+}
+
+.js .v-hero .crumbs,
+.js .v-hero__meta,
+.js .v-hero__title,
+.js .v-hero__dek,
+.js .v-hero__byline,
+.js .v-hero__actions {
+  opacity: 0;
+  translate: 0 18px;
+  animation: vRise 0.9s var(--ease-out) 0.05s forwards;
+}
+
+.js .v-hero__meta { animation-delay: 0.1s; }
+.js .v-hero__title { animation-delay: 0.2s; }
+.js .v-hero__dek { animation-delay: 0.45s; }
+.js .v-hero__byline { animation-delay: 0.55s; }
+.js .v-hero__actions { animation-delay: 0.65s; }
+
+@keyframes vRise {
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* =============================================
+   SHARED PIECES — full-width sections, headings, source lines, bubbles
+   ============================================= */
+.v-sec {
+  position: relative;
+  padding: clamp(72px, 9vw, 124px) 0;
+  scroll-margin-top: 64px;
+}
+
+.v-wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.v-wrap--narrow {
+  max-width: 880px;
+}
+
+.vel [hidden] {
+  display: none !important;
+}
+
+.v-h3 {
+  margin-bottom: 10px;
+  color: var(--text);
+  font-size: clamp(22px, 2.1vw, 27px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.v-kicker--light {
+  color: #DCD5FA;
+}
+
+/* keeps "3–6 metų" and the like on one line */
+.v-nw {
+  white-space: nowrap;
+}
+
+/* Citation chips inside running text */
+.vel .fact__src {
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: 1px;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Links in the text of the sections */
+.v-sec a:not(.fact__src):not(.btn) {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* A fact under a block: its chips first, then one or two sentences */
+.v-src {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 780px;
+  margin-top: 22px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.v-src > .fact__src,
+.v-src__chips {
+  flex-shrink: 0;
+  margin: 1px 0 0;
+}
+
+.v-src__chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.v-src__chips .fact__src {
+  margin: 0;
+}
+
+/* A row of chips under a block */
+.v-cites {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.v-cites .fact__src {
+  margin: 0;
+}
+
+.v-cites--tight {
+  margin-top: 14px;
+}
+
+/* Phrases to try, as speech bubbles */
+.v-bubbles {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.v-bubbles li {
+  justify-self: start;
+  max-width: 92%;
+  padding: 12px 16px;
+  border-radius: 20px 20px 20px 6px;
+  background: #fff;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 14px 26px -22px rgba(46, 42, 92, 0.55);
+}
+
+.v-bubbles li.is-right {
+  justify-self: end;
+  border-radius: 20px 20px 6px 20px;
+  background: var(--dusk-2);
+}
+
+@keyframes vPop {
+  from { opacity: 0; translate: 0 10px; }
+}
+
+/* Candle glass with its flame on the wick, used on the cards and the reminders */
+.v-three__light,
+.v-lights__candle {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+}
+
+.v-three__glass,
+.v-lights__glass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: auto;
+}
+
+.v-three__flame,
+.v-lights__flame {
+  position: absolute;
+  left: 34.2%;
+  top: 1.2%;
+  width: 31%;
+  height: auto;
+  opacity: 0;
+  scale: 0.2;
+  transform-origin: 50% 79%;
+  transition: opacity 0.5s ease, scale 0.8s var(--ease-out);
+}
+
+@keyframes vFlame {
+  0%, 100% { rotate: 0deg; scale: 1 1; }
+  25% { rotate: -2.5deg; scale: 0.97 1.04; }
+  50% { rotate: 1.5deg; scale: 1.02 0.97; }
+  75% { rotate: -1deg; scale: 0.98 1.03; }
+}
+
+/* Off-screen sections hold their loops still */
+.is-idle *,
+.is-idle *::before,
+.is-idle *::after {
+  animation-play-state: paused !important;
+}
+
+/* =============================================
+   1. BEFORE YOU START — three lit cards, a question first
+   ============================================= */
+.v-start__grid {
+  display: grid;
+  gap: clamp(36px, 5vw, 64px);
+}
+
+/* the heading on the left, the lede beside it */
+.v-start__copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: end;
+  column-gap: 64px;
+}
+
+.v-start__copy > :not(.b-lede) {
+  grid-column: 1;
+}
+
+.v-start__copy > .section__tag {
+  justify-self: start;
+}
+
+.v-start__copy .b-lede {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+}
+
+.v-three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 30px);
+  padding-top: 36px;
+  list-style: none;
+}
+
+.v-three__card {
+  --rd: calc(var(--i) * 0.12s);
+  position: relative;
+  padding: 84px clamp(20px, 2.4vw, 30px) clamp(22px, 2.6vw, 30px);
+  border-radius: 30px;
+  background: var(--card-bg);
+  rotate: var(--rot);
+  box-shadow: 0 30px 50px -40px rgba(46, 42, 92, 0.6);
+}
+
+.v-three__card--sky { --card-bg: linear-gradient(165deg, #F6FAFE, var(--sky-2)); --card-ink: var(--sky-ink); }
+.v-three__card--butter { --card-bg: linear-gradient(165deg, #FFFCF2, var(--butter-2)); --card-ink: var(--butter-ink); }
+.v-three__card--sage { --card-bg: linear-gradient(165deg, #F7FBF8, var(--sage-2)); --card-ink: var(--sage-ink); }
+
+.v-three__light {
+  position: absolute;
+  left: 18px;
+  top: -40px;
+  width: 112px;
+}
+
+/* the three flames catch one after another as the cards arrive */
+.v-three__card.is-in .v-three__flame,
+html:not(.js) .v-three__flame {
+  opacity: 1;
+  scale: 1;
+  transition-delay: calc(0.55s + var(--i) * 0.4s);
+  animation: vFlame 2.6s ease-in-out calc(1.4s + var(--i) * 0.4s) infinite;
+}
+
+.v-three__num {
+  position: absolute;
+  right: 22px;
+  top: 14px;
+  color: var(--card-ink);
+  font-family: var(--serif);
+  font-size: 64px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  opacity: 0.35;
+}
+
+.v-three__card h3 {
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: clamp(20px, 1.8vw, 23px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.v-three__card p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Ask first: the teddy surrounded by the questions to start with */
+.v-askfirst {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  margin-top: clamp(48px, 6vw, 80px);
+  padding: clamp(22px, 3vw, 40px);
+  border-radius: 36px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 30px 60px -50px rgba(46, 42, 92, 0.5);
+}
+
+.v-askfirst__art {
+  position: relative;
+  min-height: 330px;
+}
+
+.v-askfirst__teddy {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 30%;
+  height: auto;
+  translate: -50% 0;
+  filter: drop-shadow(0 12px 14px rgba(30, 42, 58, 0.14));
+}
+
+.v-askfirst__bubbles {
+  list-style: none;
+}
+
+.v-askfirst__bubbles li {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  max-width: 46%;
+  padding: 10px 14px;
+  border-radius: 18px 18px 18px 6px;
+  background: #fff;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  box-shadow: 0 14px 26px -18px rgba(46, 42, 92, 0.45);
+  animation: vBob 6s ease-in-out calc(var(--i) * -1.5s) infinite;
+}
+
+.v-askfirst__bubbles li.is-right {
+  border-radius: 18px 18px 6px 18px;
+  background: var(--butter-2);
+}
+
+.js .v-askfirst__bubbles li {
+  opacity: 0;
+  scale: 0.7;
+  transition: opacity 0.5s ease, scale 0.6s var(--ease-spring);
+  transition-delay: calc(0.3s + var(--i) * 0.22s);
+}
+
+.js .v-askfirst.is-in .v-askfirst__bubbles li {
+  opacity: 1;
+  scale: 1;
+}
+
+@keyframes vBob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+
+.v-askfirst__copy p {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.v-askfirst__copy .v-src {
+  font-size: 15px;
+}
+
+/* =============================================
+   2. WHAT VĖLINĖS IS — two calendar sheets, three moments of history
+   ============================================= */
+.v-days__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+.v-days__say {
+  max-width: 30em;
+  margin-top: 28px;
+  padding: 22px 26px;
+  border-radius: 26px;
+  background: #fff;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.1vw, 27px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  box-shadow: 0 24px 44px -36px rgba(46, 42, 92, 0.55);
+}
+
+.v-days__say-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--dusk);
+  font-family: var(--font);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-cal {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 0 40px;
+}
+
+.v-cal__sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(168px, 17vw, 214px);
+  padding: 0 14px 22px;
+  border-radius: 22px;
+  background: #fff;
+  text-align: center;
+  rotate: var(--rot);
+  box-shadow: 0 30px 50px -32px rgba(46, 42, 92, 0.5);
+}
+
+.v-cal__sheet--dusk {
+  z-index: 1;
+  margin: 54px 0 0 -6px;
+}
+
+.v-cal__rings::before,
+.v-cal__rings::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: -9px;
+  width: 9px;
+  height: 22px;
+  border-radius: 6px;
+  background: #6E6A8A;
+  box-shadow: inset -2px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+.v-cal__rings::before { left: 28%; }
+.v-cal__rings::after { right: 28%; }
+
+.v-cal__month {
+  align-self: stretch;
+  margin: 0 -14px 6px;
+  padding: 22px 0 10px;
+  border-radius: 22px 22px 0 0;
+  background: var(--butter-3);
+  color: var(--butter-ink);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.v-cal__sheet--dusk .v-cal__month {
+  background: var(--dusk);
+  color: #fff;
+}
+
+.v-cal__day {
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(84px, 8.6vw, 116px);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.v-cal__sheet--dusk .v-cal__day {
+  color: var(--dusk);
+}
+
+.v-cal__name {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.v-cal__sub {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.v-cal__stk {
+  position: absolute;
+  z-index: 2;
+  height: auto;
+  filter: drop-shadow(0 10px 12px rgba(30, 42, 58, 0.14));
+}
+
+.v-cal__stk--candles {
+  left: 2%;
+  bottom: 0;
+  width: 25%;
+}
+
+.v-cal__stk--sprig {
+  right: 4%;
+  top: 0;
+  width: 17%;
+  transform-origin: 30% 80%;
+  animation: vSway 7s ease-in-out infinite;
+}
+
+@keyframes vSway {
+  0%, 100% { rotate: -6deg; }
+  50% { rotate: 6deg; }
+}
+
+.v-time {
+  --time-gap: clamp(20px, 3vw, 40px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--time-gap);
+  margin-top: clamp(48px, 6vw, 80px);
+  list-style: none;
+}
+
+.v-time li {
+  position: relative;
+}
+
+/* a dotted line from each moment to the next one, so it stops at the last */
+.v-time li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 42px;
+  left: 42px;
+  width: calc(100% + var(--time-gap));
+  border-top: 3px dotted var(--dusk-3);
+}
+
+.v-time li > img {
+  position: relative;
+  display: block;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+  box-shadow: 0 16px 30px -22px rgba(46, 42, 92, 0.6);
+}
+
+.v-time__when {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--dusk);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-time b {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.v-time p {
+  max-width: 22em;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+/* =============================================
+   3. CLEAR WORDS — cards that turn over to show what a child hears
+   ============================================= */
+.v-flips {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 1.8vw, 22px);
+  list-style: none;
+}
+
+.v-flips li {
+  --rd: calc(var(--i) * 0.1s);
+  display: grid;
+}
+
+.v-flip {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 310px;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  perspective: 1200px;
+}
+
+.v-flip:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.v-flip__face {
+  position: relative;
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 22px;
+  border-radius: 28px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.75s var(--ease-out), box-shadow 0.3s ease;
+}
+
+.v-flip__front {
+  background: #fff;
+  box-shadow: 0 24px 40px -32px rgba(46, 42, 92, 0.55);
+}
+
+/* a soft blob of colour behind each sticker */
+.v-flip__front::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  right: -12%;
+  bottom: -14%;
+  width: 66%;
+  aspect-ratio: 1;
+  border-radius: 46% 54% 58% 42% / 48% 42% 58% 52%;
+  background: var(--blob, var(--lilac-2));
+}
+
+.v-flips li:nth-child(2) .v-flip__front { --blob: var(--sky-2); }
+.v-flips li:nth-child(3) .v-flip__front { --blob: var(--peach-2); }
+.v-flips li:nth-child(4) .v-flip__front { --blob: var(--sage-2); }
+
+.v-flip__front > :not(.v-flip__stk) {
+  position: relative;
+  z-index: 1;
+}
+
+.v-flip__back {
+  transform: rotateY(180deg);
+  background: linear-gradient(165deg, #5F52AE, var(--dusk) 55%, #463A8A);
+  color: #fff;
+}
+
+.v-flip.is-flipped .v-flip__front {
+  transform: rotateY(-180deg);
+}
+
+.v-flip.is-flipped .v-flip__back {
+  transform: rotateY(0deg);
+}
+
+.v-flip:hover .v-flip__front {
+  box-shadow: 0 30px 50px -30px rgba(46, 42, 92, 0.6);
+}
+
+.v-flip__label {
+  margin-bottom: 10px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-flip__back .v-flip__label {
+  color: #DCD5FA;
+}
+
+.v-flip__phrase {
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(23px, 2.1vw, 28px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.v-flip__stk {
+  position: absolute;
+  z-index: 1;
+  right: 6%;
+  bottom: 12%;
+  width: 42%;
+  max-height: 46%;
+  object-fit: contain;
+  object-position: right bottom;
+  height: auto;
+  rotate: 6deg;
+  filter: drop-shadow(0 10px 12px rgba(30, 42, 58, 0.14));
+  transition: rotate 0.5s var(--ease-spring), translate 0.5s var(--ease-spring);
+}
+
+.v-flip:hover .v-flip__stk {
+  rotate: -3deg;
+  translate: 0 -6px;
+}
+
+.v-flip__turn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 7px 12px;
+  border-radius: var(--radius-full);
+  background: var(--dusk-2);
+  color: var(--dusk);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.v-flip__turn::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  rotate: 45deg;
+}
+
+.v-flip__hear {
+  color: #fff;
+  font-size: clamp(20px, 1.8vw, 23px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.v-flip__say {
+  margin-top: auto;
+  padding: 14px 16px;
+  border-radius: 18px 18px 18px 6px;
+  background: #fff;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.v-flip__say b {
+  display: block;
+  margin-top: 2px;
+  color: var(--dusk);
+  font-size: 17px;
+}
+
+/* Without scripts both sides show, one above the other */
+html:not(.js) .v-flip {
+  gap: 10px;
+  cursor: default;
+}
+
+html:not(.js) .v-flip__face {
+  grid-area: auto;
+  transform: none;
+}
+
+html:not(.js) .v-flip__front {
+  min-height: 200px;
+}
+
+/* What "died" means: four plain facts about the body */
+.v-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  margin-top: clamp(48px, 6vw, 72px);
+  padding: clamp(24px, 3.4vw, 44px);
+  border-radius: 36px;
+  background: #fff;
+  box-shadow: 0 30px 60px -50px rgba(46, 42, 92, 0.5);
+}
+
+.v-body__copy p {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.v-body__copy .v-body__sum {
+  margin-top: 18px;
+  padding-left: 18px;
+  border-left: 4px solid var(--candle);
+  color: var(--dusk);
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 26px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.v-body__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+}
+
+.v-body__list li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--paper);
+}
+
+.v-body__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: var(--dusk-2);
+  color: var(--dusk);
+}
+
+.v-body__icon svg,
+.v-keys__icon svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.js .v-body__icon {
+  scale: 0.4;
+  opacity: 0;
+  transition: scale 0.6s var(--ease-spring), opacity 0.4s ease;
+  transition-delay: calc(0.35s + var(--i) * 0.18s);
+}
+
+.js .v-body.is-in .v-body__icon {
+  scale: 1;
+  opacity: 1;
+}
+
+.v-body__list b {
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.v-body__list span:not(.v-body__icon) {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.v-belief {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 20px clamp(24px, 4vw, 48px);
+  margin-top: 18px;
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: 30px;
+  background: var(--dusk-1);
+}
+
+.v-belief__text {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.v-belief__text b {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* =============================================
+   4. WHAT A CHILD UNDERSTANDS — pencil marks on the door frame
+   ============================================= */
+.v-grow__box {
+  --gh: clamp(330px, 34vw, 420px);
+  --kid: 30%;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+}
+
+.v-grow__box[data-age="1"] { --kid: 55%; }
+.v-grow__box[data-age="2"] { --kid: 80%; }
+
+.v-grow__frame,
+.v-grow__marks {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  height: var(--gh);
+}
+
+.v-grow__frame::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(91, 65, 40, 0.16);
+}
+
+/* the frame: a strip of painted wood with ruler ticks */
+.v-grow__wood {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 60%;
+  width: 38px;
+  border-radius: 6px 6px 0 0;
+  background:
+    repeating-linear-gradient(to top, rgba(91, 65, 40, 0.32) 0 2px, transparent 2px 22px) right / 12px 100% no-repeat,
+    linear-gradient(90deg, #F3DDB8, #E7C796 60%, #DDB883);
+  box-shadow: inset -1px 0 0 rgba(91, 65, 40, 0.18), 10px 0 24px -16px rgba(91, 65, 40, 0.5);
+}
+
+/* the teddy grows with the age picked, as far as the room beside the frame allows */
+.v-grow__kid {
+  position: absolute;
+  bottom: 0;
+  right: calc(40% + 14px);
+  width: calc(60% - 14px);
+  height: calc(var(--kid) + 4%);
+  object-fit: contain;
+  object-position: right bottom;
+  filter: drop-shadow(0 12px 14px rgba(30, 42, 58, 0.14));
+  transform-origin: 50% 100%;
+  transition: height 0.8s var(--ease-spring);
+}
+
+.v-grow__mark {
+  position: absolute;
+  left: calc(60% - 8px);
+  bottom: var(--h);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  translate: 0 50%;
+  cursor: pointer;
+}
+
+/* the pencil line across the frame */
+.v-grow__mark::before {
+  content: '';
+  width: 56px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(46, 42, 92, 0.45);
+  transition: background 0.3s ease, width 0.4s var(--ease-out);
+}
+
+.v-grow__mark span {
+  padding: 7px 13px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 10px 20px -14px rgba(30, 42, 58, 0.5);
+  transition: background 0.3s ease, color 0.3s ease, scale 0.4s var(--ease-spring);
+}
+
+.v-grow__mark:hover span {
+  color: var(--dusk);
+  scale: 1.05;
+}
+
+.v-grow__mark.is-active::before {
+  width: 64px;
+  background: var(--candle-ink);
+}
+
+.v-grow__mark.is-active span {
+  background: var(--dusk);
+  color: #fff;
+}
+
+.v-grow__mark:focus-visible {
+  outline: none;
+}
+
+.v-grow__mark:focus-visible span {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.v-grow__cards {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  gap: 14px;
+}
+
+.v-grow__card {
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 30px 60px -50px rgba(46, 42, 92, 0.55);
+}
+
+.v-grow__card.is-new {
+  animation: vPop 0.5s var(--ease-out);
+}
+
+.v-grow__age {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--sage-2);
+  color: var(--sage-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.v-grow__card h3 {
+  margin-bottom: 16px;
+  color: var(--text);
+  font-size: clamp(21px, 2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.v-grow__q {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 12px 18px;
+  border-radius: 20px 20px 20px 6px;
+  background: var(--butter-2);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(20px, 1.9vw, 24px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.v-grow__tip {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.v-grow__tip b {
+  color: var(--text);
+}
+
+/* Three discoveries, usually by 5–7 */
+.v-keys {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 2fr);
+  align-items: center;
+  gap: 16px 32px;
+  margin-top: clamp(40px, 5vw, 64px);
+  padding: clamp(22px, 3vw, 32px);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.v-keys__lead {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.v-keys__lead b {
+  display: block;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.v-keys__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+}
+
+.v-keys__list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.v-keys__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--sage-2);
+  color: var(--sage-ink);
+}
+
+.v-keys__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.v-keys__icon img {
+  width: 30px;
+  height: auto;
+}
+
+.v-keys .v-cites {
+  grid-column: 2;
+  margin-top: 0;
+}
+
+/* =============================================
+   5. QUESTIONS CHILDREN ASK — a small conversation
+   ============================================= */
+.v-chat__box {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(20px, 3vw, 40px);
+}
+
+/* Without scripts the question list is gone and every answer shows: one wide column */
+html:not(.js) .v-chat__box {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.v-chat__label {
+  margin-bottom: 12px;
+  color: var(--sky-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-chat__qs {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+
+.v-chat__q {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, translate 0.35s var(--ease-out), box-shadow 0.25s ease;
+}
+
+.v-chat__q:hover {
+  background: #fff;
+  translate: 4px 0;
+}
+
+.v-chat__q.is-active {
+  background: var(--sky-ink);
+  color: #fff;
+  translate: 8px 0;
+  box-shadow: 0 16px 30px -20px rgba(42, 85, 153, 0.8);
+}
+
+.v-chat__phone {
+  padding: 20px clamp(16px, 2.4vw, 28px) 24px;
+  border-radius: 34px;
+  background: #fff;
+  box-shadow: 0 40px 80px -56px rgba(30, 42, 58, 0.6);
+}
+
+.v-chat__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.v-chat__top .v-chat__label {
+  margin: 0;
+}
+
+.vel .v-chat__seg {
+  margin-top: 0;
+  background: var(--sky-1);
+}
+
+.v-chat__thread {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-height: 330px;
+  padding-top: 20px;
+}
+
+.v-chat__item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.v-msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 88%;
+}
+
+.v-msg > span {
+  padding: 12px 16px;
+  line-height: 1.5;
+}
+
+.v-msg--kid {
+  align-self: flex-start;
+}
+
+.v-msg--kid img {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  padding: 6px;
+  border-radius: 50%;
+  background: var(--sky-2);
+  object-fit: contain;
+}
+
+.v-msg--kid > span {
+  border-radius: 20px 20px 20px 6px;
+  background: var(--sky-2);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.v-msg--you {
+  align-self: flex-end;
+}
+
+.v-msg--you > span {
+  padding: 14px 18px;
+  border-radius: 20px 20px 6px 20px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 16px;
+}
+
+.js .v-chat__box[data-age="maz"] .v-msg--you[data-age="vyr"],
+.js .v-chat__box[data-age="vyr"] .v-msg--you[data-age="maz"] {
+  display: none;
+}
+
+/* Without scripts both answers show, each with its age */
+html:not(.js) .v-msg--you[data-age="maz"] > span::before { content: '3–4 metų vaikui: ' / ''; font-weight: 800; }
+html:not(.js) .v-msg--you[data-age="vyr"] > span::before { content: '5–6 metų vaikui: ' / ''; font-weight: 800; }
+
+.v-chat__tip {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--butter-1);
+  box-shadow: inset 0 0 0 1px var(--butter-2);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.v-chat__tip b {
+  color: var(--text);
+}
+
+/* while the adult "types", the answer and the tip wait */
+.v-chat__typing {
+  display: none;
+  align-self: flex-end;
+  gap: 5px;
+  padding: 16px 18px;
+  border-radius: 20px 20px 6px 20px;
+  background: var(--primary);
+}
+
+.v-chat__typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation: vDot 1s ease-in-out infinite;
+}
+
+.v-chat__typing span:nth-child(2) { animation-delay: 0.15s; }
+.v-chat__typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes vDot {
+  0%, 60%, 100% { translate: 0 0; opacity: 0.55; }
+  30% { translate: 0 -5px; opacity: 1; }
+}
+
+.v-chat__box.is-typing .v-chat__typing {
+  display: flex;
+}
+
+.v-chat__box.is-typing .v-msg--you,
+.v-chat__box.is-typing .v-chat__tip {
+  display: none !important;
+}
+
+.v-chat__item.is-new .v-msg--kid {
+  animation: vPop 0.4s var(--ease-out);
+}
+
+.v-chat__item.is-answered .v-msg--you,
+.v-chat__item.is-answered .v-chat__tip {
+  animation: vPop 0.5s var(--ease-out) backwards;
+}
+
+.v-chat__item.is-answered .v-chat__tip {
+  animation-delay: 0.15s;
+}
+
+.v-dunno {
+  max-width: 780px;
+  margin-top: 28px;
+  padding: 18px 22px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.v-dunno b {
+  color: var(--text);
+}
+
+/* =============================================
+   6. FEELINGS — puddles, the swap list, the weather inside
+   ============================================= */
+.v-puddles {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  margin: 0;
+}
+
+.v-puddles__scene {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 8;
+  border-radius: 32px;
+  background: linear-gradient(180deg, #FFFAF6 0%, #FFF1E8 58%, var(--peach-2) 100%);
+  box-shadow: 0 30px 60px -50px rgba(156, 74, 47, 0.6);
+}
+
+.v-puddles__ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 40%;
+  background: linear-gradient(180deg, #F6D7C4, #EFC6AE);
+}
+
+.v-puddle {
+  position: absolute;
+  left: var(--x);
+  bottom: 9%;
+  width: var(--w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.v-puddle img {
+  width: 100%;
+  height: auto;
+}
+
+/* rings spread over the water now and then */
+.v-puddle:not(.v-puddle--dry)::before {
+  content: '';
+  z-index: 1;
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: 40%;
+  aspect-ratio: 2.6;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  translate: -50% -50%;
+  opacity: 0;
+  animation: vRipple 6s ease-out infinite;
+}
+
+/* the rings start as the boots land, see vHop */
+.v-puddle:nth-of-type(4)::before {
+  animation-delay: 3.3s;
+}
+
+@keyframes vRipple {
+  0% { opacity: 0.95; scale: 0.3; }
+  26%, 100% { opacity: 0; scale: 1.7; }
+}
+
+.v-puddle--dry img {
+  width: 70%;
+  filter: drop-shadow(0 10px 10px rgba(30, 42, 58, 0.14));
+  animation: vBounce 2.4s var(--ease-in-out) infinite;
+}
+
+.v-puddle--dry:last-of-type img {
+  animation-delay: -1.2s;
+}
+
+@keyframes vBounce {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
+}
+
+/* the last label keeps inside the picture */
+.v-puddle:last-of-type small {
+  align-self: flex-end;
+}
+
+.v-puddle small {
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: var(--peach-ink);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* The boots jump into one puddle, over the ball into the next, and back */
+.v-puddles__boots {
+  position: absolute;
+  z-index: 2;
+  --hop-a: 13%;
+  --hop-mid: 38.5%;
+  --hop-b: 64%;
+  left: var(--hop-a);
+  bottom: 20%;
+  width: 12%;
+  height: auto;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 10px 10px rgba(30, 42, 58, 0.16));
+  animation: vHop 6s linear infinite;
+}
+
+@keyframes vHop {
+  0% { left: var(--hop-a); bottom: 20%; rotate: 0deg; scale: 1.1 0.9; }
+  10% { left: var(--hop-a); bottom: 20%; rotate: 0deg; scale: 1 1; animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  32% { left: var(--hop-mid); bottom: 64%; rotate: 10deg; animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  55% { left: var(--hop-b); bottom: 20%; rotate: 0deg; scale: 1.1 0.9; }
+  65% { left: var(--hop-b); bottom: 20%; rotate: 0deg; scale: 1 1; animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  82% { left: var(--hop-mid); bottom: 64%; rotate: -10deg; animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  100% { left: var(--hop-a); bottom: 20%; rotate: 0deg; scale: 1.1 0.9; }
+}
+
+.v-puddles__umbrella {
+  position: absolute;
+  right: 6%;
+  top: 7%;
+  width: 15%;
+  height: auto;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 10px 10px rgba(30, 42, 58, 0.14));
+  animation: vSway 8s ease-in-out infinite;
+}
+
+.v-puddles__cap {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.v-puddles__cap b {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text);
+  font-size: clamp(22px, 2.1vw, 27px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.v-feel__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(16px, 2.4vw, 28px);
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+.v-swap,
+.v-weather {
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 30px 60px -50px rgba(156, 74, 47, 0.55);
+}
+
+.v-swap__cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.v-swap__col {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+
+.v-swap__col li {
+  padding: 11px 14px;
+  border-radius: 16px;
+  font-size: 15.5px;
+  line-height: 1.4;
+}
+
+.v-swap__col--no li {
+  background: var(--peach-1);
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  text-decoration-color: rgba(156, 74, 47, 0.45);
+  text-decoration-thickness: 2px;
+}
+
+.v-swap__col--yes li {
+  background: var(--sage-2);
+  color: #25573A;
+  font-weight: 700;
+}
+
+.js .v-swap__col--yes li {
+  opacity: 0;
+  translate: -12px 0;
+  transition: opacity 0.5s ease, translate 0.6s var(--ease-out);
+}
+
+.js .v-swap__col--yes li:nth-child(1) { transition-delay: 0.5s; }
+.js .v-swap__col--yes li:nth-child(2) { transition-delay: 0.7s; }
+.js .v-swap__col--yes li:nth-child(3) { transition-delay: 0.9s; }
+
+.js .v-swap.is-in .v-swap__col--yes li {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.v-swap__arrow {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--candle);
+  color: #fff;
+}
+
+.v-swap__arrow svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The weather inside: pick a word, the sky changes */
+@property --wa {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #C9D6E8;
+}
+
+@property --wb {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #EDF2F9;
+}
+
+.v-weather {
+  --wa: #C9D6E8;
+  --wb: #EDF2F9;
+}
+
+.v-weather[data-w="debesis"] { --wa: #D7DEE9; --wb: #F1F4F8; }
+.v-weather[data-w="perkunija"] { --wa: #A9A2CF; --wb: #DCD7EE; }
+.v-weather[data-w="vejas"] { --wa: #CFE6D7; --wb: #EEF7F1; }
+.v-weather[data-w="rukas"] { --wa: #DEDBE6; --wb: #F3F1F6; }
+.v-weather[data-w="menulis"] { --wa: #3B3675; --wb: #6D64B0; }
+.v-weather[data-w="saule"] { --wa: #FFE3A0; --wb: #FFF6DC; }
+
+.v-weather__intro {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.v-weather__sky {
+  position: relative;
+  overflow: hidden;
+  margin-top: 16px;
+  padding: 10px 24px 56px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--wa), var(--wb));
+  transition: --wa 0.9s ease, --wb 0.9s ease;
+}
+
+.v-weather__art {
+  display: block;
+  width: 100%;
+  max-height: 210px;
+  height: auto;
+  overflow: visible;
+}
+
+.w {
+  opacity: 0;
+  transform: translateY(8px) scale(0.92);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.5s ease, transform 0.7s var(--ease-out);
+}
+
+.v-weather[data-w="lietus"] :is(.w--cloud, .w--rain),
+.v-weather[data-w="debesis"] .w--cloud,
+.v-weather[data-w="perkunija"] :is(.w--cloud, .w--bolt),
+.v-weather[data-w="vejas"] .w--wind,
+.v-weather[data-w="rukas"] .w--fog,
+.v-weather[data-w="menulis"] .w--moon,
+.v-weather[data-w="saule"] .w--sun {
+  opacity: 1;
+  transform: none;
+}
+
+.w--sun circle { fill: #F7C948; }
+.w--sun .w__rays {
+  fill: none;
+  stroke: #F2B53A;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transform-box: view-box;
+  transform-origin: 100px 58px;
+  animation: vSpin 24s linear infinite;
+}
+
+@keyframes vSpin {
+  to { rotate: 360deg; }
+}
+
+.w--moon path { fill: #FFF1C4; }
+.w--moon .w__star {
+  fill: #fff;
+  animation: vTwinkle 2.6s ease-in-out infinite;
+}
+
+.w--moon .w__star:nth-of-type(2) { animation-delay: -0.9s; }
+.w--moon .w__star:nth-of-type(3) { animation-delay: -1.7s; }
+
+@keyframes vTwinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.w--cloud path {
+  fill: #fff;
+  transition: fill 0.6s ease;
+}
+
+.v-weather[data-w="perkunija"] .w--cloud path {
+  fill: #8C85BC;
+}
+
+.w--rain .w__drop {
+  fill: none;
+  stroke: #5E8FD0;
+  stroke-width: 4;
+  stroke-linecap: round;
+  animation: vRain 1.1s linear infinite;
+}
+
+.w--rain .w__drop:nth-child(2) { animation-delay: -0.55s; }
+.w--rain .w__drop:nth-child(3) { animation-delay: -0.25s; }
+.w--rain .w__drop:nth-child(4) { animation-delay: -0.8s; }
+
+@keyframes vRain {
+  0% { opacity: 0; translate: 0 -6px; }
+  30% { opacity: 1; }
+  100% { opacity: 0; translate: -3px 14px; }
+}
+
+.w--bolt path {
+  fill: #F7C948;
+  animation: vFlash 2.8s ease-in-out infinite;
+}
+
+@keyframes vFlash {
+  0%, 60%, 100% { opacity: 1; }
+  64% { opacity: 0.2; }
+  68% { opacity: 1; }
+  72% { opacity: 0.4; }
+}
+
+.w--wind path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 60 30;
+  animation: vWind 2.4s linear infinite;
+}
+
+@keyframes vWind {
+  to { stroke-dashoffset: -90; }
+}
+
+.w--fog path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 7;
+  stroke-linecap: round;
+  opacity: 0.9;
+  animation: vDrift 6s ease-in-out infinite alternate;
+}
+
+@keyframes vDrift {
+  to { translate: 12px 0; }
+}
+
+.v-weather__say {
+  position: absolute;
+  left: 18px;
+  bottom: 14px;
+  padding: 9px 15px;
+  border-radius: 18px 18px 18px 6px;
+  background: #fff;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 10px 20px -14px rgba(30, 42, 58, 0.5);
+}
+
+.v-weather__say.is-new {
+  animation: vPop 0.45s var(--ease-out);
+}
+
+.v-weather__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  list-style: none;
+}
+
+.v-weather__chip {
+  min-height: 42px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, scale 0.3s var(--ease-spring);
+}
+
+.v-weather__chip:hover {
+  color: var(--dusk);
+  box-shadow: inset 0 0 0 1.5px var(--dusk-3);
+}
+
+.v-weather__chip.is-active {
+  background: var(--dusk);
+  color: #fff;
+  box-shadow: none;
+  scale: 1.04;
+}
+
+html:not(.js) .v-weather__chip {
+  cursor: default;
+  pointer-events: none;
+}
+
+.v-weather__ask {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.v-weather__ask b {
+  color: var(--dusk);
+}
+
+/* =============================================
+   7. A LOSS THIS YEAR — who died, and what to say
+   ============================================= */
+.v-loss__card {
+  position: relative;
+  padding: clamp(28px, 4.4vw, 56px);
+  border-radius: 40px;
+  background: #fff;
+  box-shadow: 0 40px 80px -60px rgba(46, 42, 92, 0.6);
+}
+
+.v-loss__stk {
+  position: absolute;
+  right: clamp(12px, 3vw, 40px);
+  top: -34px;
+  width: clamp(130px, 15vw, 200px);
+  height: auto;
+  rotate: 7deg;
+  filter: drop-shadow(0 14px 16px rgba(46, 42, 92, 0.16));
+}
+
+.v-loss__head {
+  max-width: 660px;
+}
+
+.v-loss__lede {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.vel .v-loss__seg {
+  margin-top: 26px;
+  background: var(--dusk-1);
+}
+
+.v-loss__panels {
+  display: grid;
+  gap: 28px;
+  margin-top: 26px;
+}
+
+.v-loss__panel {
+  display: grid;
+  gap: 14px;
+  max-width: 820px;
+}
+
+.v-loss__panel.is-new {
+  animation: vPop 0.45s var(--ease-out);
+}
+
+.v-loss__ph {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* with scripts the switch above already names the loss */
+.js .v-loss__ph {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.v-loss__panel .v-bubbles li {
+  background: var(--dusk-1);
+  box-shadow: none;
+}
+
+.v-loss__panel .v-bubbles li.is-right {
+  background: var(--butter-2);
+}
+
+.v-loss__panel .v-src {
+  margin-top: 4px;
+}
+
+.v-loss__text {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.v-loss__note {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 30px;
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--kraft);
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.v-loss__note img {
+  flex-shrink: 0;
+  width: 70px;
+  height: auto;
+  rotate: -6deg;
+}
+
+.v-loss__note b {
+  color: var(--text);
+}
+
+/* =============================================
+   8. AT THE CEMETERY — the way there, a basket, what you will see, safety
+   ============================================= */
+.v-route {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  list-style: none;
+}
+
+.v-route__path {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: -4px;
+  height: 104px;
+  pointer-events: none;
+}
+
+.v-route__path svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.v-route__line {
+  fill: none;
+  stroke: var(--candle);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1 13;
+  vector-effect: non-scaling-stroke;
+  animation: vMarch 2s linear infinite;
+}
+
+@keyframes vMarch {
+  to { stroke-dashoffset: -28; }
+}
+
+.v-stop {
+  --rd: calc(var(--i) * 0.12s);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.v-stop:nth-child(odd) {
+  padding-top: 18px;
+}
+
+.v-stop__pin {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 14px;
+  border: 4px solid var(--butter-3);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 16px 30px -20px rgba(119, 88, 0, 0.6);
+}
+
+.v-stop__pin img {
+  width: 62%;
+  height: 62%;
+  object-fit: contain;
+  transition: scale 0.4s var(--ease-spring), rotate 0.4s var(--ease-spring);
+}
+
+.v-stop:hover .v-stop__pin img {
+  scale: 1.12;
+  rotate: -6deg;
+}
+
+.v-stop__when {
+  color: var(--butter-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.v-stop h3 {
+  margin: 4px 0 10px;
+  color: var(--text);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.v-stop__say {
+  margin-bottom: 10px;
+  padding: 11px 14px;
+  border-radius: 18px 18px 18px 6px;
+  background: #fff;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 12px 24px -20px rgba(119, 88, 0, 0.55);
+}
+
+.v-stop__note {
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.v-trip__duo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(16px, 2.4vw, 28px);
+  margin-top: clamp(48px, 6vw, 80px);
+}
+
+.v-spy,
+.v-pack {
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: 32px;
+}
+
+/* What you will see: polaroids pinned to a kraft board */
+.v-spy {
+  background: linear-gradient(160deg, #F8EEDD, var(--kraft));
+}
+
+.v-spy__intro,
+.v-pack__intro {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.v-spy__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 14px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.v-spy__list li {
+  display: flex;
+  flex-direction: column;
+  width: calc((100% - 28px) / 3);
+  padding: 8px 8px 12px;
+  border-radius: 6px;
+  background: #fff;
+  rotate: var(--rot);
+  box-shadow: 0 14px 22px -16px rgba(91, 65, 40, 0.6);
+  transition: rotate 0.4s var(--ease-spring), scale 0.4s var(--ease-spring);
+}
+
+.v-spy__list li:hover {
+  rotate: 0deg;
+  scale: 1.04;
+}
+
+.v-spy__list img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  padding: 12%;
+  border-radius: 3px;
+  background: var(--paper);
+  object-fit: contain;
+}
+
+.v-spy__list b {
+  margin: 8px 2px 2px;
+  color: var(--text);
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.v-spy__list span {
+  margin: 0 2px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* The basket: things jump in when tapped */
+.v-pack {
+  background: #fff;
+  box-shadow: 0 30px 60px -50px rgba(119, 88, 0, 0.6);
+  scroll-margin-top: 100px;
+}
+
+.v-pack__things {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+  list-style: none;
+}
+
+.v-pack__things li {
+  display: grid;
+}
+
+.v-thing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px 14px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--butter-1);
+  box-shadow: inset 0 0 0 1.5px var(--butter-2);
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.25s ease, box-shadow 0.25s ease, translate 0.3s var(--ease-out);
+}
+
+.v-thing:hover {
+  translate: 0 -3px;
+  box-shadow: inset 0 0 0 1.5px var(--butter-3);
+}
+
+.v-thing img {
+  width: auto;
+  height: 54px;
+  margin-bottom: 4px;
+  object-fit: contain;
+  transition: opacity 0.35s ease, scale 0.45s var(--ease-spring);
+}
+
+.v-thing b {
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.v-thing__why {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+html:not(.js) .v-thing {
+  cursor: default;
+}
+
+.v-thing[aria-pressed="true"] {
+  background: var(--sage-1);
+  box-shadow: inset 0 0 0 1.5px var(--sage-3);
+}
+
+.v-thing[aria-pressed="true"] img {
+  opacity: 0.35;
+  scale: 0.8;
+}
+
+/* a check in the corner once packed */
+.v-thing[aria-pressed="true"]::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 44%, #fff 44% 56%, transparent 56%) 6px 9px / 6px 6px no-repeat,
+    linear-gradient(-45deg, transparent 44%, #fff 44% 56%, transparent 56%) 9px 5px / 9px 10px no-repeat,
+    var(--sage-ink);
+  animation: vPop 0.3s var(--ease-out);
+}
+
+.v-pack__basket {
+  position: relative;
+  width: min(210px, 58%);
+  margin: 26px auto 0;
+}
+
+.v-pack__basket > img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* the things sink in behind the front rim of the basket */
+.v-pack__in {
+  position: absolute;
+  z-index: 2;
+  left: 17%;
+  right: 17%;
+  top: -40%;
+  bottom: 37%;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: center;
+  align-content: flex-start;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.v-pack__in img {
+  width: auto;
+  height: 44px;
+  margin: 0 -4px -16px;
+  rotate: var(--r, 0deg);
+  animation: vDrop 0.55s var(--ease-out);
+}
+
+@keyframes vDrop {
+  0% { opacity: 0; translate: 0 -70px; }
+  60% { opacity: 1; translate: 0 6px; }
+  100% { translate: 0 0; }
+}
+
+.v-pack__basket.is-bump > img {
+  animation: vBump 0.4s var(--ease-out);
+}
+
+@keyframes vBump {
+  40% { scale: 1.05 0.95; }
+}
+
+.v-pack__count {
+  margin-top: 12px;
+  color: var(--butter-ink);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.v-pack__count.is-done {
+  color: var(--sage-ink);
+}
+
+.v-pack .v-cites {
+  justify-content: center;
+}
+
+/* Safety: the evening card */
+.v-safe {
+  position: relative;
+  overflow: hidden;
+  margin-top: clamp(48px, 6vw, 80px);
+  padding: clamp(28px, 4.4vw, 56px);
+  border-radius: 40px;
+  background:
+    radial-gradient(70% 90% at 100% 0%, rgba(240, 168, 103, 0.18), transparent 60%),
+    linear-gradient(160deg, #3D3778, var(--night));
+  color: #fff;
+  scroll-margin-top: 100px;
+}
+
+.v-safe__head {
+  max-width: 640px;
+}
+
+.v-safe__title {
+  color: #fff;
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.v-safe__title .serif-accent,
+.v-night .b-title .serif-accent {
+  color: #F7C77F;
+}
+
+.v-safe__rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+  list-style: none;
+}
+
+.v-safe__rules li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.v-safe__rules b {
+  display: block;
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.v-safe__icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: rgba(240, 168, 103, 0.18);
+  color: var(--candle);
+}
+
+.v-safe__icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.v-safe__src {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.v-safe .fact__src,
+.v-src--light .fact__src {
+  margin: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.v-safe a.fact__src:hover,
+.v-safe a.fact__src:focus-visible,
+.v-src--light a.fact__src:hover,
+.v-src--light a.fact__src:focus-visible {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* How far a driver sees you: two bars */
+.v-reflect {
+  display: grid;
+  gap: 10px;
+  align-self: stretch;
+  margin-top: 14px;
+}
+
+.v-reflect__row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 70px;
+  align-items: center;
+  gap: 10px;
+}
+
+.v-reflect__label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v-reflect__bar {
+  position: relative;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.v-reflect__bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--w);
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.4);
+  transition: width 1.4s var(--ease-out) 0.4s;
+}
+
+.v-reflect__row--yes .v-reflect__bar::before {
+  background: linear-gradient(90deg, rgba(240, 168, 103, 0.35), var(--candle));
+}
+
+.v-reflect__bar img {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  width: auto;
+  height: 36px;
+  translate: 0 -50%;
+  transition: opacity 0.4s ease 1.5s;
+}
+
+.js .v-safe:not(.is-in) .v-reflect__bar::before {
+  width: 0;
+}
+
+.js .v-safe:not(.is-in) .v-reflect__bar img {
+  opacity: 0;
+}
+
+.v-reflect__row b {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* =============================================
+   9. AT HOME — three small rituals
+   ============================================= */
+.v-home__box {
+  display: grid;
+  gap: 18px;
+}
+
+.v-home__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.v-home__tab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+  padding: 10px 16px 10px 10px;
+  border: 0;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.6);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.25s ease, box-shadow 0.25s ease, translate 0.3s var(--ease-out);
+}
+
+.v-home__tab:hover {
+  background: rgba(255, 255, 255, 0.9);
+  translate: 0 -2px;
+}
+
+.v-home__tab img {
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  padding: 6px;
+  border-radius: 18px;
+  background: var(--peach-1);
+  object-fit: contain;
+}
+
+.v-home__tab b {
+  display: block;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.v-home__tab small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.v-home__tab.is-active {
+  background: #fff;
+  box-shadow: 0 20px 34px -24px rgba(156, 74, 47, 0.6), inset 0 0 0 2px var(--peach-3);
+}
+
+.v-ritual {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  overflow: hidden;
+  border-radius: 36px;
+  background: #fff;
+  box-shadow: 0 40px 80px -60px rgba(156, 74, 47, 0.7);
+  scroll-margin-top: 100px;
+}
+
+.v-ritual.is-new {
+  animation: vPop 0.45s var(--ease-out);
+}
+
+.v-ritual__art {
+  min-height: 360px;
+  height: 100%;
+}
+
+.v-ritual__body {
+  padding: clamp(24px, 3.6vw, 48px);
+}
+
+.v-ritual__meta {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--peach-2);
+  color: var(--peach-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.v-ritual h3 {
+  margin-bottom: 16px;
+  color: var(--text);
+  font-size: clamp(24px, 2.4vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.v-steps {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+  list-style: none;
+  counter-reset: vstep;
+}
+
+.v-steps li {
+  position: relative;
+  padding-left: 44px;
+  color: var(--text-secondary);
+  font-size: 16.5px;
+  line-height: 1.6;
+  counter-increment: vstep;
+}
+
+.v-steps li::before {
+  content: counter(vstep);
+  position: absolute;
+  left: 0;
+  top: -1px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--peach-2);
+  color: var(--peach-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.v-ritual__tip {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--paper);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.v-ritual__tip b {
+  color: var(--text);
+}
+
+/* =============================================
+   10. THE MEMORY CANDLE — the page turns to night
+   ============================================= */
+.v-night__card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(28px, 5vw, 64px);
+  border-radius: 44px;
+  background:
+    radial-gradient(90% 60% at 50% 115%, rgba(169, 158, 220, 0.55), transparent 65%),
+    linear-gradient(180deg, #24204D, #39336F);
+  color: #fff;
+  box-shadow: 0 50px 90px -60px rgba(36, 32, 77, 0.9);
+}
+
+.v-night__stars {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    radial-gradient(1.6px 1.6px at 8% 12%, #fff 98%, transparent),
+    radial-gradient(1.2px 1.2px at 22% 30%, #fff 98%, transparent),
+    radial-gradient(1.8px 1.8px at 36% 8%, #fff 98%, transparent),
+    radial-gradient(1.2px 1.2px at 52% 20%, #fff 98%, transparent),
+    radial-gradient(1.4px 1.4px at 68% 10%, #fff 98%, transparent),
+    radial-gradient(1.2px 1.2px at 80% 26%, #fff 98%, transparent),
+    radial-gradient(1.8px 1.8px at 92% 14%, #fff 98%, transparent),
+    radial-gradient(1.2px 1.2px at 14% 52%, #fff 98%, transparent),
+    radial-gradient(1.4px 1.4px at 88% 48%, #fff 98%, transparent),
+    radial-gradient(1.2px 1.2px at 4% 78%, #fff 98%, transparent),
+    radial-gradient(1.6px 1.6px at 96% 74%, #fff 98%, transparent);
+  animation: vTwinkle 5s ease-in-out infinite;
+}
+
+.v-night__head {
+  max-width: 660px;
+  margin: 0 auto clamp(28px, 4vw, 44px);
+  text-align: center;
+}
+
+.v-night__head .v-kicker {
+  justify-content: center;
+}
+
+.v-night .b-title {
+  color: #fff;
+}
+
+.v-night__lede {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: clamp(17px, 1.35vw, 19px);
+  line-height: 1.65;
+}
+
+.v-candle {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(16px, 3vw, 40px);
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(16px, 2.4vw, 28px);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.v-candle__stage {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1.02;
+  border-radius: 26px;
+  background: linear-gradient(180deg, #4A4486 0%, #6D64B0 55%, #A99EDC 100%);
+}
+
+/* the room fills with warm light once the candle burns */
+.v-candle__stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(55% 46% at 50% 58%, rgba(255, 214, 140, 0.55), rgba(255, 214, 140, 0) 72%);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.v-candle.is-lit .v-candle__stage::before {
+  opacity: 1;
+}
+
+.v-candle__moon {
+  position: absolute;
+  top: 7%;
+  right: 9%;
+  width: 17%;
+  height: auto;
+  opacity: 0.9;
+}
+
+/* The candle and its flame share one box, so the flame stays on the wick at any size */
+.v-candle__holder {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  width: 72%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+}
+
+.v-candle__glass,
+.v-candle__flame {
+  position: absolute;
+  height: auto;
+}
+
+.v-candle__glass {
+  inset: 0;
+  width: 100%;
+}
+
+.v-candle__flame {
+  left: 34.2%;
+  top: 1.2%;
+  width: 31%;
+  opacity: 0;
+  scale: 0.2;
+  transform-origin: 50% 79%;
+  transition: opacity 0.5s ease, scale 0.7s var(--ease-out);
+}
+
+.v-candle.is-lit .v-candle__flame {
+  opacity: 1;
+  scale: 1;
+  animation: vFlame 2.6s ease-in-out 0.7s infinite;
+}
+
+.v-candle__panel {
+  min-width: 0;
+}
+
+.v-candle__panel .v-kicker {
+  display: flex;
+  margin: 0 0 10px;
+}
+
+.v-candle__line {
+  min-height: 3.1em;
+  margin: 0 0 10px;
+  color: #fff;
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.v-candle__line.is-new {
+  animation: vPop 0.6s var(--ease-out);
+}
+
+.v-candle__hint {
+  margin: 0 0 20px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.v-candle__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+
+.v-candle__btn img {
+  width: 20px;
+  height: auto;
+}
+
+.v-candle .v-link-btn {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #fff;
+}
+
+.v-candle .v-link-btn:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+.v-candle__dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 18px;
+  list-style: none;
+}
+
+.v-candle__dots li {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.3s ease, scale 0.3s var(--ease-out);
+}
+
+.v-candle__dots li.is-on {
+  background: var(--candle);
+  scale: 1.25;
+}
+
+.v-candle__starters {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+
+.v-candle__starters li {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.v-src--light {
+  max-width: 980px;
+  margin: 24px auto 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* =============================================
+   11. BOOKS — pull one off the shelf
+   ============================================= */
+.v-shelf__box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+}
+
+/* Without scripts the shelf is gone and every book shows: one wide column */
+html:not(.js) .v-shelf__box {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.v-shelf__rack {
+  position: relative;
+  padding-top: 30px;
+}
+
+.v-shelf__spines {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 300px;
+  padding: 0 clamp(96px, 11vw, 136px) 0 clamp(80px, 9vw, 112px);
+  list-style: none;
+}
+
+.v-shelf__spines li {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+/* A painted cloth spine (its height, shape and blank title band come from the picture) */
+.v-spine {
+  position: relative;
+  display: block;
+  height: var(--h);
+  aspect-ratio: var(--ar);
+  padding: 0;
+  border: 0;
+  border-radius: 10px 10px 6px 6px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  filter: drop-shadow(0 5px 5px rgba(30, 42, 58, 0.14));
+  transition: translate 0.45s var(--ease-spring), filter 0.3s ease;
+}
+
+.v-spine img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* the title, stamped into the plain band between the badge and the lower bands */
+.v-spine span {
+  position: absolute;
+  top: var(--t);
+  bottom: var(--b);
+  left: 8%;
+  right: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: rgba(30, 42, 58, 0.86);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.12;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+.v-spine:hover {
+  translate: 0 -8px;
+}
+
+.v-spine.is-active {
+  translate: 0 -22px;
+  filter: drop-shadow(0 16px 12px rgba(30, 42, 58, 0.26));
+}
+
+.v-spine:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.v-shelf__plank {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(#E1B987, #C99660);
+  box-shadow: 0 16px 22px -14px rgba(91, 65, 40, 0.7);
+}
+
+.v-shelf__stk {
+  position: absolute;
+  bottom: 18px;
+  height: auto;
+  filter: drop-shadow(0 10px 10px rgba(30, 42, 58, 0.14));
+}
+
+.v-shelf__stk--teddy {
+  left: 0;
+  width: clamp(92px, 10vw, 128px);
+}
+
+.v-shelf__stk--pile {
+  right: 0;
+  width: clamp(84px, 9vw, 116px);
+}
+
+.v-shelf__cards {
+  display: grid;
+  gap: 14px;
+}
+
+.v-book {
+  padding: clamp(24px, 3vw, 36px);
+  border-left: 14px solid var(--spine);
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 30px 60px -50px rgba(119, 88, 0, 0.6);
+}
+
+.v-book.is-new {
+  animation: vPop 0.45s var(--ease-out);
+}
+
+.v-book__by {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.v-book h3 {
+  margin: 6px 0 10px;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(26px, 2.6vw, 32px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.v-book p:not(.v-book__by) {
+  color: var(--text-secondary);
+  font-size: 16.5px;
+  line-height: 1.65;
+}
+
+.v-book .v-book__tip {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--butter-1);
+  font-size: 15px;
+}
+
+.v-book__tip b {
+  color: var(--text);
+}
+
+/* =============================================
+   12. WHEN TO ASK FOR HELP — what is usual, what is worth a call
+   ============================================= */
+.v-signs {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+  gap: clamp(16px, 2.4vw, 28px);
+}
+
+.v-signs__col {
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 30px 60px -50px rgba(47, 107, 71, 0.6);
+}
+
+.v-signs__col h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.v-signs__col > p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.v-signs__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--sage-2);
+  color: var(--sage-ink);
+}
+
+.v-signs__col--ask .v-signs__icon {
+  background: var(--peach-2);
+  color: var(--peach-ink);
+}
+
+.v-signs__icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.v-signs__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  list-style: none;
+}
+
+.v-signs__chips li {
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--sage-1);
+  box-shadow: inset 0 0 0 1px var(--sage-2);
+  color: #25573A;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.v-signs__list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.v-signs__list li {
+  position: relative;
+  padding-left: 24px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.v-signs__list li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.62em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--peach-3);
+}
+
+/* =============================================
+   13. FOUR CANDLES, FOUR REMINDERS
+   ============================================= */
+.v-lights__row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 3vw, 36px);
+  list-style: none;
+}
+
+.v-lights__row li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.v-lights__candle {
+  width: clamp(96px, 10vw, 128px);
+}
+
+/* a warm glow behind each candle once it is lit */
+.v-lights__candle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: 120%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(circle, rgba(255, 214, 140, 0.6), rgba(255, 214, 140, 0) 65%);
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.v-lights__row.is-in .v-lights__candle::before,
+html:not(.js) .v-lights__candle::before {
+  opacity: 1;
+  transition-delay: calc(0.5s + var(--i) * 0.5s);
+}
+
+.v-lights__row.is-in .v-lights__flame,
+html:not(.js) .v-lights__flame {
+  opacity: 1;
+  scale: 1;
+  transition-delay: calc(0.5s + var(--i) * 0.5s);
+  animation: vFlame 2.6s ease-in-out calc(1.4s + var(--i) * 0.5s) infinite;
+}
+
+.v-lights__row p {
+  max-width: 15em;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.v-lights__quote {
+  max-width: 780px;
+  margin: clamp(48px, 6vw, 80px) auto 0;
+  text-align: center;
+}
+
+.v-lights__quote blockquote {
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 38px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.v-lights__quote figcaption {
+  margin-top: 16px;
+  color: var(--dusk);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* =============================================
+   SOURCES + END
+   ============================================= */
+.v-sources {
+  padding: clamp(40px, 6vw, 72px) 0 clamp(48px, 6vw, 80px);
+}
+
+.v-sources__title {
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.v-sources .sources__note {
+  margin-top: 16px;
+}
+
+/* One card: who the sources are at a glance, the full list folded away */
+.v-srcbox {
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid var(--border-light);
+  border-radius: 28px;
+  background: #fff;
+}
+
+.v-srcbox__lede {
+  max-width: 62ch;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.v-srcbox__who {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+  list-style: none;
+}
+
+.v-srcbox__who li {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--lilac-1);
+  color: var(--lilac-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.v-srcbox__more {
+  margin-top: 18px;
+}
+
+.v-srcbox__more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 800;
+  list-style: none;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.v-srcbox__more summary::-webkit-details-marker {
+  display: none;
+}
+
+.v-srcbox__more summary:hover {
+  background: var(--sky-1);
+}
+
+.v-srcbox__more summary:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.v-srcbox__more summary svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate 0.3s var(--ease-out);
+}
+
+.v-srcbox__more[open] summary svg {
+  rotate: 180deg;
+}
+
+.v-srcbox__close,
+.v-srcbox__more[open] .v-srcbox__open {
+  display: none;
+}
+
+.v-srcbox__more[open] .v-srcbox__close {
+  display: inline;
+}
+
+/* the list itself: two tight columns */
+.vel .v-srcbox .sources__list--article {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 12px;
+  margin-top: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.vel .v-srcbox .sources__list a {
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.vel .v-srcbox .sources__list small {
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.vel .share--end {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.vel .share--end .share__label {
+  flex-basis: 100%;
+}
+
+/* =============================================
+   FALLING LEAVES — one or two per section, slow, at the edges
+   ============================================= */
+.v-fall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  container-type: size;
+}
+
+.v-fall img {
+  position: absolute;
+  left: var(--lx);
+  top: -60px;
+  width: var(--lw, 36px);
+  height: auto;
+  opacity: 0;
+  filter: drop-shadow(0 8px 8px rgba(91, 65, 40, 0.14));
+  animation: vFall var(--ls, 28s) linear var(--ld, 0s) infinite;
+}
+
+@keyframes vFall {
+  0% { opacity: 0; transform: translate(0, 0) rotate(var(--lr)); }
+  5% { opacity: 0.85; }
+  28% { transform: translate(28px, 28cqh) rotate(calc(var(--lr) + 55deg)); }
+  55% { transform: translate(-18px, 56cqh) rotate(calc(var(--lr) - 15deg)); }
+  80% { transform: translate(16px, 80cqh) rotate(calc(var(--lr) + 35deg)); }
+  94% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(-6px, calc(100cqh + 40px)) rotate(calc(var(--lr) + 10deg)); }
+}
+
+.is-idle .v-fall img {
+  animation-play-state: paused;
+}
+
+/* =============================================
+   A GAME FOR THE CHILD — a torch finds the reflectors in a dark yard
+   ============================================= */
+.v-torch {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.6fr);
+  align-items: center;
+  gap: clamp(22px, 3vw, 44px);
+  margin-top: clamp(28px, 4vw, 44px);
+  padding-top: clamp(26px, 3.6vw, 40px);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.v-torch__title {
+  margin: 6px 0 10px;
+  color: #fff;
+  font-size: clamp(23px, 2.4vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.v-torch__how {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.v-torch__count {
+  margin: 14px 0 16px;
+  color: #F7C77F;
+  font-size: 15.5px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.v-torch__count.is-done {
+  animation: vPop 0.45s var(--ease-out);
+}
+
+.vel .v-torch__all {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.vel .v-torch__all:hover,
+.vel .v-torch__all[aria-pressed="true"] {
+  border-color: #F7C77F;
+  color: #F7C77F;
+}
+
+.v-torch__stage {
+  --tx: 50%;
+  --ty: 40%;
+  --tr: 90px;
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    radial-gradient(50% 40% at 50% 100%, rgba(240, 168, 103, 0.22), transparent 70%),
+    linear-gradient(180deg, #2D2B62 0%, #4A4785 62%, #3D4568 62.4%, #353B57 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  cursor: crosshair;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.v-torch__stage:focus-visible {
+  outline: 3px solid #F7C77F;
+  outline-offset: 4px;
+}
+
+.v-torch__scene {
+  position: absolute;
+  inset: 0;
+}
+
+.v-torch__thing {
+  position: absolute;
+  left: var(--x);
+  bottom: var(--b);
+  width: var(--w);
+}
+
+.v-torch__thing > img:first-child {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.v-torch__refl {
+  position: absolute;
+  left: var(--rx);
+  top: var(--ry);
+  width: var(--rw);
+  height: auto;
+  transform-origin: 50% 4%;
+  animation: vHang 3.4s ease-in-out var(--rd, 0s) infinite alternate;
+  transition: filter 0.2s ease;
+}
+
+@keyframes vHang {
+  from { rotate: -7deg; }
+  to { rotate: 7deg; }
+}
+
+/* a reflector sends the light straight back */
+.v-torch__refl.is-hit,
+.v-torch__stage.is-on .v-torch__refl {
+  filter: brightness(1.75) saturate(0.55) drop-shadow(0 0 5px #fff) drop-shadow(0 0 16px rgba(255, 255, 255, 0.95));
+}
+
+.v-torch__beam,
+.v-torch__dark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.v-torch__beam {
+  z-index: 1;
+  background: radial-gradient(circle calc(var(--tr) * 1.1) at var(--tx) var(--ty), rgba(255, 240, 190, 0.34), rgba(255, 240, 190, 0.08) 65%, transparent 100%);
+  mix-blend-mode: screen;
+}
+
+/* pitch dark, so only the beam shows what stands in the yard */
+.v-torch__dark {
+  z-index: 2;
+  background: #0C0C26;
+  -webkit-mask-image: radial-gradient(circle var(--tr) at var(--tx) var(--ty), transparent 38%, rgba(0, 0, 0, 0.55) 72%, #000 100%);
+  mask-image: radial-gradient(circle var(--tr) at var(--tx) var(--ty), transparent 38%, rgba(0, 0, 0, 0.55) 72%, #000 100%);
+}
+
+.v-torch__stage:not(.is-live) .v-torch__beam,
+.v-torch__stage:not(.is-live) .v-torch__dark,
+.v-torch__stage.is-on .v-torch__beam,
+.v-torch__stage.is-on .v-torch__dark {
+  opacity: 0;
+}
+
+/* what shows in the dark anyway: stars, the moon, the candles and found reflectors */
+.v-torch__glow {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+}
+
+.v-torch__stars {
+  position: absolute;
+  inset: 0 0 45%;
+  background-image:
+    radial-gradient(1.6px 1.6px at 8% 22%, #fff 60%, transparent),
+    radial-gradient(1.4px 1.4px at 19% 9%, #fff 60%, transparent),
+    radial-gradient(1.8px 1.8px at 33% 30%, #fff 60%, transparent),
+    radial-gradient(1.4px 1.4px at 47% 12%, #fff 60%, transparent),
+    radial-gradient(1.6px 1.6px at 61% 26%, #fff 60%, transparent),
+    radial-gradient(1.4px 1.4px at 72% 8%, #fff 60%, transparent),
+    radial-gradient(1.8px 1.8px at 93% 38%, #fff 60%, transparent);
+  opacity: 0.75;
+  animation: vStarsDim 4.6s ease-in-out infinite alternate;
+}
+
+@keyframes vStarsDim {
+  from { opacity: 0.45; }
+  to { opacity: 0.85; }
+}
+
+.v-torch__moon {
+  position: absolute;
+  top: 7%;
+  right: 5%;
+  width: 7.5%;
+  height: auto;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 14px rgba(255, 240, 200, 0.45));
+}
+
+.v-torch__candles {
+  position: absolute;
+  left: 44%;
+  bottom: 9%;
+  width: 9%;
+  height: auto;
+  filter: brightness(0.92) drop-shadow(0 0 12px rgba(255, 196, 110, 0.65));
+}
+
+.v-torch__halo {
+  position: absolute;
+  left: 48.5%;
+  bottom: 13%;
+  width: 22%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 120, 0.42), rgba(255, 190, 110, 0.12) 45%, transparent 70%);
+  translate: -50% 50%;
+  animation: vFlicker 3.8s ease-in-out infinite;
+}
+
+.v-torch__glint {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  background: #fff;
+  opacity: 0;
+  scale: 0.3;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  transition: opacity 0.3s ease, scale 0.5s var(--ease-spring);
+}
+
+.v-torch__glint.is-found {
+  opacity: 0.95;
+  scale: 1;
+  animation: vGlint 2.2s ease-in-out infinite;
+}
+
+@keyframes vGlint {
+  0%, 100% { rotate: 0deg; scale: 1; }
+  50% { rotate: 45deg; scale: 0.7; }
+}
+
+.is-idle .v-torch__refl,
+.is-idle .v-torch__stars,
+.is-idle .v-torch__halo,
+.is-idle .v-torch__glint {
+  animation-play-state: paused;
+}
+
+@media (max-width: 900px) {
+  .v-torch {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .v-fall img {
+    width: 28px;
+  }
+
+  .v-fall img:nth-child(n + 2) {
+    display: none;
+  }
+
+  .v-torch__stage {
+    aspect-ratio: 4 / 3;
+    border-radius: 22px;
+  }
+
+  /* small, but still a thing a finger can aim at */
+  .v-torch__refl {
+    min-width: 8px;
+  }
+
+  .v-torch__glint {
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-fall {
+    display: none;
+  }
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 1100px) {
+  .v-hero__scene {
+    width: 70vw;
+    bottom: 120px;
+  }
+
+  .v-flips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v-flip {
+    min-height: 270px;
+  }
+
+  .v-keys {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-keys .v-cites {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .v-hero {
+    padding-top: var(--nav-h);
+  }
+
+  /* The still life comes first, cropped to its right part, the words below it */
+  .v-hero__scene {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    aspect-ratio: 1 / 0.9;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 6%, #000 80%, transparent);
+    mask-image: linear-gradient(transparent, #000 6%, #000 80%, transparent);
+  }
+
+  .v-hero__frame {
+    position: absolute;
+    right: -2%;
+    bottom: -11.2%;
+    width: 150%;
+  }
+
+  .v-hero__copy {
+    max-width: 640px;
+    margin-top: -8px;
+    padding-bottom: 36px;
+  }
+
+  .v-askfirst,
+  .v-days__grid,
+  .v-body,
+  .v-belief,
+  .v-chat__box,
+  .v-puddles,
+  .v-feel__grid,
+  .v-trip__duo,
+  .v-ritual,
+  .v-candle,
+  .v-shelf__box,
+  .v-signs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-cal {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .v-start__copy {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-start__copy .b-lede {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 20px;
+  }
+
+  .v-grow__box {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  }
+
+  /* The questions become a row of chips to scroll sideways */
+  .v-chat__qs {
+    display: flex;
+    gap: 8px;
+    margin: 0 calc(-1 * var(--space-lg));
+    padding: 2px var(--space-lg) 10px;
+    overflow-x: auto;
+    scroll-padding-inline: var(--space-lg);
+    scrollbar-width: none;
+  }
+
+  .v-chat__qs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .v-chat__qs li {
+    flex: none;
+  }
+
+  .v-chat__q {
+    width: auto;
+    padding: 11px 16px;
+    border-radius: var(--radius-full);
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .v-chat__q:hover,
+  .v-chat__q.is-active {
+    translate: none;
+  }
+
+  .v-chat__thread {
+    min-height: 0;
+  }
+
+  /* The way to the cemetery runs down the page */
+  .v-route {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+
+  .v-route__path {
+    display: none;
+  }
+
+  .v-route::before {
+    content: '';
+    position: absolute;
+    left: 35px;
+    top: 40px;
+    bottom: 40px;
+    border-left: 4px dotted var(--candle);
+  }
+
+  .v-stop {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    column-gap: 18px;
+    align-items: start;
+  }
+
+  .v-stop:nth-child(odd) {
+    padding-top: 0;
+  }
+
+  .v-stop__pin {
+    grid-row: 1 / span 4;
+    width: 74px;
+    height: 74px;
+    margin: 0;
+  }
+
+  .v-stop > :not(.v-stop__pin) {
+    grid-column: 2;
+  }
+
+  .v-stop__say {
+    justify-self: start;
+  }
+
+  .v-ritual__art {
+    min-height: 260px;
+  }
+
+  .v-candle__stage {
+    width: min(100%, 340px);
+    margin: 0 auto;
+    aspect-ratio: 1 / 0.92;
+  }
+
+  .v-candle__line {
+    min-height: 2.6em;
+  }
+
+  .v-shelf__rack {
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .v-lights__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 40px;
+  }
+}
+
+/* Tablets: the painting stays at the right edge without filling the whole first screen */
+@media (min-width: 641px) and (max-width: 900px) {
+  .v-hero__scene {
+    width: min(100%, 620px);
+    margin-left: auto;
+    -webkit-mask-image: linear-gradient(transparent, #000 6%, #000 80%, transparent), linear-gradient(90deg, transparent, #000 16%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(transparent, #000 6%, #000 80%, transparent), linear-gradient(90deg, transparent, #000 16%);
+    mask-composite: intersect;
+  }
+}
+
+@media (min-width: 901px) {
+  .v-hero__frame {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .v-hero__actions .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* the three cards: the candle at the side, the words beside it */
+  .v-three {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-top: 0;
+  }
+
+  .v-three__card {
+    padding: 20px 20px 20px 104px;
+    rotate: none;
+  }
+
+  .v-three__light {
+    left: 10px;
+    top: 14px;
+    width: 86px;
+  }
+
+  .v-three__num {
+    right: 16px;
+    top: 10px;
+    font-size: 44px;
+  }
+
+  .v-askfirst {
+    border-radius: 28px;
+  }
+
+  .v-askfirst__art {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    align-items: end;
+    gap: 14px;
+  }
+
+  .v-askfirst__teddy {
+    position: static;
+    width: 100%;
+    translate: none;
+  }
+
+  .v-askfirst__bubbles {
+    display: grid;
+    gap: 8px;
+  }
+
+  .v-askfirst__bubbles li {
+    position: static;
+    justify-self: start;
+    max-width: none;
+    animation: none;
+  }
+
+  .v-askfirst__bubbles li.is-right {
+    justify-self: end;
+  }
+
+  .v-cal__sheet {
+    width: 150px;
+  }
+
+  .v-cal__sheet--dusk {
+    margin-left: -4px;
+  }
+
+  .v-cal__stk--candles {
+    left: -2%;
+    width: 24%;
+  }
+
+  .v-cal__stk--sprig {
+    right: -2%;
+  }
+
+  /* history reads top to bottom along a dotted line */
+  .v-time {
+    --time-gap: 22px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-time li:not(:last-child)::before {
+    top: 32px;
+    bottom: calc(-32px - var(--time-gap));
+    left: 31px;
+    width: 0;
+    border-top: 0;
+    border-left: 3px dotted var(--dusk-3);
+  }
+
+  .v-time li {
+    padding-left: 82px;
+  }
+
+  .v-time li > img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 64px;
+    height: 64px;
+    padding: 10px;
+  }
+
+  .v-flips {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-flip {
+    min-height: 220px;
+  }
+
+  .v-flip__stk {
+    width: 34%;
+    max-height: 56%;
+  }
+
+  .v-flip__phrase {
+    max-width: 62%;
+  }
+
+  .v-body__list {
+    gap: 10px;
+  }
+
+  .v-body__list li {
+    padding: 14px;
+  }
+
+  /* the door frame on top, the card below */
+  .v-grow__box {
+    --gh: 290px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-grow__cards {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .v-grow__wood {
+    left: 56%;
+  }
+
+  .v-grow__kid {
+    right: calc(44% + 14px);
+    width: calc(56% - 14px);
+  }
+
+  .v-grow__mark {
+    left: calc(56% - 8px);
+  }
+
+  .v-keys__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-msg {
+    max-width: 94%;
+  }
+
+  .v-chat__phone {
+    padding: 16px 14px 18px;
+    border-radius: 28px;
+  }
+
+  .v-chat__top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .v-puddles__scene {
+    aspect-ratio: 4 / 3;
+  }
+
+  .v-puddle {
+    bottom: 12%;
+  }
+
+  .v-puddle small {
+    padding: 2px 7px;
+    font-size: 10.5px;
+  }
+
+  /* a little more room between the four on a narrow screen */
+  .v-puddle:nth-of-type(2) { --x: 2% !important; --w: 28% !important; }
+  .v-puddle:nth-of-type(3) { --x: 33% !important; --w: 18% !important; }
+  .v-puddle:nth-of-type(4) { --x: 52% !important; --w: 22% !important; }
+  .v-puddle:nth-of-type(5) { --x: 80% !important; --w: 17% !important; }
+
+  .v-puddles__boots {
+    --hop-a: 7.5%;
+    --hop-mid: 33.5%;
+    --hop-b: 54.5%;
+    width: 17%;
+  }
+
+  .v-swap__cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-swap__arrow {
+    justify-self: center;
+    rotate: 90deg;
+  }
+
+  .v-loss__stk {
+    top: -26px;
+    right: 10px;
+    width: 104px;
+  }
+
+  .v-loss__head {
+    padding-top: 40px;
+  }
+
+  .vel .v-loss__seg {
+    display: flex;
+    border-radius: 24px;
+  }
+
+  .vel .v-loss__seg .seg__btn {
+    flex: 1 1 auto;
+  }
+
+  .v-loss__note {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .v-loss__note img {
+    width: 52px;
+  }
+
+  .v-spy__list li {
+    width: calc((100% - 14px) / 2);
+  }
+
+  .v-pack__things {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v-safe__rules {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-reflect__row {
+    grid-template-columns: 70px minmax(0, 1fr) 64px;
+  }
+
+  /* the three rituals: small picture tabs */
+  .v-home__tabs {
+    gap: 8px;
+  }
+
+  .v-home__tab {
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+    padding: 10px 6px 12px;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  .v-home__tab img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .v-home__tab b {
+    font-size: 13.5px;
+  }
+
+  .v-home__tab small {
+    display: none;
+  }
+
+  .v-ritual {
+    border-radius: 30px;
+  }
+
+  .v-ritual__art {
+    min-height: 220px;
+  }
+
+  .v-night__card {
+    border-radius: 32px;
+  }
+
+  .v-shelf__spines {
+    gap: 4px;
+    height: 236px;
+    padding: 0 76px 0 70px;
+  }
+
+  .v-spine span {
+    left: 5%;
+    right: 5%;
+    font-size: 11px;
+  }
+
+  .v-shelf__stk--teddy {
+    width: 74px;
+  }
+
+  .v-shelf__stk--pile {
+    width: 72px;
+  }
+
+  .v-src {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .vel .v-srcbox .sources__list--article {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v-srcbox__more summary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .v-src__chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .v-shelf__spines {
+    height: 220px;
+    padding: 0 60px 0 56px;
+  }
+
+  .v-shelf__stk--teddy {
+    width: 60px;
+  }
+
+  .v-shelf__stk--pile {
+    width: 58px;
+  }
+
+  .v-lights__row {
+    column-gap: 12px;
+  }
+
+  .v-lights__row p {
+    font-size: 15.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .v-hero .crumbs,
+  .js .v-hero__meta,
+  .js .v-hero__title,
+  .js .v-hero__dek,
+  .js .v-hero__byline,
+  .js .v-hero__actions {
+    opacity: 1;
+    translate: none;
+    animation: none;
+  }
+
+  .v-hero__leaf {
+    display: none;
+  }
+
+  .vel *,
+  .vel *::before,
+  .vel *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+  }
+
+  .v-flip__face,
+  .v-grow__kid,
+  .v-candle__flame,
+  .v-candle__stage::before,
+  .v-three__flame,
+  .v-lights__flame,
+  .v-lights__candle::before,
+  .v-reflect__bar::before,
+  .js .v-askfirst__bubbles li,
+  .js .v-body__icon,
+  .js .v-swap__col--yes li {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}

@@ -2,9 +2,11 @@
 // LAVIJU — first-party visit statistics
 // No cookies, no identifiers and no third parties. Page, reading and click
 // events go to Laviju's own Supabase Edge Function and are visible only to the
-// platform owner. To tell new visitors from returning ones, the browser keeps
-// only the time of its last visit, a visit count and the kind of source its
-// first visit came from; just coarse groups of those are sent.
+// platform owner. Whether a person used a page at all, only yes or no, tells
+// people from automated browsers. To tell new visitors from returning ones,
+// the browser keeps only the time of its last visit, a visit count and the
+// kind of source its first visit came from; just coarse groups of those are
+// sent.
 // Details: /privacy/#statistika
 // =============================================
 
@@ -34,6 +36,12 @@
   const VISIT_GAP_MS = 1800000;
   const VISIT_MEMORY_MS = 34214400000;
   const IDLE_AFTER_MS = 90000;
+  // Right after loading, the browser itself may scroll to a remembered
+  // position or a #section; that is not a person using the page.
+  const INPUT_GRACE_MS = 1000;
+  // The first use is reported a moment later, so the update cannot overtake
+  // the page view it belongs to.
+  const INPUT_REPORT_MS = 2000;
   const MAX_ENGAGED_MS = 3600000;
   const MAX_INTERACTIONS = 60;
   const MAX_SECTIONS = 40;
@@ -110,7 +118,8 @@
   if (PRODUCTION_HOSTS.indexOf(window.location.hostname) === -1) return;
   if (isOptedOut() || nav.webdriver) return;
   if (/bot|crawl|spider|headless|lighthouse/i.test(nav.userAgent || '')) return;
-  // A post read inside the Laviju app (/blog/<post>/?app) is not a site visit.
+  // A post read inside the Laviju app (/blog/<post>/?app) or a policy page the
+  // app's settings open is not a site visit.
   if (/[?&]app(?:[=&]|$)/.test(window.location.search || '')) return;
 
   // ---------------------------------------------
@@ -382,6 +391,8 @@
   let lastInteractionAt = 0;
   let lastSnapshot = '';
   let nextMilestone = 15000;
+  let pageStartedAt = 0;
+  let hadInput = false;
   const vitals = { ttfb: null, lcp: null, inp: null, cls: null };
 
   // ---------------------------------------------
@@ -418,6 +429,23 @@
     window.clearTimeout(idleTimer);
     idleTimer = window.setTimeout(stopStretch, IDLE_AFTER_MS);
     touchVisit(false);
+  }
+
+  // ---------------------------------------------
+  // Whether a person used the page: a touch, click, key, mouse movement or
+  // scroll. Only yes or no is sent, never where or how often. Automated
+  // browsers that just load a page never use it.
+  // ---------------------------------------------
+  function onInput(event) {
+    if (hadInput || !pageviewId || (event && event.isTrusted === false)) return;
+    if (event && event.type === 'scroll') {
+      // Scrolling inside a page element can be the page's own doing.
+      const target = event.target;
+      if (target && target !== document && target !== window) return;
+      if (now() - pageStartedAt < INPUT_GRACE_MS) return;
+    }
+    hadInput = true;
+    window.setTimeout(() => flush(false), INPUT_REPORT_MS);
   }
 
   // ---------------------------------------------
@@ -562,7 +590,7 @@
     // Running totals: a lost update loses nothing, so unchanged state is skipped.
     const snapshot = JSON.stringify([
       Math.round(engaged / 1000), maxScroll, Object.keys(sections).length,
-      vitals.ttfb, vitals.lcp, vitals.inp, vitals.cls, errorCount,
+      vitals.ttfb, vitals.lcp, vitals.inp, vitals.cls, errorCount, hadInput,
     ]);
     if (snapshot === lastSnapshot) return;
     lastSnapshot = snapshot;
@@ -585,6 +613,7 @@
       vitals,
       errors: errorCount,
       error: firstError,
+      input: hadInput,
     }, leaving);
   }
 
@@ -602,6 +631,8 @@
     interactionCount = 0;
     lastSnapshot = '';
     nextMilestone = 15000;
+    pageStartedAt = now();
+    hadInput = false;
     collectSections();
     measure();
     beginVisit();
@@ -623,6 +654,8 @@
       language: nav.language || null,
       timeZone: timeZone(),
       visit: visitGroups(),
+      // Not yet used; reading updates report the first use.
+      input: false,
     }, false);
 
     onActivity();
@@ -844,6 +877,7 @@
 
   ['scroll', 'wheel', 'keydown', 'pointerdown', 'pointermove', 'touchstart'].forEach((type) => {
     window.addEventListener(type, onActivity, { passive: true, capture: true });
+    window.addEventListener(type, onInput, { passive: true, capture: true });
   });
   window.addEventListener('scroll', queueMeasure, { passive: true });
   window.addEventListener('resize', queueMeasure, { passive: true });

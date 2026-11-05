@@ -281,6 +281,24 @@ img {
   width: 100%;
 }
 
+/* Parents create their own free account beside signing in. */
+.nav__link--signup {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav__link--signup:hover {
+  background: var(--primary-dark);
+  color: #fff;
+}
+
+.nav__link--signup::after {
+  display: none;
+}
+
 .nav__menu-btn {
   display: none;
   flex-direction: column;

@@ -154,7 +154,8 @@
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const tone = TONES[entry.target.dataset.tone] || TONES.base;
-            toneCanvas.style.setProperty('--tone', tone);
+            // on the root, so the contents' scroll mask can match the canvas
+            document.documentElement.style.setProperty('--tone', tone);
           }
         });
       },
