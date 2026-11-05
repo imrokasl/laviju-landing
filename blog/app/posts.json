@@ -1,0 +1,28 @@
+{
+  "posts": [
+    {
+      "url": "/blog/moliugadienis/",
+      "title": "Moliūgadienis: vienas moliūgas – visa diena kartu",
+      "kind": "Savaitės tema",
+      "meta": "Žaidimai · 6 idėjos · 6 min",
+      "image": "/blog/assets/moliugadienis/moliugai.webp",
+      "tint": "peach"
+    },
+    {
+      "url": "/blog/maziau-veiklu-daugiau-kalbejimosi/",
+      "title": "Mažiau veiklų – daugiau kalbėjimosi",
+      "kind": "Straipsnis",
+      "meta": "Kalba · 5 situacijos · 5 min",
+      "image": "/blog/assets/stickers/book-teddy.webp",
+      "tint": "sage"
+    },
+    {
+      "url": "/blog/kalba-auga-kartu-su-jumis/",
+      "title": "Kalba auga kartu su jumis",
+      "kind": "Interaktyvus gidas",
+      "meta": "Kalba · Garsai ir „+1“ · 7 min",
+      "image": "/blog/assets/stickers/bird.webp",
+      "tint": "sky"
+    }
+  ]
+}
