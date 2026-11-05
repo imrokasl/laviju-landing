@@ -1,9 +1,17 @@
 {
   "posts": [
     {
+      "url": "/blog/velines/",
+      "title": "Vėlinės: ką pasakyti vaikui apie tuos, kurių nebėra",
+      "kind": "Savaitės tema",
+      "meta": "Tėvams · 7 klausimai · 12 min",
+      "image": "/blog/assets/velines/zvakes.webp",
+      "tint": "lilac"
+    },
+    {
       "url": "/blog/moliugadienis/",
       "title": "Moliūgadienis: vienas moliūgas – visa diena kartu",
-      "kind": "Savaitės tema",
+      "kind": "Straipsnis",
       "meta": "Žaidimai · 6 idėjos · 6 min",
       "image": "/blog/assets/moliugadienis/moliugai.webp",
       "tint": "peach"
