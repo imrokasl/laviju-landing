@@ -1507,41 +1507,9 @@ a:hover .art__stk:nth-of-type(even) { translate: 0 -3px; scale: 1.06; }
   }
 }
 
-/* Vėlinės: the same card at dusk, lilac where Moliūgadienis had pumpkin */
-.season--dusk .season__card {
-  border-color: rgba(84, 71, 158, 0.16);
-  background: #FEFBF0;
-  box-shadow: 0 46px 90px -56px rgba(46, 42, 92, 0.5), 0 2px 0 rgba(255, 255, 255, 0.8) inset;
-}
-
-.season--dusk .season__head .section__tag {
-  background: var(--lilac-2);
-  color: var(--lilac-ink);
-}
-
-.season--dusk .season__ring text {
-  fill: var(--lilac-ink);
-}
-
-.season--dusk .season__title .serif-accent,
-.season--dusk .season__eyebrow {
-  color: var(--lilac-ink);
-}
-
-.season--dusk .season__num {
-  background: var(--lilac-ink);
-}
-
-.season--dusk .season__stops {
-  border-top-color: rgba(84, 71, 158, 0.22);
-}
-
-.season--dusk .season__stops::before {
-  border-top-color: var(--lilac-3);
-}
-
-.season--dusk .season__leaf {
-  filter: drop-shadow(0 10px 12px rgba(46, 42, 92, 0.16));
+/* Pyragų diena: the same card on the cover's warmer paper, so the picture has no edge */
+.season--kitchen .season__card {
+  background: #FCF4EC;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -7000,6 +6968,7 @@ html:not(.js) .finder {
 .idea__src--peach { --src: #E8843C; }
 .idea__src--butter { --src: #F2C94C; }
 .idea__src--lilac { --src: #A596E6; }
+.idea__src--crust { --src: #C98A3D; }
 
 /* Email invitation */
 .b-section.letter-band {

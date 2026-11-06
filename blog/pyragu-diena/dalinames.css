@@ -1,0 +1,1044 @@
+/* =============================================
+   PYRAGŲ DIENA — Dalinamės (#dalinames)
+   The cake to slice and share: a round table seen from above with a sky
+   gingham cloth, the cake on its platter in the middle, two to six friends
+   round the table with their own small plates, and a cake server that
+   follows the pointer. Positions come from the script (one table of sizes
+   there); this file is the look.
+   Builds on /styles.css and /blog/blog.css (tokens, type, talk bubbles).
+   ============================================= */
+
+.pp {
+  --pp-cloth: #FBFDFF;
+  --pp-check: rgba(143, 186, 232, 0.24);
+  --pp-hem: rgba(122, 167, 222, 0.55);
+  --pp-honey: var(--honey, #E9A94B);
+  --pp-caramel: var(--caramel, #B3611E);
+  --pp-crust: rgba(122, 75, 14, 0.55);
+}
+
+.js .pp-no-js {
+  display: none;
+}
+
+html:not(.js) .pp-needs-js {
+  display: none !important;
+}
+
+.pp [hidden] {
+  display: none !important;
+}
+
+/* =============================================
+   THE CARD — table on one side, words and buttons on the other
+   ============================================= */
+.pp-game {
+  scroll-margin-top: 84px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.16fr) minmax(0, 0.84fr);
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "stage head"
+    "stage count"
+    "stage panel";
+  column-gap: clamp(28px, 4vw, 60px);
+  padding: clamp(22px, 3.4vw, 44px);
+  border-radius: 40px;
+  background: #fff;
+  box-shadow: 0 40px 80px -48px rgba(42, 85, 153, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+}
+
+.pp-head {
+  grid-area: head;
+  align-self: end;
+}
+
+.pp-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--sky-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.pp-kicker::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pp-honey);
+  box-shadow: 0 0 0 4px rgba(233, 169, 75, 0.2);
+}
+
+.pp-title {
+  color: var(--text);
+  font-size: clamp(25px, 2.5vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.pp-how {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* The reader's own cake, from the bake game above */
+.pp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding: 6px 12px 6px 8px;
+  border-radius: var(--radius-full);
+  background: var(--butter-2);
+  color: var(--butter-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pp-badge svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--pp-honey);
+}
+
+.pp-badge.is-new {
+  animation: ppPop 0.6s var(--ease-spring);
+}
+
+/* ---------- How many friends ---------- */
+.pp-count {
+  grid-area: count;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 8px 8px 8px 20px;
+  border-radius: var(--radius-full);
+  background: var(--sky-1);
+}
+
+.pp-count__label {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.pp-stepper {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 2px;
+}
+
+.pp-stepper__btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--primary-dark);
+  font-family: var(--font);
+  cursor: pointer;
+  box-shadow: 0 6px 14px -8px rgba(42, 85, 153, 0.55), inset 0 0 0 1px rgba(42, 85, 153, 0.08);
+  transition: transform 0.3s var(--ease-spring), opacity 0.2s ease;
+}
+
+.pp-stepper__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.pp-stepper__btn:not([aria-disabled="true"]):hover {
+  transform: translateY(-2px);
+}
+
+.pp-stepper__btn[aria-disabled="true"] {
+  opacity: 0.38;
+  cursor: default;
+  box-shadow: none;
+}
+
+.pp-stepper__value {
+  min-width: 2.2ch;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ---------- Status, buttons ---------- */
+.pp-panel {
+  grid-area: panel;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.pp-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-height: 132px;
+  padding: 16px 18px;
+  border-radius: 24px;
+  background: var(--butter-1);
+  box-shadow: inset 0 0 0 1px rgba(247, 221, 140, 0.55);
+}
+
+/* A little pie when the shares are not fair yet, the fraction when they are */
+.pp-status__chip {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 8px 18px -12px rgba(122, 75, 14, 0.6), inset 0 0 0 1px rgba(233, 169, 75, 0.3);
+}
+
+.pp-status__pie {
+  width: 30px;
+  height: 30px;
+  transition: opacity 0.25s ease, scale 0.35s var(--ease-spring);
+}
+
+.pp-status__frac {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--pp-honey);
+  color: #fff;
+  font-size: 22px;
+  opacity: 0;
+  scale: 0.5;
+  transition: opacity 0.25s ease, scale 0.45s var(--ease-spring);
+}
+
+.pp-status__frac.is-on {
+  opacity: 1;
+  scale: 1;
+}
+
+.pp-status__frac.is-on ~ .pp-status__pie {
+  opacity: 0;
+  scale: 0.6;
+}
+
+.pp-status__text {
+  align-self: center;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.pp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.pp-btn {
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 22px;
+}
+
+.pp-btn.btn--ghost {
+  background: #fff;
+}
+
+.pp-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+
+.pp-btn.btn--ghost[aria-disabled="true"]:hover {
+  border-color: var(--border);
+  color: var(--text-secondary);
+  background: #fff;
+}
+
+.pp-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.pp-link-btn:hover {
+  color: var(--primary);
+  background: var(--sky-1);
+}
+
+.pp-link-btn svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pp-keys {
+  color: var(--text-tertiary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pp-keys kbd {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--sky-1);
+  box-shadow: inset 0 -1px 0 rgba(42, 85, 153, 0.18);
+  color: var(--sky-ink);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =============================================
+   THE TABLE — every layer is placed by the script in % of this square
+   ============================================= */
+.pp-stage {
+  grid-area: stage;
+  position: relative;
+  isolation: isolate;
+  align-self: start;
+  width: 100%;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.pp-stage > * {
+  position: absolute;
+}
+
+.pp-layer {
+  inset: 0;
+  pointer-events: none;
+}
+
+/* A round gingham cloth with a stitched hem */
+.pp-cloth {
+  --pp-sq: 13px;
+  z-index: 2;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--pp-cloth);
+  background-image:
+    radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 56%),
+    repeating-linear-gradient(0deg, var(--pp-check) 0 var(--pp-sq), transparent var(--pp-sq) calc(var(--pp-sq) * 2)),
+    repeating-linear-gradient(90deg, var(--pp-check) 0 var(--pp-sq), transparent var(--pp-sq) calc(var(--pp-sq) * 2));
+  background-position: center;
+  box-shadow:
+    0 36px 64px -36px rgba(42, 85, 153, 0.55),
+    0 10px 20px -12px rgba(42, 85, 153, 0.3),
+    inset 0 0 0 1px rgba(42, 85, 153, 0.08),
+    inset 0 -18px 34px rgba(42, 85, 153, 0.07);
+}
+
+@supports (width: 1cqw) {
+  .pp-cloth {
+    --pp-sq: 2.3cqw;
+  }
+}
+
+.pp-cloth::after {
+  content: '';
+  position: absolute;
+  inset: 2.4%;
+  border: 2px dashed var(--pp-hem);
+  border-radius: 50%;
+}
+
+.pp-platter {
+  z-index: 3;
+  height: auto;
+  max-width: none;
+  filter: drop-shadow(0 12px 14px rgba(42, 85, 153, 0.2));
+}
+
+/* ---------- Friends and their plates ---------- */
+.pp-seat {
+  position: absolute;
+  z-index: 3;
+  aspect-ratio: 1;
+}
+
+.pp-seat img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.pp-seat__plate {
+  filter: drop-shadow(0 5px 6px rgba(42, 85, 153, 0.16));
+  transition: opacity 0.5s ease;
+}
+
+.pp-seat__crumbs {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.pp-seat.is-eaten .pp-seat__crumbs {
+  opacity: 1;
+}
+
+.pp-seat.is-eaten .pp-seat__plate {
+  opacity: 0;
+}
+
+.pp-guest {
+  position: absolute;
+  z-index: 4;
+  display: block;
+}
+
+/* friends on the far side sit behind the table: the cloth covers their feet */
+.pp-guest.is-back {
+  z-index: 1;
+}
+
+.pp-guest__body {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+}
+
+.pp-guest__body.is-hop {
+  animation: ppHop 0.62s var(--ease-out);
+}
+
+.pp-guest__img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 7px rgba(42, 52, 70, 0.16));
+  transform-origin: 50% 90%;
+  animation: ppSway 6s ease-in-out infinite;
+}
+
+.pp-guest:nth-child(2) .pp-guest__img { animation-delay: -1.4s; animation-duration: 6.6s; }
+.pp-guest:nth-child(3) .pp-guest__img { animation-delay: -3.1s; animation-duration: 5.4s; }
+.pp-guest:nth-child(4) .pp-guest__img { animation-delay: -0.6s; animation-duration: 7s; }
+.pp-guest:nth-child(5) .pp-guest__img { animation-delay: -4.2s; animation-duration: 6.2s; }
+.pp-guest:nth-child(6) .pp-guest__img { animation-delay: -2.4s; animation-duration: 5.8s; }
+
+.is-idle .pp-guest__img {
+  animation-play-state: paused;
+}
+
+@keyframes ppSway {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+@keyframes ppHop {
+  0%, 100% { transform: none; }
+  30% { transform: translateY(-16%) scale(1.04, 0.97); }
+  55% { transform: translateY(0) scale(1.05, 0.94); }
+  72% { transform: translateY(-5%); }
+}
+
+@keyframes ppPop {
+  0% { scale: 0.6; }
+  60% { scale: 1.08; }
+  100% { scale: 1; }
+}
+
+/* ---------- The cake: pieces, cut lines, crumbs ---------- */
+.pp-cake {
+  z-index: 5;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+/* the cake's shadow on the platter (the cake fills 1/1.1 of its box) */
+.pp-cake::before {
+  content: '';
+  position: absolute;
+  inset: 4.6%;
+  border-radius: 50%;
+  box-shadow: 0 7px 14px rgba(122, 75, 14, 0.26), 0 2px 4px rgba(122, 75, 14, 0.16);
+  transition: opacity 0.5s ease;
+}
+
+.pp-stage:not(.is-ready) .pp-cake::before,
+.pp-stage.is-empty .pp-cake::before {
+  opacity: 0;
+}
+
+.pp-bits,
+.pp-pieces,
+.pp-lines {
+  position: absolute;
+  inset: 0;
+}
+
+/* holds the baked apples' filter; draws nothing */
+.pp-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.pp-piece {
+  position: absolute;
+  inset: 0;
+}
+
+.pp-piece svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* parted pieces cast a little shadow into the gaps between them */
+.pp-piece.is-part > svg {
+  filter: drop-shadow(0 1.5px 1.5px rgba(122, 75, 14, 0.34));
+}
+
+.pp-piece.is-flying {
+  z-index: 2;
+  filter: drop-shadow(0 18px 14px rgba(91, 65, 40, 0.3));
+}
+
+.pp-piece.is-served:not(.is-flying) {
+  z-index: 1;
+  filter: drop-shadow(0 3px 3px rgba(91, 65, 40, 0.22));
+}
+
+.pp-piece__cut {
+  fill: none;
+  stroke: rgba(122, 75, 14, 0.42);
+  stroke-width: 2.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.pp-piece__rim {
+  fill: none;
+  stroke: none;
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* "this piece is bigger than that one": the two the status line talks about.
+   The big one breathes in a white outline, the small one has a dashed one. */
+.pp-piece.is-big {
+  z-index: 1;
+  animation: ppBig 1.6s ease-in-out infinite;
+}
+
+.pp-piece.is-big .pp-piece__rim {
+  stroke: #fff;
+  stroke-width: 4;
+}
+
+.pp-piece.is-small .pp-piece__rim {
+  stroke: var(--primary);
+  stroke-dasharray: 6 5;
+}
+
+@keyframes ppBig {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.04; }
+}
+
+/* each piece's fraction, once the shares are fair */
+.pp-label {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.3em;
+  height: 2.3em;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 6px 14px -6px rgba(91, 65, 40, 0.45);
+  color: var(--pp-caramel);
+  font-size: clamp(12px, 3.6cqw, 19px);
+  translate: -50% -50%;
+  opacity: 0;
+  scale: 0.5;
+  transition: opacity 0.25s ease, scale 0.45s var(--ease-spring);
+}
+
+.pp-stage.is-fair:hover .pp-label,
+.pp-stage.is-fair:focus-within .pp-label,
+.pp-stage.is-fair.is-proud .pp-label {
+  opacity: 1;
+  scale: 1;
+}
+
+.pp-stage.is-served .pp-label {
+  opacity: 0;
+  scale: 0.5;
+}
+
+.pp-frac {
+  display: inline-grid;
+  justify-items: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.pp-frac__n {
+  padding: 0 0.22em 0.06em;
+  border-bottom: 0.09em solid currentColor;
+}
+
+.pp-frac__d {
+  padding-top: 0.08em;
+}
+
+/* Lines through the cake's middle, turned by the script */
+.pp-line {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 0;
+}
+
+.pp-line__bar {
+  position: absolute;
+  top: -1.5px;
+  height: 3px;
+  border-radius: 3px;
+}
+
+.pp-line--slit .pp-line__bar {
+  top: -1px;
+  height: 2px;
+  background: var(--pp-crust);
+}
+
+.pp-line--guide .pp-line__bar {
+  background: repeating-linear-gradient(90deg, var(--primary) 0 7px, transparent 7px 13px);
+  filter: drop-shadow(0 0 1.5px #fff);
+}
+
+.pp-line--preview,
+.pp-line--aim {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pp-line--preview.is-on,
+.pp-line--aim.is-on {
+  opacity: 1;
+}
+
+.pp-line--preview .pp-line__bar {
+  top: -2px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--primary-dark) 0 9px, transparent 9px 15px);
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff);
+}
+
+.pp-line--aim .pp-line__bar {
+  top: -2px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--pp-caramel) 0 8px, transparent 8px 13px);
+  filter: drop-shadow(0 0 2px #fff);
+}
+
+.pp-crumb {
+  position: absolute;
+  pointer-events: none;
+}
+
+.pp-bits .pp-crumb {
+  translate: -50% -50%;
+}
+
+/* fair shares: a ring of little stars round the platter */
+.pp-spark {
+  position: absolute;
+  width: 22px;
+  aspect-ratio: 1;
+  background: var(--pp-honey);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  pointer-events: none;
+}
+
+.pp-spark:nth-child(3n) {
+  background: #F2BE4E;
+}
+
+.pp-spark:nth-child(3n + 1) {
+  background: var(--pp-caramel);
+}
+
+@supports (width: 1cqw) {
+  .pp-spark {
+    width: 4.4cqw;
+  }
+}
+
+/* ---------- The knife, the area that takes it, bubbles, notes ---------- */
+.pp-knife {
+  left: 0;
+  top: 0;
+  z-index: 7;
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 6px 5px rgba(42, 52, 70, 0.22));
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+
+.pp-knife.is-on {
+  opacity: 1;
+}
+
+.pp-knife.is-lifted {
+  filter: drop-shadow(0 16px 12px rgba(42, 52, 70, 0.24));
+}
+
+.pp-hit {
+  z-index: 6;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  outline: none;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pp-hit {
+    cursor: none;
+  }
+}
+
+.pp-stage.is-busy .pp-hit,
+.pp-stage.is-served .pp-hit {
+  cursor: default;
+}
+
+.pp-hit:focus-visible {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--primary-dark);
+}
+
+/* flying crumbs and sparkles: over the cake, under the knife */
+.pp-fx {
+  z-index: 6;
+}
+
+.pp-talk {
+  z-index: 8;
+}
+
+/* the script puts each bubble where it hides the least; its sharp corner points at the friend */
+.pp-bubble.talk-bubble {
+  position: absolute;
+  z-index: auto;
+  padding: 0.42em 0.78em;
+  border-radius: 16px;
+  font-size: clamp(11px, 3.1cqw, 15px);
+  transform-origin: 0 100%;
+  opacity: 0;
+  scale: 0.5;
+  transition: opacity 0.2s ease, scale 0.45s var(--ease-spring);
+}
+
+.pp-bubble.is-on {
+  opacity: 1;
+  scale: 1;
+}
+
+.pp-bubble[data-corner="bl"] {
+  border-bottom-left-radius: 5px;
+}
+
+.pp-bubble[data-corner="br"] {
+  border-bottom-right-radius: 5px;
+  transform-origin: 100% 100%;
+}
+
+.pp-bubble[data-corner="tl"] {
+  border-top-left-radius: 5px;
+  transform-origin: 0 0;
+}
+
+.pp-bubble[data-corner="tr"] {
+  border-top-right-radius: 5px;
+  transform-origin: 100% 0;
+}
+
+.pp-toast {
+  left: 0;
+  right: 0;
+  top: 77%;
+  z-index: 9;
+  width: fit-content;
+  max-width: 92%;
+  margin-inline: auto;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(30, 42, 58, 0.9);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+  pointer-events: none;
+  translate: 0 6px;
+  opacity: 0;
+  transition: opacity 0.25s ease, translate 0.4s var(--ease-out);
+}
+
+.pp-toast.is-on {
+  translate: 0 0;
+  opacity: 1;
+}
+
+.pp-done {
+  left: 50%;
+  top: 50%;
+  z-index: 9;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  box-shadow: 0 16px 30px -16px rgba(91, 65, 40, 0.5), inset 0 0 0 1px rgba(233, 169, 75, 0.35);
+  color: var(--pp-caramel);
+  font-family: var(--serif);
+  font-size: clamp(18px, 4.4cqw, 26px);
+  font-style: italic;
+  font-weight: 600;
+  white-space: nowrap;
+  translate: -50% -50%;
+}
+
+.pp-done.is-on {
+  animation: ppPop 0.7s var(--ease-spring);
+}
+
+/* =============================================
+   AT THE REAL TABLE — three tips for parents
+   ============================================= */
+.pp-tips-head {
+  margin-top: clamp(48px, 6vw, 76px);
+  color: var(--text);
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.pp-tips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  margin-top: 20px;
+  list-style: none;
+}
+
+.pp-tip {
+  position: relative;
+  padding: 24px 24px 26px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.95), 0 26px 50px -40px rgba(42, 85, 153, 0.5);
+}
+
+.pp-tip__num {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--sky-2);
+  color: var(--sky-ink);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.pp-tip h4 {
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.pp-tip p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.pp-tip .fact__src,
+.pp .b-head__aside .fact__src {
+  margin-left: 6px;
+}
+
+.pp-no-js {
+  max-width: 720px;
+  padding: 20px 24px;
+  border-radius: 24px;
+  background: #fff;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 1100px) {
+  .pp-game {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .pp-game {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      "head"
+      "count"
+      "stage"
+      "panel";
+  }
+
+  .pp-head {
+    align-self: start;
+  }
+
+  .pp-stage {
+    justify-self: center;
+    max-width: 560px;
+    margin-top: 14px;
+  }
+
+  .pp-panel {
+    margin-top: 6px;
+  }
+
+  .pp-tips {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pp-game {
+    margin-inline: -16px;
+    padding: 24px 16px 22px;
+    border-radius: 30px;
+  }
+
+  .pp-stage {
+    width: calc(100% + 32px);
+    max-width: none;
+    margin-inline: -16px;
+  }
+
+  .pp-how {
+    font-size: 15px;
+  }
+
+  .pp-count {
+    padding-left: 16px;
+  }
+
+  .pp-status {
+    min-height: 128px;
+    padding: 14px 16px;
+  }
+
+  .pp-status__text {
+    font-size: 16px;
+  }
+
+  .pp-actions .btn--primary {
+    flex: 1 1 auto;
+  }
+
+  .pp-tip {
+    padding: 20px 20px 22px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .pp-keys {
+    display: none;
+  }
+}
+
+/* =============================================
+   REDUCED MOTION — no crumbs, no flights; states change at once
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .pp-guest__img,
+  .pp-guest__body.is-hop,
+  .pp-piece.is-big,
+  .pp-badge.is-new,
+  .pp-done.is-on {
+    animation: none !important;
+  }
+}

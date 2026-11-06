@@ -1,0 +1,2158 @@
+/* =============================================
+   PYRAGŲ DIENA — /blog/pyragu-diena/
+   A warm kitchen page: the header is a table seen from above with a cake
+   still steaming on its plate (blow on the steam; a slice lifts as you
+   scroll), then a price tag for the day, the cake's "ingredients" label,
+   an oven dial that turns to the child's age, the recipe with a cake to
+   bake on screen, a kitchen timer cut into four slices, the cake to slice
+   and share, a shelf of word jars and notes on the fridge door. A small
+   cake in the corner fills slice by slice as you read.
+   Builds on /styles.css and /blog/blog.css (tokens, type, shared parts).
+   ============================================= */
+
+.pyr {
+  /* a shade darker than the shared one, so small grey text keeps 4.5:1 on the warm tones */
+  --text-tertiary: #5E6C80;
+  --paper: #FBF7EE;
+  --honey: #E9A94B;
+  --honey-1: #FFF6E6;
+  --honey-2: #FBE7C2;
+  --honey-3: #F3CC85;
+  --honey-ink: #7A4B0E;
+  --caramel: #B3611E;
+  --crust: #C98A3D;
+  --apple: #E07A62;
+  --apple-ink: #9A3B26;
+  --kraft: #F1E0C4;
+  --kraft-ink: #5B4128;
+  --enamel: #EAF2FB;
+  --gingham-ink: rgba(240, 168, 103, 0.2);
+}
+
+.pyr .section__tag {
+  background: var(--honey-2);
+  color: var(--honey-ink);
+}
+
+.pyr .scribble path {
+  stroke: var(--honey);
+}
+
+.pyr [hidden] {
+  display: none !important;
+}
+
+html:not(.js) .p-needs-js {
+  display: none !important;
+}
+
+/* =============================================
+   SHARED PIECES — full-width sections, headings, source chips
+   ============================================= */
+.p-sec {
+  position: relative;
+  padding: clamp(72px, 9vw, 124px) 0;
+  scroll-margin-top: 64px;
+}
+
+.p-wrap {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.p-h3 {
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: clamp(20px, 1.9vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+/* keeps "3–6 metų" and the like on one line */
+.p-nw {
+  white-space: nowrap;
+}
+
+.pyr .b-title .serif-accent,
+.pyr .b-title em {
+  color: var(--caramel);
+}
+
+/* Citation chips inside running text */
+.pyr .fact__src {
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: 1px;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.p-cites {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.p-cites .fact__src {
+  margin: 0;
+}
+
+.p-sec a:not(.fact__src):not(.btn) {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* A gingham cloth: two crossing stripes of the same soft colour */
+.p-gingham,
+.p-table__cloth {
+  background-color: #FFFDF8;
+  background-image:
+    repeating-linear-gradient(0deg, var(--gingham-ink) 0 var(--check, 16px), transparent var(--check, 16px) calc(var(--check, 16px) * 2)),
+    repeating-linear-gradient(90deg, var(--gingham-ink) 0 var(--check, 16px), transparent var(--check, 16px) calc(var(--check, 16px) * 2));
+}
+
+/* =============================================
+   HERO — the words on cream paper, the warm cake on its table beside them
+   ============================================= */
+.p-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: calc(var(--nav-h) + clamp(24px, 4.4vw, 64px)) 0 0;
+  background:
+    radial-gradient(60% 70% at 78% 40%, rgba(255, 233, 196, 0.75), rgba(255, 233, 196, 0) 70%),
+    linear-gradient(var(--paper) 0 calc(100% - 140px), rgba(251, 247, 238, 0));
+}
+
+.p-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px clamp(24px, 4vw, 56px);
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.p-hero__copy {
+  padding-bottom: clamp(36px, 4.6vw, 64px);
+}
+
+.p-hero__meta {
+  margin-bottom: 18px;
+}
+
+.p-hero__title {
+  margin-bottom: 22px;
+  color: var(--text);
+  font-size: clamp(40px, 4.9vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.p-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--caramel);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.p-hero__eyebrow img {
+  width: 32px;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(122, 75, 14, 0.2));
+}
+
+.p-hero__title .serif-accent {
+  padding-right: 0.06em;
+  font-size: 1.06em;
+  color: var(--caramel);
+}
+
+.p-scribbled {
+  position: relative;
+  display: inline-block;
+}
+
+.p-scribbled .scribble {
+  position: absolute;
+  left: 0;
+  bottom: -0.06em;
+  width: 100%;
+  height: 0.22em;
+  overflow: visible;
+}
+
+.p-scribbled .scribble path {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: pScribble 1.1s var(--ease-out) 1.1s forwards;
+}
+
+@keyframes pScribble {
+  to { stroke-dashoffset: 0; }
+}
+
+.p-hero__dek {
+  max-width: 31em;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  font-size: clamp(17px, 1.4vw, 19px);
+  line-height: 1.7;
+}
+
+.p-hero__byline {
+  justify-content: flex-start;
+  margin: 0 0 26px;
+}
+
+.p-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+/* "Rytoj – Pyragų diena!": a small live note that knows today's date */
+.p-hero__when {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 16px;
+  padding: 7px 14px 7px 10px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  box-shadow: 0 10px 24px -14px rgba(122, 75, 14, 0.45), inset 0 0 0 1px rgba(233, 169, 75, 0.35);
+  color: var(--honey-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.p-hero__when::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--apple);
+  box-shadow: 0 0 0 0 rgba(224, 122, 98, 0.5);
+  animation: pPing 2.2s ease-out infinite;
+}
+
+@keyframes pPing {
+  0% { box-shadow: 0 0 0 0 rgba(224, 122, 98, 0.55); }
+  70%, 100% { box-shadow: 0 0 0 9px rgba(224, 122, 98, 0); }
+}
+
+/* The recipe card: the title written on a card, taped to the table beside the cake */
+.p-hero__card {
+  --card-pad: clamp(24px, 3.2vw, 44px);
+  position: relative;
+  margin-top: 6px;
+  padding: clamp(22px, 2.6vw, 34px) var(--card-pad) clamp(26px, 3vw, 38px);
+  border-radius: 12px;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(255, 244, 214, 0.55), rgba(255, 244, 214, 0) 60%),
+    #FFFDF8;
+  box-shadow:
+    0 44px 80px -48px rgba(122, 75, 14, 0.55),
+    0 12px 24px -18px rgba(122, 75, 14, 0.25),
+    inset 0 0 0 1px rgba(233, 169, 75, 0.22);
+  rotate: -0.8deg;
+}
+
+.p-hero__card .p-hero__title {
+  font-size: clamp(38px, 4vw, 58px);
+}
+
+/* washi tape across the top edge */
+.p-hero__card::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 132px;
+  height: 30px;
+  translate: -50% 0;
+  rotate: 3deg;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0 7px, rgba(255, 255, 255, 0) 7px 14px),
+    rgba(243, 204, 133, 0.78);
+  box-shadow: 0 4px 10px -6px rgba(122, 75, 14, 0.35);
+  -webkit-mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent calc(100% - 2px)),
+    repeating-linear-gradient(0deg, #000 0 3px, transparent 3px 5px);
+}
+
+/* the card's heading row, ruled off in apple red like an index card */
+.p-hero__card .p-hero__eyebrow {
+  margin: 0 calc(var(--card-pad) * -1) 24px;
+  padding: 0 var(--card-pad) 16px;
+  border-bottom: 2px solid rgba(224, 122, 98, 0.45);
+  box-shadow: 0 4px 0 -2px rgba(224, 122, 98, 0.2);
+}
+
+.p-hero__card .p-hero__byline {
+  margin-bottom: 24px;
+}
+
+/* The table: a gingham napkin, the plate, the cake, and the steam above it */
+.p-table {
+  position: relative;
+  width: min(100%, 640px);
+  aspect-ratio: 1;
+  justify-self: center;
+  margin-bottom: clamp(8px, 2vw, 24px);
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.p-table__cloth {
+  --check: 15px;
+  position: absolute;
+  inset: 9% 7% 7% 9%;
+  border-radius: 26px;
+  rotate: -7deg;
+  box-shadow: 0 40px 80px -46px rgba(122, 75, 14, 0.55), inset 0 0 0 1px rgba(233, 169, 75, 0.25);
+}
+
+/* soft light falling across the table */
+.p-table__sun {
+  position: absolute;
+  inset: -10% -20% 10% 10%;
+  background: linear-gradient(118deg, rgba(255, 244, 214, 0) 30%, rgba(255, 244, 214, 0.7) 46%, rgba(255, 244, 214, 0) 64%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.p-table__stk {
+  position: absolute;
+  z-index: 2;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: auto;
+  transform: rotate(var(--r, 0deg));
+  filter: drop-shadow(0 12px 12px rgba(91, 65, 40, 0.16));
+}
+
+.p-plate {
+  position: absolute;
+  z-index: 3;
+  left: 15%;
+  top: 14%;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 63%, #F4EFE6 64.5%, #fff 67% 100%);
+  box-shadow:
+    0 44px 70px -36px rgba(91, 65, 40, 0.55),
+    0 6px 14px -6px rgba(91, 65, 40, 0.18),
+    inset 0 -6px 16px rgba(91, 65, 40, 0.06),
+    inset 0 0 0 1px rgba(91, 65, 40, 0.05);
+}
+
+.p-cake {
+  position: absolute;
+  inset: 6.5%;
+}
+
+.p-cake__part {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.p-cake__slice {
+  display: none;
+}
+
+/* With the script the cake is cut: the slice lifts away as the page scrolls */
+.js .p-cake.is-cut .p-cake__slice {
+  display: block;
+  filter: drop-shadow(0 16px 14px rgba(91, 65, 40, 0.3));
+  will-change: transform;
+}
+
+.p-steam {
+  position: absolute;
+  z-index: 4;
+  left: 5%;
+  top: -14%;
+  width: 90%;
+  height: 92%;
+  pointer-events: none;
+}
+
+.p-table__bubble {
+  position: absolute;
+  z-index: 5;
+  right: 2%;
+  top: 22%;
+  opacity: 0;
+  transform: translateY(8px) scale(0.92);
+  transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-spring);
+}
+
+.p-table.is-hinting .p-table__bubble {
+  opacity: 1;
+  transform: none;
+}
+
+/* =============================================
+   1. PYRAGŲ DIENA — a kraft price tag on a string
+   ============================================= */
+.p-day__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 32px clamp(32px, 6vw, 96px);
+}
+
+.p-tag {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 300px);
+  padding-top: 70px;
+  /* on the wrapper: a shadow on the card itself would be cut off by its shape */
+  filter: drop-shadow(0 26px 22px rgba(91, 65, 40, 0.18));
+}
+
+.p-tag__string {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 92px;
+  background: linear-gradient(#C9A27A, #A97F55);
+  transform-origin: 50% 0;
+  border-radius: 2px;
+}
+
+.p-tag__string::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: -6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, var(--honey) 60%, #C77F25);
+  box-shadow: 0 3px 6px rgba(91, 65, 40, 0.3);
+}
+
+.p-tag__card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 46px 22px 30px;
+  border-radius: 18px 18px 26px 26px;
+  background:
+    radial-gradient(120% 80% at 30% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 60%),
+    var(--kraft);
+  color: var(--kraft-ink);
+  text-align: center;
+  clip-path: polygon(50% 0, 100% 16%, 100% 100%, 0 100%, 0 16%);
+  box-shadow: inset 0 0 0 1px rgba(91, 65, 40, 0.08);
+  transform-origin: 50% -22px;
+  animation: pTagSway 6s ease-in-out infinite;
+}
+
+.p-tag:hover .p-tag__card {
+  animation: pTagSwing 1.6s var(--ease-out);
+}
+
+.p-tag__hole {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 2px 3px rgba(91, 65, 40, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.p-tag__month {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.p-tag__day {
+  font-family: var(--serif);
+  font-size: clamp(120px, 14vw, 168px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 0.92;
+  color: var(--caramel);
+}
+
+.p-tag__name {
+  padding: 6px 14px;
+  border: 1.5px dashed rgba(91, 65, 40, 0.35);
+  border-radius: var(--radius-full);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+@keyframes pTagSway {
+  0%, 100% { rotate: -3deg; }
+  50% { rotate: 3deg; }
+}
+
+@keyframes pTagSwing {
+  0% { rotate: 0deg; }
+  20% { rotate: 14deg; }
+  40% { rotate: -10deg; }
+  60% { rotate: 6deg; }
+  80% { rotate: -3deg; }
+  100% { rotate: 0deg; }
+}
+
+.is-idle .p-tag__card {
+  animation-play-state: paused;
+}
+
+.p-day__copy .b-lede + .b-lede {
+  margin-top: 14px;
+}
+
+.p-day__home,
+.p-learn__more {
+  max-width: 36em;
+  margin-top: 16px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.p-day__home .fact__src,
+.p-learn__more .fact__src,
+.p-wcard__answer .fact__src {
+  margin-left: 6px;
+}
+
+.p-say {
+  max-width: 34em;
+  margin-top: 26px;
+  padding: 18px 22px;
+  border-radius: 6px 22px 22px 22px;
+  background: #fff;
+  box-shadow: 0 18px 40px -26px rgba(122, 75, 14, 0.45);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(20px, 2vw, 24px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.p-say__label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--honey-ink);
+  font-family: var(--font);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* =============================================
+   2. WHAT A CHILD LEARNS — an ingredients label, like on a shop cake
+   ============================================= */
+.p-learn__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 40px clamp(32px, 6vw, 88px);
+}
+
+.p-facts {
+  position: relative;
+  max-width: 480px;
+  justify-self: center;
+  width: 100%;
+  padding: 22px 24px 18px;
+  border: 2.5px solid var(--text);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 14px 16px 0 -2px var(--honey-2), 0 30px 60px -40px rgba(30, 42, 58, 0.4);
+  rotate: 1.2deg;
+}
+
+.p-facts__head {
+  display: grid;
+  gap: 2px;
+  padding-bottom: 10px;
+  border-bottom: 10px solid var(--text);
+}
+
+.p-facts__title {
+  color: var(--text);
+  font-size: clamp(34px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.p-facts__sub {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.p-facts__rows {
+  list-style: none;
+}
+
+.p-facts__rows li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  padding: 11px 0 12px;
+  border-bottom: 1.5px solid rgba(30, 42, 58, 0.55);
+}
+
+.p-facts__rows li:last-child {
+  border-bottom-width: 6px;
+  border-bottom-color: var(--text);
+}
+
+.p-facts__rows b {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.p-facts__rows .p-facts__amt {
+  grid-column: auto;
+  color: var(--caramel);
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.p-facts__rows span {
+  grid-column: 1 / -1;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* The rows print one after another, like a label coming out of a scale */
+.js .p-facts__rows li {
+  opacity: 0;
+  translate: 0 8px;
+  transition: opacity 0.5s ease, translate 0.6s var(--ease-out);
+  transition-delay: calc(0.25s + var(--i, 0) * 0.1s);
+}
+
+.js .p-facts.is-in .p-facts__rows li {
+  opacity: 1;
+  translate: none;
+}
+
+.p-facts__foot {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+/* =============================================
+   3. WHAT SMALL HANDS CAN DO — an oven dial turned to the child's age
+   ============================================= */
+.p-dial {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 32px clamp(32px, 5vw, 80px);
+  padding: clamp(24px, 3.4vw, 44px);
+  border-radius: 36px;
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 60%),
+    var(--enamel);
+  box-shadow: inset 0 0 0 1px rgba(53, 101, 176, 0.08), 0 40px 80px -60px rgba(30, 42, 58, 0.5);
+}
+
+.p-dial__control {
+  position: relative;
+  width: min(100%, 360px);
+  aspect-ratio: 1;
+  justify-self: center;
+}
+
+.p-dial__plate {
+  position: absolute;
+  inset: 13%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 32%, #fff, #F3F1EC 70%, #E9E4DA);
+  box-shadow: 0 18px 30px -16px rgba(30, 42, 58, 0.45), inset 0 -4px 10px rgba(30, 42, 58, 0.08);
+}
+
+.p-dial__ticks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.p-dial__ring {
+  fill: none;
+  stroke: rgba(30, 42, 58, 0.08);
+  stroke-width: 1.5;
+}
+
+.p-dial__marks line {
+  stroke: rgba(30, 42, 58, 0.35);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.p-dial__marks line.is-major {
+  stroke: var(--text);
+  stroke-width: 3.5;
+}
+
+.p-dial__knob {
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, #FFFDF8, #F1E6D2 62%, #D9C7A8);
+  box-shadow:
+    0 16px 24px -10px rgba(91, 65, 40, 0.5),
+    0 3px 6px rgba(91, 65, 40, 0.2),
+    inset 0 2px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -6px 10px rgba(91, 65, 40, 0.14);
+  rotate: var(--knob, -60deg);
+  transition: rotate 0.7s var(--ease-spring);
+  cursor: grab;
+  touch-action: none;
+}
+
+.p-dial__knob.is-dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+.p-dial__grip {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  bottom: 8%;
+  width: 26%;
+  margin-left: -13%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #E7D9C0, #FFFBF2 45%, #E2D2B6);
+  box-shadow: 0 4px 8px -2px rgba(91, 65, 40, 0.35), inset 0 0 0 1px rgba(91, 65, 40, 0.08);
+}
+
+.p-dial__pointer {
+  position: absolute;
+  left: 50%;
+  top: 12%;
+  width: 6px;
+  height: 18%;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: var(--apple);
+}
+
+/* the knob's warm "on" light */
+.p-dial__glow {
+  position: absolute;
+  left: 50%;
+  top: -2%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--honey);
+  box-shadow: 0 0 0 4px rgba(233, 169, 75, 0.25), 0 0 18px 6px rgba(233, 169, 75, 0.5);
+}
+
+.p-dial__ages {
+  position: absolute;
+  inset: 0;
+  border: 0;
+}
+
+.p-dial__control {
+  --radius: 158px;
+}
+
+/* the four ages sit round the top of the plate, each at its own angle */
+.p-dial__age {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  transform: rotate(var(--a)) translateY(calc(var(--radius) * -1)) rotate(calc(var(--a) * -1));
+  cursor: pointer;
+}
+
+.p-dial__age input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.p-dial__age span {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 10px 20px -12px rgba(30, 42, 58, 0.5), inset 0 0 0 1.5px var(--border);
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.4s var(--ease-spring);
+}
+
+.p-dial__age small {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.p-dial__age:hover span {
+  transform: scale(1.06);
+}
+
+.p-dial__age input:checked + span {
+  background: var(--caramel);
+  color: #fff;
+  box-shadow: 0 12px 22px -10px rgba(179, 97, 30, 0.7);
+  transform: scale(1.08);
+}
+
+.p-dial__age input:checked + span small {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.p-dial__age input:focus-visible + span {
+  outline: 3px solid var(--primary-dark);
+  outline-offset: 4px;
+}
+
+.p-age + .p-age {
+  margin-top: 28px;
+}
+
+.js .p-age {
+  display: none;
+}
+
+.js .p-age.is-on {
+  display: block;
+}
+
+.p-age__title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 16px;
+  color: var(--text);
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.p-age__title b {
+  font-family: var(--serif);
+  font-size: 1.6em;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 0.8;
+  color: var(--caramel);
+}
+
+.p-age__title span {
+  color: var(--text-tertiary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.p-jobs {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.p-jobs li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 24px -20px rgba(30, 42, 58, 0.5);
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+
+.p-jobs li b {
+  color: var(--text);
+}
+
+.p-jobs img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.js .p-age.is-on .p-jobs li {
+  animation: pJobIn 0.6s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 0.07s);
+}
+
+@keyframes pJobIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+.p-age__plus {
+  margin-top: 12px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.p-adult {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 760px;
+  margin: 26px auto 0;
+  padding: 12px 18px 12px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 0 0 1px var(--border-light);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.p-adult img {
+  flex-shrink: 0;
+  width: 46px;
+  height: auto;
+}
+
+.p-adult b {
+  color: var(--text);
+}
+
+/* =============================================
+   5. WHILE IT BAKES — a kitchen timer cut into four slices
+   ============================================= */
+.p-wait__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 40px clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+
+.p-wait__aside {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+}
+
+.p-timer {
+  position: relative;
+  width: min(100%, 340px);
+  margin: 34px auto 0;
+  aspect-ratio: 1;
+}
+
+.p-timer__face {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 30px 34px rgba(84, 71, 158, 0.25));
+}
+
+.p-timer__rim {
+  fill: #fff;
+  stroke: #fff;
+  stroke-width: 10;
+}
+
+.p-timer__slices path {
+  stroke: #fff;
+  stroke-width: 4;
+  opacity: 0.45;
+  transition: opacity 0.5s ease, transform 0.6s var(--ease-spring);
+  transform-origin: 120px 120px;
+}
+
+.p-timer__slices path.is-on {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+.p-timer__slices path.is-done {
+  opacity: 0.85;
+}
+
+.p-timer__ticks line {
+  stroke: rgba(30, 42, 58, 0.35);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.p-timer__ticks line.is-major {
+  stroke: rgba(30, 42, 58, 0.7);
+  stroke-width: 3;
+}
+
+.p-timer__hand {
+  transform-origin: 120px 120px;
+  rotate: var(--hand, 0deg);
+  transition: rotate 1s var(--ease-spring);
+}
+
+.p-timer__hand line {
+  stroke: var(--text);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.p-timer__hand circle {
+  fill: var(--apple);
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.p-timer__read {
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  translate: -50% 0;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--text);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.p-timer__bell {
+  position: absolute;
+  right: -2%;
+  top: 4%;
+  padding: 8px 14px;
+  border-radius: 16px 16px 16px 4px;
+  background: #FFE9A8;
+  color: var(--honey-ink);
+  font-size: 18px;
+  font-weight: 800;
+  opacity: 0;
+  transform: scale(0.6) rotate(-8deg);
+  transition: opacity 0.3s ease, transform 0.5s var(--ease-spring);
+  box-shadow: 0 14px 30px -14px rgba(122, 75, 14, 0.5);
+}
+
+.p-timer.is-ringing .p-timer__bell {
+  opacity: 1;
+  transform: none;
+}
+
+.p-timer.is-ringing .p-timer__face {
+  animation: pRing 0.6s ease-in-out 2;
+}
+
+@keyframes pRing {
+  0%, 100% { rotate: 0deg; }
+  20% { rotate: -5deg; }
+  40% { rotate: 5deg; }
+  60% { rotate: -3deg; }
+  80% { rotate: 3deg; }
+}
+
+.p-wait__list {
+  display: grid;
+  gap: 22px;
+  list-style: none;
+  counter-reset: none;
+}
+
+.p-wcard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 6px 20px;
+  padding: 24px 26px 24px 22px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 24px 50px -40px rgba(84, 71, 158, 0.6);
+  transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out);
+}
+
+.p-wcard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+  width: 5px;
+  border-radius: 0 5px 5px 0;
+  background: var(--c);
+  transition: width 0.4s var(--ease-out);
+}
+
+.p-wcard.is-on {
+  transform: translateX(-6px);
+  box-shadow: 0 30px 60px -36px rgba(84, 71, 158, 0.7);
+}
+
+.p-wcard.is-on::before {
+  width: 9px;
+}
+
+.p-wcard__art {
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+.p-wcard__art img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.p-wcard__time {
+  color: var(--lilac-ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.p-wcard h3 {
+  color: var(--text);
+  font-size: clamp(20px, 1.9vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.p-wcard p {
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.p-wcard__ask {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: 6px;
+  padding: 8px 14px;
+  border-radius: 16px 16px 16px 4px;
+  background: var(--lilac-1);
+  color: var(--lilac-ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.p-wcard .p-wcard__answer {
+  grid-column: 2;
+  margin-top: 4px;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.p-wcard__answer b {
+  color: var(--text);
+}
+
+/* =============================================
+   7. KITCHEN WORDS — a shelf of jars; each holds a word
+   ============================================= */
+.p-shelf {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: 32px clamp(28px, 4vw, 64px);
+}
+
+.p-jars {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 34px 14px;
+  padding: 0 6px;
+  list-style: none;
+}
+
+/* the wooden boards under each row of jars */
+.p-jars::before,
+.p-jars::after {
+  content: '';
+  position: absolute;
+  left: -14px;
+  right: -14px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(#D9B38A, #BF8F5F);
+  box-shadow: 0 14px 18px -10px rgba(91, 65, 40, 0.5);
+  pointer-events: none;
+}
+
+.p-jars::before {
+  top: calc(50% - 22px);
+}
+
+.p-jars::after {
+  bottom: -14px;
+}
+
+.p-jar {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.p-jar__lid {
+  position: relative;
+  z-index: 2;
+  width: 64%;
+  height: 14px;
+  border-radius: 5px 5px 3px 3px;
+  background: var(--lid);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.5);
+  transform-origin: 0% 100%;
+  transition: transform 0.5s var(--ease-spring);
+}
+
+.p-jar__glass {
+  position: relative;
+  width: 82%;
+  aspect-ratio: 0.82;
+  margin-top: -2px;
+  overflow: hidden;
+  border-radius: 16px 16px 20px 20px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9), inset 0 -10px 18px rgba(30, 42, 58, 0.06), 0 12px 16px -12px rgba(30, 42, 58, 0.35);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.p-jar__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--h, 60%);
+  background: var(--fill);
+  transition: height 0.6s var(--ease-out);
+}
+
+/* a wavy top on what is inside */
+.p-jar__fill::before {
+  content: '';
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: -6px;
+  height: 12px;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.p-jar__shine {
+  position: absolute;
+  left: 14%;
+  top: 10%;
+  width: 12%;
+  height: 62%;
+  border-radius: 999px;
+  background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+}
+
+.p-jar__label {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 56%;
+  translate: -50% -50%;
+  max-width: 108%;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #FFFDF6;
+  box-shadow: 0 2px 6px rgba(91, 65, 40, 0.18), inset 0 0 0 1px rgba(91, 65, 40, 0.1);
+  color: var(--kraft-ink);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  rotate: var(--tilt, -2deg);
+}
+
+.p-jar:hover .p-jar__lid,
+.p-jar[aria-pressed="true"] .p-jar__lid {
+  transform: translate(-6%, -9px) rotate(-16deg);
+}
+
+.p-jar:hover .p-jar__glass {
+  animation: pJiggle 0.5s ease-in-out;
+}
+
+.p-jar[aria-pressed="true"] .p-jar__glass {
+  box-shadow: inset 0 0 0 2px #fff, 0 0 0 4px var(--honey-3), 0 16px 24px -12px rgba(122, 75, 14, 0.5);
+}
+
+.p-jar:focus-visible {
+  outline: none;
+}
+
+.p-jar:focus-visible .p-jar__glass {
+  outline: 3px solid var(--primary-dark);
+  outline-offset: 4px;
+}
+
+@keyframes pJiggle {
+  0%, 100% { rotate: 0deg; }
+  30% { rotate: -4deg; }
+  60% { rotate: 3deg; }
+}
+
+/* a puff of what was in the jar, when it opens */
+.p-jar__puff {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: var(--dot, #fff);
+  box-shadow: 0 0 0 1px rgba(91, 65, 40, 0.12);
+  pointer-events: none;
+  animation: pPuff 0.9s var(--ease-out) forwards;
+}
+
+@keyframes pPuff {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.4); }
+}
+
+.p-word {
+  position: relative;
+  min-height: 300px;
+  padding: clamp(24px, 3vw, 34px);
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 34px 70px -50px rgba(156, 74, 47, 0.55);
+}
+
+.p-word__hint {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.js .p-word__item {
+  display: none;
+}
+
+.js .p-word__item.is-on {
+  display: block;
+  animation: pWordIn 0.55s var(--ease-out);
+}
+
+html:not(.js) .p-word__hint {
+  display: none;
+}
+
+html:not(.js) .p-word__item + .p-word__item {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border-light);
+}
+
+@keyframes pWordIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+.p-word__word {
+  font-family: var(--serif);
+  font-size: clamp(42px, 4.6vw, 60px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--caramel);
+}
+
+.p-word__syll {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 18px;
+  list-style: none;
+}
+
+.p-word__syll li {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--peach-1);
+  color: var(--peach-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.js .p-word__item.is-on .p-word__syll li {
+  animation: pClap 0.5s var(--ease-spring) both;
+  animation-delay: calc(0.25s + var(--i, 0) * 0.32s);
+}
+
+@keyframes pClap {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+
+.p-word__claps {
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.p-word__line {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+  color: var(--text);
+  font-size: 16.5px;
+  line-height: 1.5;
+}
+
+.p-word__line > span {
+  padding-top: 3px;
+  color: var(--honey-ink);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.p-word__line q {
+  quotes: '„' '“';
+  font-family: var(--serif);
+  font-size: 19px;
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* =============================================
+   8. SAFELY — notes held on the fridge door by magnets
+   ============================================= */
+.p-safe__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 40px clamp(32px, 6vw, 88px);
+}
+
+.p-fridge {
+  position: relative;
+  padding: clamp(26px, 3.4vw, 40px) clamp(22px, 3vw, 36px) clamp(26px, 3.4vw, 40px) clamp(40px, 5vw, 64px);
+  border-radius: 34px;
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 40%),
+    var(--enamel);
+  box-shadow:
+    inset 0 0 0 1px rgba(53, 101, 176, 0.1),
+    inset -14px 0 24px -16px rgba(53, 101, 176, 0.25),
+    0 50px 80px -60px rgba(30, 42, 58, 0.6);
+}
+
+.p-fridge__handle {
+  position: absolute;
+  left: 16px;
+  top: 18%;
+  bottom: 18%;
+  width: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #C9D6E6, #F6F9FD 45%, #BCCADB);
+  box-shadow: 0 8px 14px -6px rgba(30, 42, 58, 0.4);
+}
+
+.p-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 20px;
+  list-style: none;
+}
+
+.p-note {
+  position: relative;
+  padding: 26px 18px 16px;
+  background: var(--n, #fff);
+  border-radius: 4px 4px 14px 4px;
+  box-shadow: 0 18px 26px -20px rgba(30, 42, 58, 0.55), 0 1px 2px rgba(30, 42, 58, 0.08);
+  rotate: var(--rot, 0deg);
+  transform-origin: 50% 8px;
+  transition: rotate 0.5s var(--ease-spring), translate 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+}
+
+.p-note:nth-child(5) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: min(100%, 360px);
+}
+
+.p-note:hover {
+  rotate: calc(var(--rot, 0deg) * -1.4);
+  translate: 0 -4px;
+  box-shadow: 0 26px 34px -22px rgba(30, 42, 58, 0.6), 0 1px 2px rgba(30, 42, 58, 0.08);
+}
+
+.p-note__magnet {
+  position: absolute;
+  left: 50%;
+  top: -11px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8), var(--m) 45%, color-mix(in srgb, var(--m) 70%, #000));
+  box-shadow: 0 6px 8px -3px rgba(30, 42, 58, 0.45);
+}
+
+.p-note h3 {
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.p-note p {
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.p-note .p-cites {
+  margin-top: 10px;
+}
+
+/* =============================================
+   9. THE END — an empty plate, crumbs and all
+   ============================================= */
+.p-end__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 32px clamp(32px, 6vw, 88px);
+}
+
+.p-end__art {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 360px);
+}
+
+.p-end__plate {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 30px 30px rgba(91, 65, 40, 0.2));
+}
+
+.p-end__bubble {
+  position: absolute;
+  right: -4%;
+  top: 4%;
+}
+
+.p-end__quote {
+  max-width: 36em;
+  margin-top: 26px;
+  padding-left: 18px;
+  border-left: 4px solid var(--honey-3);
+}
+
+.p-end__quote blockquote {
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(20px, 2vw, 25px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* =============================================
+   SOURCES
+   ============================================= */
+.p-sources {
+  position: relative;
+  padding: clamp(40px, 6vw, 72px) 0 clamp(48px, 6vw, 80px);
+}
+
+.p-sources__title {
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.p-sources .sources__note {
+  margin-top: 16px;
+}
+
+.p-srcbox {
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid var(--border-light);
+  border-radius: 28px;
+  background: #fff;
+}
+
+.p-srcbox__lede {
+  max-width: 62ch;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.p-srcbox__who {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+  list-style: none;
+}
+
+.p-srcbox__who li {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--honey-1);
+  color: var(--honey-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.p-srcbox__more {
+  margin-top: 18px;
+}
+
+.p-srcbox__more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 800;
+  list-style: none;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.p-srcbox__more summary::-webkit-details-marker {
+  display: none;
+}
+
+.p-srcbox__more summary:hover {
+  background: var(--sky-1);
+}
+
+.p-srcbox__more summary:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.p-srcbox__more summary svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate 0.3s var(--ease-out);
+}
+
+.p-srcbox__more[open] summary svg {
+  rotate: 180deg;
+}
+
+.p-srcbox__close,
+.p-srcbox__more[open] .p-srcbox__open {
+  display: none;
+}
+
+.p-srcbox__more[open] .p-srcbox__close {
+  display: inline;
+}
+
+.pyr .p-srcbox .sources__list--article {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 12px;
+  margin-top: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.pyr .p-srcbox .sources__list a {
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.pyr .p-srcbox .sources__list small {
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.pyr .share--end {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+
+/* =============================================
+   DOCK — a small cake that fills slice by slice as you read
+   ============================================= */
+.p-dock {
+  position: fixed;
+  z-index: 900;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  visibility: hidden;
+  opacity: 0;
+  translate: 0 16px;
+  pointer-events: none;
+  transition: opacity 0.4s ease, translate 0.5s var(--ease-out), visibility 0s linear 0.5s;
+}
+
+.p-dock.is-shown {
+  visibility: visible;
+  opacity: 1;
+  translate: 0 0;
+  pointer-events: auto;
+  transition: opacity 0.4s ease, translate 0.5s var(--ease-out), visibility 0s;
+}
+
+.p-dock__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 6px 16px 6px 6px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 34px -16px rgba(30, 42, 58, 0.45), inset 0 0 0 1px rgba(30, 42, 58, 0.06);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.p-dock__pie {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.p-dock__crust {
+  fill: var(--honey-1);
+  stroke: var(--honey-3);
+  stroke-width: 2;
+}
+
+.p-dock__pie path {
+  fill: var(--honey);
+  stroke: #fff;
+  stroke-width: 1.4;
+  opacity: 0;
+  transform-origin: 20px 20px;
+  scale: 0.6;
+  transition: opacity 0.4s ease, scale 0.5s var(--ease-spring), fill 0.3s ease;
+}
+
+.p-dock__pie path.is-read {
+  opacity: 1;
+  scale: 1;
+}
+
+.p-dock__pie path.is-now {
+  fill: var(--apple);
+  opacity: 1;
+  scale: 1;
+}
+
+.p-dock__chev {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate 0.3s var(--ease-out);
+}
+
+.p-dock__btn[aria-expanded="true"] .p-dock__chev {
+  rotate: 180deg;
+}
+
+.p-dock__label {
+  max-width: 11em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.p-dock__list {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  display: grid;
+  min-width: 220px;
+  padding: 8px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 50px -20px rgba(30, 42, 58, 0.45), inset 0 0 0 1px rgba(30, 42, 58, 0.06);
+  list-style: none;
+  transform-origin: 20px 100%;
+  animation: pDockOpen 0.35s var(--ease-out);
+}
+
+@keyframes pDockOpen {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.p-dock__list a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.p-dock__list a::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.p-dock__list a.is-read::before {
+  background: var(--honey);
+}
+
+.p-dock__list a[aria-current="true"] {
+  background: var(--honey-1);
+}
+
+.p-dock__list a[aria-current="true"]::before {
+  background: var(--apple);
+}
+
+.p-dock__list a:hover {
+  background: var(--bg);
+}
+
+html.in-app .p-dock {
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 1100px) {
+  .p-jars {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .p-shelf {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-word {
+    min-height: 0;
+  }
+
+  .p-word__hint {
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 900px) {
+  .p-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-hero__copy {
+    padding-bottom: 8px;
+  }
+
+  .p-table {
+    width: min(100%, 520px);
+  }
+
+  .p-day__grid,
+  .p-learn__grid,
+  .p-safe__grid,
+  .p-end__grid,
+  .p-wait__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-tag {
+    width: min(70%, 260px);
+  }
+
+  .p-dial {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-wait__aside {
+    position: relative;
+    top: auto;
+  }
+
+  .p-timer {
+    width: min(78%, 300px);
+  }
+}
+
+@media (max-width: 640px) {
+  .p-hero__title {
+    font-size: clamp(40px, 11.5vw, 54px);
+  }
+
+  .p-table__bubble {
+    right: 0;
+    top: 10%;
+    font-size: 14px;
+  }
+
+  .p-dial__control {
+    --radius: min(41vw, 150px);
+  }
+
+  .p-dial__age {
+    width: 56px;
+    height: 56px;
+    margin: -28px 0 0 -28px;
+  }
+
+  .p-dial__age span {
+    font-size: 21px;
+  }
+
+  .p-jobs li {
+    grid-template-columns: 44px minmax(0, 1fr);
+    font-size: 15px;
+  }
+
+  .p-jobs img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .p-wcard {
+    grid-template-columns: 60px minmax(0, 1fr);
+    padding: 20px 18px 20px 16px;
+  }
+
+  .p-wcard__art {
+    width: 60px;
+    height: 60px;
+  }
+
+  .p-wcard__art img {
+    width: 46px;
+    height: 46px;
+  }
+
+  .p-wcard__ask {
+    grid-column: 1 / -1;
+  }
+
+  .p-jars {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 30px 6px;
+  }
+
+  .p-jar__label {
+    font-size: 11px;
+    padding: 4px 5px;
+  }
+
+  .p-word__line {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .p-notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-fridge {
+    padding-left: 40px;
+  }
+
+  .pyr .p-srcbox .sources__list--article {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .p-dock__label {
+    max-width: 8em;
+  }
+}
+
+@media (max-width: 560px) {
+  .p-hero__card {
+    rotate: -0.6deg;
+  }
+
+  /* on a phone the dock is just the little pie */
+  .p-dock__btn {
+    min-height: 0;
+    padding: 6px;
+  }
+
+  .p-dock__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .p-dock__chev {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .p-jars {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 26px 4px;
+    padding: 0;
+  }
+
+  .p-jar__label {
+    font-size: 10px;
+    padding: 3px 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .p-tag__card,
+  .p-hero__when::before,
+  .p-scribbled .scribble path {
+    animation: none;
+  }
+
+  .p-scribbled .scribble path {
+    stroke-dashoffset: 0;
+  }
+
+  .p-dial__knob,
+  .p-timer__hand,
+  .js .p-facts__rows li {
+    transition: none;
+  }
+
+  .js .p-age.is-on .p-jobs li,
+  .js .p-word__item.is-on,
+  .js .p-word__item.is-on .p-word__syll li {
+    animation: none;
+  }
+}

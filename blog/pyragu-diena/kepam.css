@@ -1,0 +1,893 @@
+/* ==========================================================================
+   Pyragų diena: the recipe (#receptas) and the bake game „Iškepkite pyragą
+   ekrane“. Every class here starts with pk-. The painted kitchen is a
+   1000 × 640 scene; JS sets --pk-u (px per scene unit) on the stage and
+   moves the camera with one transform on .pk-scene.
+   ========================================================================== */
+
+.pk {
+  --pk-u: 1px;
+  --pk-warm: 0;
+  isolation: isolate;
+}
+
+.pk [hidden] {
+  display: none !important;
+}
+
+/* The oven's warmth reaches the whole section while the cake bakes */
+.pk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 45% at 30% 60%, rgba(255, 170, 90, 0.2), rgba(255, 170, 90, 0) 70%),
+    radial-gradient(50% 40% at 80% 40%, rgba(255, 200, 110, 0.16), rgba(255, 200, 110, 0) 70%);
+  opacity: var(--pk-warm);
+}
+
+html:not(.js) .pk-needs-js {
+  display: none !important;
+}
+
+/* ---------- Layout: the game beside the recipe card, stacked on phones ---------- */
+.pk-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+  gap: clamp(28px, 3.4vw, 48px);
+  align-items: start;
+  margin-top: clamp(28px, 4vw, 48px);
+}
+
+html:not(.js) .pk-body {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 680px;
+}
+
+@media (min-width: 961px) and (min-height: 760px) {
+  .pk-game {
+    position: sticky;
+    top: calc(var(--nav-h, 76px) + 18px);
+  }
+}
+
+@media (max-width: 960px) {
+  .pk-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- The game's top line ---------- */
+.pk-game__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pk-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--caramel, #B3611E);
+}
+
+.pk-kicker::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--apple, #E07A62);
+  box-shadow: 0 0 0 4px rgba(224, 122, 98, 0.18);
+}
+
+.pk-sound {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid var(--honey-3, #F3CC85);
+  border-radius: 50%;
+  background: #FFFDF7;
+  color: var(--honey-ink, #7A4B0E);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.pk-sound:hover {
+  background: var(--honey-1, #FFF6E6);
+}
+
+.pk-sound:focus-visible {
+  outline: 3px solid var(--primary-dark);
+  outline-offset: 3px;
+}
+
+.pk-sound svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pk-sound[aria-pressed='true'] .pk-sound__off {
+  display: none;
+}
+
+.pk-sound[aria-pressed='false'] {
+  color: var(--text-secondary);
+}
+
+/* ---------- The stage and the painted kitchen ---------- */
+.pk-stage {
+  position: relative;
+  aspect-ratio: 1000 / 640;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #FCEBC8;
+  box-shadow: 0 40px 80px -50px rgba(119, 88, 0, 0.55);
+  contain: layout paint;
+  isolation: isolate;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pk-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(233, 169, 75, 0.3);
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .pk-stage {
+    aspect-ratio: 1 / 0.96;
+    border-radius: 20px;
+  }
+}
+
+.pk-scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--pk-u) * 1000);
+  height: calc(var(--pk-u) * 640);
+  transform-origin: 0 0;
+}
+
+.pk-kitchen {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes pk-cloud {
+  from { transform: translateX(-70px); }
+  to { transform: translateX(160px); }
+}
+
+.pk-cloud--a {
+  animation: pk-cloud 40s linear infinite;
+}
+
+.pk-cloud--b {
+  animation: pk-cloud 56s linear -24s infinite;
+}
+
+.pk-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* A painted thing in the kitchen: its box is set in % of the scene */
+.pk-o {
+  position: absolute;
+  margin: 0;
+}
+
+.pk-o__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.pk-o--front {
+  pointer-events: none;
+}
+
+/* Things this step listens to glow and bob a little */
+.pk-o.is-live {
+  cursor: pointer;
+  touch-action: none;
+}
+
+.pk-o.is-live > .pk-o__img {
+  filter: drop-shadow(0 0 calc(var(--pk-u) * 2) rgba(255, 255, 255, 0.95)) drop-shadow(0 0 calc(var(--pk-u) * 9) rgba(255, 190, 80, 0.95));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pk-o.is-live:not(.pk-o--dubuo):not(.pk-o--forma):not(.pk-o--orkaite) {
+    animation: pk-bob 1.7s var(--ease-in-out, ease-in-out) infinite;
+  }
+}
+
+@keyframes pk-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -3%; }
+}
+
+/* While stirring, a finger on the bowl stirs instead of scrolling */
+.pk-stage.is-stirring .pk-o--dubuo,
+.pk-stage.is-stirring .pk-o--samtis,
+.pk-o--front.is-stir {
+  touch-action: none;
+}
+
+.pk-stage.is-pointing {
+  cursor: pointer;
+}
+
+.pk-stage.is-stirring.is-pointing,
+.pk-stage.is-dragging {
+  cursor: grabbing;
+}
+
+.pk-stage.is-idle *,
+.pk-stage.is-idle *::before,
+.pk-stage.is-idle *::after {
+  animation-play-state: paused !important;
+}
+
+/* Layers drawn over a painting, in its own pixels */
+.pk-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pk-mix,
+.pk-pool {
+  opacity: 0;
+}
+
+/* The tin: the batter and the baked cake lie over the empty tin */
+.pk-tin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pk-apples {
+  position: absolute;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+/* The slices are pale like the batter: a warm rim and a soft shadow lift them off it */
+.pk-slice {
+  position: absolute;
+  display: block;
+  aspect-ratio: 168 / 104;
+  transform-origin: 50% 50%;
+  filter: brightness(1.07) contrast(1.14) saturate(1.25) drop-shadow(0 0 calc(var(--pk-u) * 0.7) rgba(176, 84, 44, 0.7)) drop-shadow(0 calc(var(--pk-u) * 2.2) calc(var(--pk-u) * 0.6) rgba(150, 96, 28, 0.5));
+}
+
+.pk-slice__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.pk-apples.is-baked .pk-slice {
+  filter: sepia(0.42) saturate(1.7) brightness(0.95) hue-rotate(-8deg) drop-shadow(0 0 calc(var(--pk-u) * 0.7) rgba(150, 70, 30, 0.7)) drop-shadow(0 calc(var(--pk-u) * 2.2) calc(var(--pk-u) * 0.6) rgba(120, 70, 20, 0.5));
+  transition: filter 5s linear;
+}
+
+.pk-cin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* The oven: a warm light behind the glass, the glass over the tin */
+.pk-oven {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pk-oven--light {
+  z-index: 3;
+  opacity: 0;
+  background:
+    radial-gradient(70% 80% at 50% 38%, rgba(255, 214, 130, 0.95), rgba(255, 158, 70, 0.7) 45%, rgba(170, 80, 30, 0.35) 78%, rgba(90, 50, 30, 0) 100%);
+}
+
+.pk-oven__rack {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 72%;
+  height: 0;
+  border-top: calc(var(--pk-u) * 1.6) solid rgba(90, 60, 40, 0.45);
+  box-shadow: 0 calc(var(--pk-u) * 9) 0 rgba(90, 60, 40, 0.3);
+}
+
+.pk-oven--glass {
+  z-index: 5;
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0) 26%, rgba(255, 255, 255, 0.2) 33%, rgba(255, 255, 255, 0) 41%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0) 46%, rgba(255, 255, 255, 0.1) 49%, rgba(255, 255, 255, 0) 53%),
+    rgba(60, 40, 28, 0.14);
+}
+
+.pk-led {
+  position: absolute;
+  z-index: 3;
+  border-radius: 50%;
+  background: #D9C4A2;
+  box-shadow: inset 0 calc(var(--pk-u) * -1) 0 rgba(0, 0, 0, 0.12);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.pk-led.is-on {
+  background: #FF6B3D;
+  box-shadow: 0 0 calc(var(--pk-u) * 7) calc(var(--pk-u) * 2) rgba(255, 107, 61, 0.65);
+}
+
+/* Little labels on the scene: the oven's heat and the minutes left */
+.pk-chip {
+  position: absolute;
+  z-index: 13;
+  transform: translate(-50%, -50%);
+  padding: 0.25em 0.65em 0.3em;
+  border-radius: 999px;
+  background: var(--text);
+  color: #FFFFFF;
+  font: 700 calc(var(--pk-u) * 14) / 1.2 var(--font);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.pk-chip.is-on {
+  opacity: 1;
+}
+
+.pk-chip--time {
+  background: var(--apple-ink, #9A3B26);
+}
+
+/* Speech bubbles */
+.pk-pop {
+  position: absolute;
+  z-index: 20;
+  transform: translate(-50%, -100%);
+  padding: 0.32em 0.7em 0.38em;
+  border-radius: 1em;
+  background: #FFFFFF;
+  color: var(--honey-ink, #7A4B0E);
+  font: 800 calc(var(--pk-u) * 17) / 1.1 var(--font);
+  white-space: nowrap;
+  box-shadow: 0 calc(var(--pk-u) * 6) calc(var(--pk-u) * 14) calc(var(--pk-u) * -6) rgba(119, 88, 0, 0.5);
+  pointer-events: none;
+}
+
+.pk-pop::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--pk-u) * -4);
+  width: calc(var(--pk-u) * 10);
+  height: calc(var(--pk-u) * 10);
+  margin-left: calc(var(--pk-u) * -5);
+  background: inherit;
+  transform: rotate(45deg);
+  border-radius: 0 0 calc(var(--pk-u) * 2) 0;
+}
+
+.pk-pop--big {
+  font-size: calc(var(--pk-u) * 26);
+  color: var(--apple-ink, #9A3B26);
+}
+
+.pk-bit {
+  position: absolute;
+  pointer-events: none;
+}
+
+.pk-bit svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pk-flow {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pk-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Ten steps, ten dots */
+.pk-dots {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 3;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 7px 10px;
+  list-style: none;
+  border-radius: 999px;
+  background: #FFFDF7;
+  box-shadow: 0 8px 18px -10px rgba(119, 88, 0, 0.6), inset 0 0 0 1px rgba(233, 169, 75, 0.3);
+  pointer-events: none;
+}
+
+.pk-dots li {
+  width: 9px;
+  height: 9px;
+  margin: 0;
+  border-radius: 50%;
+  background: #F1DDB4;
+  transition: background 0.3s, transform 0.3s var(--ease-spring, ease);
+}
+
+.pk-dots li.is-done {
+  background: var(--honey, #E9A94B);
+}
+
+.pk-dots li.is-now {
+  background: var(--apple, #E07A62);
+  transform: scale(1.4);
+}
+
+/* The praise at the end, over the kitchen */
+.pk-hug {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 4;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 9px 20px 11px;
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.95);
+  box-shadow: 0 14px 30px -18px rgba(119, 88, 0, 0.6);
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(17px, 2vw, 23px);
+  line-height: 1.2;
+  color: var(--caramel, #B3611E);
+  white-space: nowrap;
+}
+
+/* ---------- The panel under the stage ---------- */
+.pk-panel {
+  display: grid;
+  gap: 8px;
+  padding: 18px 2px 0;
+}
+
+.pk-where {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 26px;
+  margin: 0;
+}
+
+.pk-where__step {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+@media (min-width: 961px) {
+  .pk-where__step {
+    display: none;
+  }
+}
+
+.pk-who {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px 4px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.pk-who--vaikas {
+  background: var(--peach-2);
+  color: var(--peach-ink);
+}
+
+.pk-who--suauges {
+  background: var(--sky-2);
+  color: var(--sky-ink);
+}
+
+.pk-who--kartu {
+  background: var(--sage-2);
+  color: var(--sage-ink);
+}
+
+.pk-say {
+  margin: 0;
+  font-size: clamp(21px, 2.1vw, 27px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.pk-note {
+  min-height: 3em;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 560px) {
+  .pk-say {
+    min-height: 2.4em;
+  }
+
+  .pk-note {
+    min-height: 4.5em;
+  }
+}
+
+.pk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin-top: 4px;
+}
+
+.pk-go,
+.pk-alt {
+  gap: 10px;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pk-go[aria-disabled='true'],
+.pk-alt[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: progress;
+  transform: none;
+}
+
+.pk-go__count {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pk-go svg,
+.pk-alt svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- The recipe card ---------- */
+.pk-card {
+  position: relative;
+  padding: clamp(22px, 2.6vw, 32px);
+  border-radius: 28px;
+  background: #FFFDF7;
+  box-shadow: 0 40px 80px -48px rgba(119, 88, 0, 0.45), inset 0 0 0 1px rgba(247, 221, 140, 0.45);
+}
+
+.pk-card__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pk-card__head img {
+  flex: none;
+  width: 96px;
+  height: auto;
+  filter: drop-shadow(0 10px 12px rgba(119, 88, 0, 0.18));
+}
+
+.pk-card__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.pk-card__meta {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--caramel, #B3611E);
+}
+
+.pk-card__sub {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.pk-ingr {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.pk-ingr li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: var(--text);
+  transition: color 0.3s;
+}
+
+.pk-ingr li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.5em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--honey-3, #F3CC85);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.pk-ingr li.is-in {
+  color: var(--text-secondary);
+}
+
+.pk-ingr li.is-in::before {
+  content: '\2713';
+  left: 0;
+  top: 0.1em;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  background: var(--sage-2);
+  color: var(--sage-ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.pk-ingr b {
+  font-weight: 800;
+  color: var(--honey-ink, #7A4B0E);
+}
+
+.pk-card__note {
+  margin: -10px 0 24px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(247, 221, 140, 0.22);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.pk-card__note .fact__src,
+.pk-steps .fact__src,
+.pk-head .b-head__aside .fact__src {
+  margin-left: 6px;
+}
+
+.pk-pots {
+  display: inline-flex;
+  gap: 2px;
+  margin-right: 7px;
+  vertical-align: -2px;
+  color: var(--honey, #E9A94B);
+}
+
+.pk-pots svg {
+  width: 13px;
+  height: 15px;
+}
+
+.pk-card__steps-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.pk-card__steps-head .pk-card__sub {
+  margin: 0;
+}
+
+.pk-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+.pk-steps {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: pk-step;
+}
+
+.pk-steps li {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 4px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  counter-increment: pk-step;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.pk-steps li::before {
+  content: counter(pk-step);
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--honey-2, #FBE7C2);
+  color: var(--honey-ink, #7A4B0E);
+  font-size: 14px;
+  font-weight: 800;
+  transition: background 0.3s, color 0.3s;
+}
+
+.pk-steps .pk-who {
+  justify-self: start;
+}
+
+.pk-steps p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.pk-steps li.is-now {
+  background: var(--honey-1, #FFF6E6);
+  box-shadow: inset 0 0 0 2px var(--honey-3, #F3CC85);
+}
+
+.pk-steps li.is-now::before {
+  background: var(--apple, #E07A62);
+  color: #FFFFFF;
+}
+
+.pk-steps li.is-done::before {
+  content: '\2713';
+  background: var(--sage-2);
+  color: var(--sage-ink);
+}
+
+@media (max-width: 960px) {
+  .pk-steps li.is-now {
+    background: none;
+    box-shadow: none;
+  }
+
+  .pk-steps li.is-now::before {
+    background: var(--honey-2, #FBE7C2);
+    color: var(--honey-ink, #7A4B0E);
+  }
+
+  .pk-steps li.is-done::before {
+    content: counter(pk-step);
+    background: var(--honey-2, #FBE7C2);
+    color: var(--honey-ink, #7A4B0E);
+  }
+}
+
+@media (max-width: 420px) {
+  .pk-card__head img {
+    width: 76px;
+  }
+
+  .pk-card__title {
+    font-size: 20px;
+  }
+
+  .pk-steps li {
+    padding: 10px 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-cloud--a,
+  .pk-cloud--b,
+  .pk-o.is-live {
+    animation: none;
+  }
+}
