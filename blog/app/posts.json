@@ -1,9 +1,17 @@
 {
   "posts": [
     {
+      "url": "/blog/pyragu-diena/",
+      "title": "Pyragų diena: mažos rankos – didelis pyragas",
+      "kind": "Savaitės tema",
+      "meta": "Kasdienybė · 1 receptas · 8 min",
+      "image": "/blog/assets/pyragu-diena/pyragas-virsus.webp",
+      "tint": "butter"
+    },
+    {
       "url": "/blog/velines/",
       "title": "Vėlinės: ką pasakyti vaikui apie tuos, kurių nebėra",
-      "kind": "Savaitės tema",
+      "kind": "Straipsnis",
       "meta": "Tėvams · 7 klausimai · 12 min",
       "image": "/blog/assets/velines/zvakes.webp",
       "tint": "lilac"
