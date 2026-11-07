@@ -10,13 +10,17 @@ const TEXTURES = {
   bark: { file: 'bark.webp', data: true, repeat: true },
   rock: { file: 'rock.webp', data: true, repeat: true },
   pebbles: { file: 'pebbles.webp', repeat: true },
-  // Leaf sprites hold painted light and shade only; the shader supplies the hue
+  // Leaf sprites hold painted light and shade only; the shader supplies the
+  // hue. The oak's paints the soft bodies of the crowns.
   foliageOak: { file: 'foliage-oak.webp', data: true, sprite: true },
-  foliageBirch: { file: 'foliage-birch.webp', data: true, sprite: true },
-  willowStrand: { file: 'willow-strand.webp', data: true, sprite: true },
-  // For the seasons: bare twigs (light and shade only), sixteen fallen leaves
-  // on one sheet (colour) and the cracks and frost of the creek's ice
-  twigs: { file: 'twigs.webp', data: true, sprite: true },
+  // The willow's leaves and strands and the bare twigs the oak and the willow
+  // show in winter are on `standby`: only the trees drawn in code wear them,
+  // when the garden grown in Blender (flora.bin) has not come
+  foliageBirch: { file: 'foliage-birch.webp', data: true, sprite: true, standby: true },
+  willowStrand: { file: 'willow-strand.webp', data: true, sprite: true, standby: true },
+  twigs: { file: 'twigs.webp', data: true, sprite: true, standby: true },
+  // For the seasons: sixteen fallen leaves on one sheet (colour) and the
+  // cracks and frost of the creek's ice
   leaves: { file: 'leaves.webp', sprite: true },
   ice: { file: 'ice.webp', data: true, repeat: true },
   // Cushions of moss for the stones, and the crumbly earth of paths and bare ground
@@ -36,8 +40,10 @@ function loadImage(url) {
   });
 }
 
-export async function loadTextures(renderer, onProgress = () => {}) {
-  const names = Object.keys(TEXTURES);
+// The textures the page always wears, or with `standby` the ones kept for the
+// trees drawn in code
+export async function loadTextures(renderer, onProgress = () => {}, { standby = false } = {}) {
+  const names = Object.keys(TEXTURES).filter((name) => !!TEXTURES[name].standby === standby);
   const anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   const out = {};
   let done = 0;

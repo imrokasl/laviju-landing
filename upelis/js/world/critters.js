@@ -258,9 +258,9 @@ function wingGeometry(outline, { root = 0.55 } = {}) {
 
 const withSway = (g) => g.setAttribute('sway', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count), 1));
 
-// The snail and the hedgehog are modelled in Blender, as the house has them
-// (flora.bin, landing-web/upelis/blender/flora.py); the ones made here stand
-// in when the file cannot be read
+// The animals are modelled in Blender (flora.bin: landing-web/upelis/blender/
+// animals.py, and the house's snail, hedgehog and small birds); the ones made
+// here stand in when the file cannot be read
 function modelled(flora, name) {
   const part = flora?.parts.get(name);
   if (!part) return null;
@@ -311,8 +311,8 @@ export function createCritters(field, kit, { meadow, water, props, flora }, qual
       0.5
     );
     const length = lap.getLength();
-    const mother = duckGeometry({ body: palette.storkWhite, wing: '#EFE4D2', beak: palette.beak });
-    const young = duckGeometry({ body: palette.duck, wing: palette.duckDark, beak: palette.beak });
+    const mother = modelled(flora, 'duck') ?? duckGeometry({ body: palette.storkWhite, wing: '#EFE4D2', beak: palette.beak });
+    const young = modelled(flora, 'duckling') ?? duckGeometry({ body: palette.duck, wing: palette.duckDark, beak: palette.beak });
     const sizes = [0.6, 0.36, 0.33, 0.36];
     const ducks = [0, 1, 2, 3].map((k) => {
       const m = mesh(k === 0 ? mother : young, kit.creature, { name: k === 0 ? 'duck' : 'duckling' });
@@ -351,7 +351,7 @@ export function createCritters(field, kit, { meadow, water, props, flora }, qual
   if (meadow.pads.length) {
     // The meadow keeps one pad for it: the first up in spring and the last to go
     const pad = meadow.pads.find((p) => p.frog) || meadow.pads[0];
-    const frog = mesh(frogGeometry(), kit.creature, { name: 'frog' });
+    const frog = mesh(modelled(flora, 'frog') ?? frogGeometry(), kit.creature, { name: 'frog' });
     const size = Math.min(1.5, (pad.r / 0.3) * 1.45);
     frog.scale.setScalar(size);
     frog.rotation.order = 'YXZ';
@@ -392,7 +392,7 @@ export function createCritters(field, kit, { meadow, water, props, flora }, qual
 
   // ---------- Fish ----------
   {
-    const geometry = fishGeometry();
+    const geometry = modelled(flora, 'fish') ?? fishGeometry();
     const fish = [];
     const count = quality.density > 0.5 ? 6 : 4;
     for (let i = 0; i < count; i++) {
@@ -448,7 +448,11 @@ export function createCritters(field, kit, { meadow, water, props, flora }, qual
   // beyond the rim from autumn until the snow has gone.
   {
     const { x, z, yaw } = PROPS.stork;
-    const parts = storkGeometry();
+    // Its neck and head turn about the foot of the neck
+    const body = modelled(flora, 'stork');
+    const neck = modelled(flora, 'stork-head');
+    const pivot = flora?.parts.get('stork-head')?.pivot;
+    const parts = body && neck && pivot ? { body, head: neck, pivot: V(...pivot) } : storkGeometry();
     const stork = new THREE.Group();
     stork.name = 'stork';
     stork.rotation.order = 'YXZ';
@@ -533,7 +537,7 @@ export function createCritters(field, kit, { meadow, water, props, flora }, qual
 
   // ---------- Small birds ----------
   {
-    const geometry = titGeometry();
+    const geometry = modelled(flora, 'blue-tit') ?? titGeometry();
     const perches = [];
     if (props.anchors.railPerch) perches.push({ p: props.anchors.railPerch, yaw: props.anchors.railYaw, s: 1.6 });
     if (props.anchors.birdhouse) perches.push({ p: props.anchors.birdhouse, yaw: 0.3, s: 1.35 });
@@ -564,10 +568,10 @@ export function createCritters(field, kit, { meadow, water, props, flora }, qual
       const cs = Math.cos(yaw);
       const sn = Math.sin(yaw);
       [
-        { colours: { cap: palette.ink, back: '#A9B97A', belly: palette.butter, wing: '#5E6A7E' }, at: [-0.15, 0.05], turn: 0.7, s: 1.5 },
-        { colours: { cap: palette.ink, back: '#A7B1C6', belly: '#EE8A78', cheek: '#EE8A78', wing: palette.storkBlack }, at: [0.15, -0.04], turn: -1.0, s: 1.7 },
+        { name: 'great-tit', colours: { cap: palette.ink, back: '#A9B97A', belly: palette.butter, wing: '#5E6A7E' }, at: [-0.15, 0.05], turn: 0.7, s: 1.5 },
+        { name: 'bullfinch', colours: { cap: palette.ink, back: '#A7B1C6', belly: '#EE8A78', cheek: '#EE8A78', wing: palette.storkBlack }, at: [0.15, -0.04], turn: -1.0, s: 1.7 },
       ].forEach((guest, i) => {
-        const bird = mesh(titGeometry(guest.colours), kit.creature, { name: 'table-guest' });
+        const bird = mesh(modelled(flora, guest.name) ?? titGeometry(guest.colours), kit.creature, { name: 'table-guest' });
         const [lx, lz] = guest.at;
         bird.position.set(point.x + lx * cs + lz * sn, point.y, point.z - lx * sn + lz * cs);
         bird.rotation.order = 'YXZ';

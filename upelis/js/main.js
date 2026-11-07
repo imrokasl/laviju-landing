@@ -129,7 +129,7 @@ async function boot() {
   // follows the bytes of the models and the textures one by one, in the
   // shares of what they weigh over the wire.
   bar.step(0.38, 1.2);
-  const WEIGHS = { oak: 0.05, log: 0.03, flora: 0.22, textures: 0.7 };
+  const WEIGHS = { oak: 0.04, log: 0.02, flora: 0.38, textures: 0.56 };
   const arrived = { oak: 0, log: 0, flora: 0, textures: 0 };
   const fetched = (what, share) => {
     arrived[what] = share;
@@ -140,6 +140,10 @@ async function boot() {
   const textures = await loadTextures(renderer, (share) => fetched('textures', share));
   const models = await modelsArriving;
   models.flora = await floraArriving;
+  // Without the garden grown in Blender the oak and the willow are drawn in
+  // code, in leaf cards and twigs of their own
+  const grown = models.flora?.parts;
+  if (!grown?.has('oak-leaves') || !grown.has('willow-strands')) Object.assign(textures, await loadTextures(renderer, () => {}, { standby: true }));
   shared.uWash.value = textures.wash;
   bar.step(0.88, 1.4);
   await nextFrame();
@@ -219,7 +223,7 @@ async function boot() {
   ahead();
   await built(0.71);
 
-  const meadow = createMeadow(field, terrain, kit, quality);
+  const meadow = createMeadow(field, terrain, kit, quality, models.flora);
   scene.add(meadow.group);
   ahead();
   await built(0.87);

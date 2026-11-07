@@ -422,8 +422,9 @@ export function createKit(textures) {
       fragmentAlbedo: BODY_ALBEDO,
     },
   });
-  // Bare twigs, seen once the leaves are down. Frost takes to them readily.
-  const twigs = stylized({
+  // Bare twigs, seen once the leaves are down, on the trees drawn in code
+  // (their texture comes only for them). Frost takes to them readily.
+  const twigs = textures.twigs && stylized({
     name: 'twigs',
     map: textures.twigs,
     alphaTest: 0.3,

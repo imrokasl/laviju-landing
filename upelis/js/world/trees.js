@@ -6,13 +6,14 @@ import { blob, tube, curvePoints, roundedBox, place, paint, setSway, merge } fro
 import { shadeByOpenness } from '../core/models.js';
 import { mesh, part, grainUv } from './kit.js';
 import { growFlora } from './flora.js';
-import { OAK, TREES } from './layout.js';
+import { OAK, TREES, WILLOW } from './layout.js';
 
-// The trees and bushes. The birches, the spruces and the bushes are grown in
-// Blender (world/flora.js). The oak and the willow are grown here: each crown
-// is a few soft lumps dressed in painted leaf cards, which borrow their
-// normals from the crown's overall shape, so a whole tree shades like one
-// rounded form.
+// The trees and bushes. The birches, the spruces, the bushes, the oak's crown
+// and the willow are grown in Blender (world/flora.js); the oak's wood too
+// (models.oak). Without their files the oak and the willow are grown here:
+// each crown is a few soft lumps dressed in painted leaf cards, which borrow
+// their normals from the crown's overall shape, so a whole tree shades like
+// one rounded form.
 
 const LIGHT = new THREE.Vector3(-0.45, 0.82, 0.36).normalize();
 const UP = new THREE.Vector3(0, 1, 0);
@@ -133,6 +134,10 @@ export function createTrees(field, kit, textures, quality, models = {}) {
   const barks = [];
   // `crowns` lists the lumps of every crown that sheds its leaves, for the air to drop them from
   const anchors = { crowns: [] };
+  // What of the oak and the willow came grown from Blender
+  const grown = models.flora?.parts;
+  const oakGrown = !!grown?.has('oak-leaves');
+  const willowGrown = !!grown?.has('willow-strands');
 
   const randomDirection = (out, upBias = 0) => {
     out.set(rng.gauss(), rng.gauss() + upBias, rng.gauss());
@@ -382,20 +387,22 @@ export function createTrees(field, kit, textures, quality, models = {}) {
       const p = at(cx, cy, cz);
       return { x: p.x, y: p.y, z: p.z, r: r * S };
     });
-    crown(clumps, at(0, 4.3, 0.2), oakCards, oakColours, {
-      cardSize: 1.02 * S,
-      density: 64,
-      swayBase: 0.03,
-      swayTop: 0.13,
-      bodyScale: 0.72,
-      autumn: oakGold,
-      // An oak keeps a good handful of its brown leaves until spring
-      cling: 0.13,
-      twig: col(palette.twigOak),
-      sheds: 1,
-      fans: 4,
-      fanSize: 1.9,
-    });
+    if (!oakGrown) {
+      crown(clumps, at(0, 4.3, 0.2), oakCards, oakColours, {
+        cardSize: 1.02 * S,
+        density: 64,
+        swayBase: 0.03,
+        swayTop: 0.13,
+        bodyScale: 0.72,
+        autumn: oakGold,
+        // An oak keeps a good handful of its brown leaves until spring
+        cling: 0.13,
+        twig: col(palette.twigOak),
+        sheds: 1,
+        fans: 4,
+        fanSize: 1.9,
+      });
+    }
 
     anchors.oak = at(0, 3.0, 0);
     anchors.oakTop = at(0, 8.5, 0.3);
@@ -409,98 +416,91 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     const { x, z } = TREES.willow;
     const y = field.height(x, z) - 0.08;
     // It leans out over the pool
-    const lx = -0.55;
-    const lz = 0.84;
+    const [lx, lz] = WILLOW.lean;
     const at = (a, h, side = 0) => new THREE.Vector3(x + lx * a - lz * side, y + h, z + lz * a + lx * side);
 
-    limb([at(0, 0), at(0.25, 1.0), at(0.7, 2.0), at(1.1, 2.85)], 0.42, 0.26, { radial: 12, flare: 0.26, samples: 14, lightCol: palette.barkOak });
-    shoulder(at(1.06, 2.78), 0.34, 23.7);
-    for (let k = 0; k < 5; k++) {
-      const a = (k / 5) * TAU + 0.4;
-      limb([at(Math.cos(a) * 0.15, 0.4, Math.sin(a) * 0.15), at(Math.cos(a) * 0.55, 0.12, Math.sin(a) * 0.55), at(Math.cos(a) * 1.0, -0.1, Math.sin(a) * 1.0)], 0.15, 0.05, { radial: 6, samples: 7 });
-    }
-
-    const arches = [
-      [[1.1, 2.85, 0], [1.7, 4.2, 0.2], [2.6, 4.5, 0.4], [3.35, 3.6, 0.5]],
-      [[1.1, 2.85, 0], [1.2, 4.3, 1.1], [1.4, 4.6, 2.4], [1.5, 3.6, 3.4]],
-      [[1.1, 2.85, 0], [1.0, 4.4, -1.0], [0.9, 4.7, -2.3], [0.8, 3.7, -3.3]],
-      [[1.1, 2.85, 0], [0.4, 4.3, 0.3], [-0.9, 4.5, 0.5], [-2.0, 3.6, 0.6]],
-      [[1.1, 2.85, 0], [2.0, 4.5, -0.9], [3.0, 4.7, -1.9], [3.7, 3.8, -2.6]],
-      [[1.1, 2.85, 0], [2.0, 4.4, 1.2], [2.9, 4.5, 2.3], [3.4, 3.7, 3.0]],
-    ];
-    const tint = new THREE.Color();
-    const tip = new THREE.Color();
-    const gold = new THREE.Color();
-    const goldTip = new THREE.Color();
-    const facing = new THREE.Vector3();
-    const shade = new THREE.Vector3();
-    const middle = new THREE.Vector3();
-    const top = at(1.2, 4.3);
-    const clumps = [];
-
-    for (const arch of arches) {
-      const pts = limb(arch.map(([a, h, side]) => at(a, h, side)), 0.17, 0.035, { radial: 7, samples: 18 });
-      // Leafy tufts ride on top of each arch
-      for (const t of [0.42, 0.68, 0.92]) {
-        const p = pts[Math.round(t * (pts.length - 1))];
-        clumps.push({ x: p.x, y: p.y + 0.18, z: p.z, r: lerp(0.95, 0.7, t), squash: 0.62 });
+    if (!willowGrown) {
+      limb(WILLOW.trunk.map((p) => at(...p)), 0.42, 0.26, { radial: 12, flare: 0.26, samples: 14, lightCol: palette.barkOak });
+      shoulder(at(1.06, 2.78), 0.34, 23.7);
+      for (let k = 0; k < 5; k++) {
+        const a = (k / 5) * TAU + 0.4;
+        limb([at(Math.cos(a) * 0.15, 0.4, Math.sin(a) * 0.15), at(Math.cos(a) * 0.55, 0.12, Math.sin(a) * 0.55), at(Math.cos(a) * 1.0, -0.1, Math.sin(a) * 1.0)], 0.15, 0.05, { radial: 6, samples: 7 });
       }
-      // ...and the hanging curtain falls from it
-      const strands = Math.round(64 * quality.foliage);
-      for (let k = 0; k < strands; k++) {
-        const t = lerp(0.3, 1.0, (k + rng()) / strands);
-        const f = t * (pts.length - 1);
-        const i = Math.min(Math.floor(f), pts.length - 2);
-        const p = pts[i].clone().lerp(pts[i + 1], f - i);
-        // One strand in three stays on, bare, as the willow's winter threads.
-        // Those hang from the bough itself: with the leaves gone it shows
-        // what a thread is tied to.
-        const stays = yearRng.chance(0.34);
-        const spread = stays ? 0.07 : 0.35;
-        p.x += rng.range(-1, 1) * spread;
-        p.z += rng.range(-1, 1) * spread;
-        // Long enough to trail near the grass and the water, never to lie on them
-        const ground = Math.max(field.height(p.x, p.z), field.level(p.x, p.z));
-        const length = Math.min(p.y - ground - rng.range(0.3, 1.3), rng.range(2.4, 3.8));
-        if (length < 1) continue;
-        const yaw = rng.range(0, TAU);
-        facing.set(Math.cos(yaw), 0, Math.sin(yaw));
-        shade.copy(p).sub(top).setY(0).normalize().multiplyScalar(0.6).addScaledVector(UP, 0.8).normalize();
-        const lit = saturate((shade.dot(LIGHT) + 0.35) / 1.2);
-        tint.copy(willowColours.dark).lerp(willowColours.mid, saturate(lit + 0.2)).lerp(willowColours.light, lit * lit * 0.6).offsetHSL(rng.range(-0.01, 0.01), 0, rng.range(-0.035, 0.035));
-        tip.copy(tint).lerp(willowColours.light, 0.55);
-        gold.copy(willowGold.dark).lerp(willowGold.mid, saturate(lit + 0.2)).lerp(willowGold.light, lit * lit * 0.6);
-        goldTip.copy(gold).lerp(willowGold.light, 0.5);
-        // Hung from its top edge, and as wide whatever its length
-        middle.copy(p).setY(p.y - length * 0.5 + 0.1);
-        strandCards.add(middle, facing, length, tint, shade, 0.02, {
-          up: UP,
-          cup: 0.03,
-          aspect: (0.86 / length) * rng.range(0.85, 1.25),
-          tipTint: tip,
-          swayTip: 0.3 * rng.range(0.8, 1.2),
-          autumn: gold,
-          autumnTip: goldTip,
-          // The rest shrink up to where they hang
-          pivot: p,
-          kind: 3,
-          number: stays ? yearRng.range(0.972, 0.999) : yearRng.range(0, 0.9),
-        });
+
+      const tint = new THREE.Color();
+      const tip = new THREE.Color();
+      const gold = new THREE.Color();
+      const goldTip = new THREE.Color();
+      const facing = new THREE.Vector3();
+      const shade = new THREE.Vector3();
+      const middle = new THREE.Vector3();
+      const top = at(1.2, 4.3);
+      const clumps = [];
+
+      for (const arch of WILLOW.arches) {
+        const pts = limb(arch.map((p) => at(...p)), 0.17, 0.035, { radial: 7, samples: 18 });
+        // Leafy tufts ride on top of each arch
+        for (const t of [0.42, 0.68, 0.92]) {
+          const p = pts[Math.round(t * (pts.length - 1))];
+          clumps.push({ x: p.x, y: p.y + 0.18, z: p.z, r: lerp(0.95, 0.7, t), squash: 0.62 });
+        }
+        // ...and the hanging curtain falls from it
+        const strands = Math.round(64 * quality.foliage);
+        for (let k = 0; k < strands; k++) {
+          const t = lerp(0.3, 1.0, (k + rng()) / strands);
+          const f = t * (pts.length - 1);
+          const i = Math.min(Math.floor(f), pts.length - 2);
+          const p = pts[i].clone().lerp(pts[i + 1], f - i);
+          // One strand in three stays on, bare, as the willow's winter threads.
+          // Those hang from the bough itself: with the leaves gone it shows
+          // what a thread is tied to.
+          const stays = yearRng.chance(0.34);
+          const spread = stays ? 0.07 : 0.35;
+          p.x += rng.range(-1, 1) * spread;
+          p.z += rng.range(-1, 1) * spread;
+          // Long enough to trail near the grass and the water, never to lie on them
+          const ground = Math.max(field.height(p.x, p.z), field.level(p.x, p.z));
+          const length = Math.min(p.y - ground - rng.range(0.3, 1.3), rng.range(2.4, 3.8));
+          if (length < 1) continue;
+          const yaw = rng.range(0, TAU);
+          facing.set(Math.cos(yaw), 0, Math.sin(yaw));
+          shade.copy(p).sub(top).setY(0).normalize().multiplyScalar(0.6).addScaledVector(UP, 0.8).normalize();
+          const lit = saturate((shade.dot(LIGHT) + 0.35) / 1.2);
+          tint.copy(willowColours.dark).lerp(willowColours.mid, saturate(lit + 0.2)).lerp(willowColours.light, lit * lit * 0.6).offsetHSL(rng.range(-0.01, 0.01), 0, rng.range(-0.035, 0.035));
+          tip.copy(tint).lerp(willowColours.light, 0.55);
+          gold.copy(willowGold.dark).lerp(willowGold.mid, saturate(lit + 0.2)).lerp(willowGold.light, lit * lit * 0.6);
+          goldTip.copy(gold).lerp(willowGold.light, 0.5);
+          // Hung from its top edge, and as wide whatever its length
+          middle.copy(p).setY(p.y - length * 0.5 + 0.1);
+          strandCards.add(middle, facing, length, tint, shade, 0.02, {
+            up: UP,
+            cup: 0.03,
+            aspect: (0.86 / length) * rng.range(0.85, 1.25),
+            tipTint: tip,
+            swayTip: 0.3 * rng.range(0.8, 1.2),
+            autumn: gold,
+            autumnTip: goldTip,
+            // The rest shrink up to where they hang
+            pivot: p,
+            kind: 3,
+            number: stays ? yearRng.range(0.972, 0.999) : yearRng.range(0, 0.9),
+          });
+        }
       }
+      crown(clumps, at(1.2, 3.2), willowCards, willowColours, {
+        cardSize: 0.82,
+        density: 74,
+        swayBase: 0.06,
+        swayTop: 0.2,
+        bodyScale: 0.6,
+        upBias: 0.5,
+        autumn: willowGold,
+        twig: col(palette.twigWillow),
+        sheds: 3,
+        fans: 2,
+        fanSize: 1.7,
+      });
     }
-    crown(clumps, at(1.2, 3.2), willowCards, willowColours, {
-      cardSize: 0.82,
-      density: 74,
-      swayBase: 0.06,
-      swayTop: 0.2,
-      bodyScale: 0.6,
-      upBias: 0.5,
-      autumn: willowGold,
-      twig: col(palette.twigWillow),
-      sheds: 3,
-      fans: 2,
-      fanSize: 1.7,
-    });
     anchors.willow = at(1.2, 2.6);
   }
 
@@ -511,19 +511,19 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     return m;
   };
   add(merge(barks, { keepUv: true, keep: ['aMoss'] }), kit.bark, 'bark');
-  add(merge(crowns), kit.canopy, 'crowns');
-  const bodies = add(merge(leafBodies, { keep: ['aLeaf', 'aTurn'] }), kit.crown, 'leaf-crowns');
-  bodies.customDepthMaterial = kit.shadows.crown;
-  const leafy = [
-    add(oakCards.build(), kit.leaves(textures.foliageOak, { seasonal: true }), 'oak-leaves', { receive: false }),
-    add(willowCards.build(), kit.leaves(textures.foliageBirch, { seasonal: true }), 'willow-leaves', { receive: false }),
-    // Thin strands would vanish in the distance with the usual cut-off
-    add(strandCards.build(), kit.leaves(textures.willowStrand, { alphaTest: 0.16, seasonal: true }), 'willow-strands', { receive: false }),
-  ];
+  if (crowns.length) add(merge(crowns), kit.canopy, 'crowns');
+  // What Blender grew is drawn with the rest of its garden: here only what was grown here
+  const bodies = leafBodies.length ? add(merge(leafBodies, { keep: ['aLeaf', 'aTurn'] }), kit.crown, 'leaf-crowns') : null;
+  if (bodies) bodies.customDepthMaterial = kit.shadows.crown;
+  const leafy = [];
+  if (oakCards.count) leafy.push(add(oakCards.build(), kit.leaves(textures.foliageOak, { seasonal: true }), 'oak-leaves', { receive: false }));
+  if (willowCards.count) leafy.push(add(willowCards.build(), kit.leaves(textures.foliageBirch, { seasonal: true }), 'willow-leaves', { receive: false }));
+  // Thin strands would vanish in the distance with the usual cut-off
+  if (strandCards.count) leafy.push(add(strandCards.build(), kit.leaves(textures.willowStrand, { alphaTest: 0.16, seasonal: true }), 'willow-strands', { receive: false }));
   // One shadow material to a mesh: each is handed its own leaf sprite to cut the shadow with
   for (const m of leafy) m.customDepthMaterial = kit.shadows.leaves();
-  const twigs = add(twigCards.build(), kit.twigs, 'twigs', { receive: false });
-  twigs.customDepthMaterial = kit.shadows.twigs;
+  const twigs = twigCards.count ? add(twigCards.build(), kit.twigs, 'twigs', { receive: false }) : null;
+  if (twigs) twigs.customDepthMaterial = kit.shadows.twigs;
 
   // ---------- The birches, the spruces and the bushes ----------
   // Grown in Blender; without their file the island is drawn without them
@@ -562,8 +562,8 @@ export function createTrees(field, kit, textures, quality, models = {}) {
   function dress() {
     // While the year turns one side of the island is further on than the other
     const fewest = season.least('leafDrop');
-    bodies.visible = fewest < 0.82;
-    twigs.visible = season.most('leafDrop') > 0.1;
+    if (bodies) bodies.visible = fewest < 0.82;
+    if (twigs) twigs.visible = season.most('leafDrop') > 0.1;
     for (const m of leafy) m.visible = fewest < 0.999;
     garden?.dress();
   }

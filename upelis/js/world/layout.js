@@ -138,6 +138,29 @@ export const OAK = {
   ],
 };
 
+// The willow's wood, in metres from its foot: `lean` is the way it leans out
+// over the pool, and every point is [along that way, up, to its side]. The
+// trunk, then the six limbs that arch out of its top and down again, its
+// curtain hanging from them. Grown on these lines in Blender (landing-web/
+// upelis/blender/flora.py), or in trees.js when that file is missing.
+export const WILLOW = {
+  lean: [-0.55, 0.84],
+  trunk: [
+    [0, 0, 0],
+    [0.25, 1.0, 0],
+    [0.7, 2.0, 0],
+    [1.1, 2.85, 0],
+  ],
+  arches: [
+    [[1.1, 2.85, 0], [1.7, 4.2, 0.2], [2.6, 4.5, 0.4], [3.35, 3.6, 0.5]],
+    [[1.1, 2.85, 0], [1.2, 4.3, 1.1], [1.4, 4.6, 2.4], [1.5, 3.6, 3.4]],
+    [[1.1, 2.85, 0], [1.0, 4.4, -1.0], [0.9, 4.7, -2.3], [0.8, 3.7, -3.3]],
+    [[1.1, 2.85, 0], [0.4, 4.3, 0.3], [-0.9, 4.5, 0.5], [-2.0, 3.6, 0.6]],
+    [[1.1, 2.85, 0], [2.0, 4.5, -0.9], [3.0, 4.7, -1.9], [3.7, 3.8, -2.6]],
+    [[1.1, 2.85, 0], [2.0, 4.4, 1.2], [2.9, 4.5, 2.3], [3.4, 3.7, 3.0]],
+  ],
+};
+
 export const PROPS = {
   log: { x: -4.3, z: 7.9, yaw: 0.95, length: 3.1 },
   hedgehog: { x: -2.4, z: 6.0, yaw: 1.28 },
