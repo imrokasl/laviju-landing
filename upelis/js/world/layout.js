@@ -84,19 +84,21 @@ export const TREES = {
     { x: -13.9, z: -7.0, h: 4.4 },
   ],
   willow: { x: 4.3, z: -3.9 },
+  // Lilacs that flower in late spring (two of them white), hazels hung with
+  // catkins before their leaves are out, and wild red currants
   bushes: [
-    { x: -2.6, z: -5.6, r: 1.0 },
-    { x: -1.2, z: -6.4, r: 0.7 },
-    { x: 6.4, z: -6.9, r: 1.05 },
-    { x: -13.2, z: 1.2, r: 1.1 },
-    { x: -12.4, z: 2.6, r: 0.7 },
-    { x: 13.6, z: 6.0, r: 0.95 },
-    { x: 2.6, z: 9.2, r: 0.9 },
-    { x: -10.6, z: 8.2, r: 1.0 },
-    { x: -4.4, z: -4.9, r: 0.6 },
-    { x: 7.9, z: -2.9, r: 0.65 },
-    { x: 14.2, z: -4.6, r: 0.8 },
-    { x: -0.4, z: 9.9, r: 0.6 },
+    { x: -2.6, z: -5.6, r: 1.0, kind: 'lilac', white: true },
+    { x: -1.2, z: -6.4, r: 0.7, kind: 'hazel' },
+    { x: 6.4, z: -6.9, r: 1.05, kind: 'currant' },
+    { x: -13.2, z: 1.2, r: 1.1, kind: 'lilac' },
+    { x: -12.4, z: 2.6, r: 0.7, kind: 'hazel' },
+    { x: 13.6, z: 6.0, r: 0.95, kind: 'currant' },
+    { x: 2.6, z: 9.2, r: 0.9, kind: 'lilac', white: true },
+    { x: -10.6, z: 8.2, r: 1.0, kind: 'hazel' },
+    { x: -4.4, z: -4.9, r: 0.6, kind: 'currant' },
+    { x: 7.9, z: -2.9, r: 0.65, kind: 'lilac' },
+    { x: 14.2, z: -4.6, r: 0.8, kind: 'hazel' },
+    { x: -0.4, z: 9.9, r: 0.6, kind: 'currant' },
   ],
 };
 

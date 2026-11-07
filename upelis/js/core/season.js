@@ -168,6 +168,10 @@ const NUMBERS = {
   pads: num([0.8, 1], [1.5, 1], [2.2, 0.35], [2.5, 0], [3.6, 0], [3.95, 0.7]),
   reedDry: num([0.5, 0], [1.3, 0], [2, 0.7], [2.6, 1], [3.5, 1], [3.95, 0.25]),
 
+  // ----- The bushes' fruit -----
+  // Red currants ripe by the height of summer, as in the house's garden
+  currants: num([0.62, 0], [0.92, 1], [1.62, 1], [1.86, 0]),
+
   // ----- Things and animals: each set belongs to its season -----
   setSpring: during(0),
   setSummer: during(1),

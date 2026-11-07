@@ -278,6 +278,13 @@ export function createAtmosphere(textures, quality, { reducedMotion = false } = 
   sun.shadow.radius = quality.shadowRadius;
   fitShadowCamera(sun);
   group.add(sun, sun.target);
+  // The stars, the moon, the rain and the snow are drawn over the finished
+  // frame, and none of them is lit, but they are drawn by these lights too:
+  // three draws a frame's shadows by the lights of the drawing before, and
+  // that is the overlay. With the same lights in every drawing the shadows'
+  // shaders are always the same ones, and can be built before the first frame.
+  hemi.layers.enable(OVER_LAYER);
+  sun.layers.enable(OVER_LAYER);
 
   // ---------- Clouds ----------
   // Laid out for the opening view: across the frame, up the frame, and away

@@ -423,7 +423,7 @@ export function createExperience(root, { season: opening, onCelebrate = () => {}
   }
 
   return {
-    setLoading: chrome.setLoading,
+    loading: chrome.loading,
     setSeason,
     setHour,
 

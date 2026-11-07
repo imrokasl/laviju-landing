@@ -1697,7 +1697,17 @@ button {
   background: linear-gradient(90deg, var(--primary-dark), var(--primary), var(--teal));
   transform: scaleX(0.04);
   transform-origin: 0 50%;
-  transition: transform 0.5s var(--ease-out);
+  /* Creeps on while the scripts arrive; from then on ui/chrome.js sets it a
+     moment ahead every frame, and this glide carries it there even through
+     a frame the building keeps busy */
+  animation: loader-wake 2.4s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  transition: transform 0.6s linear;
+}
+
+@keyframes loader-wake {
+  to {
+    transform: scaleX(0.12);
+  }
 }
 
 /* ---------- Without WebGL: the ideas as plain pages ---------- */

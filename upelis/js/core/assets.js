@@ -13,14 +13,11 @@ const TEXTURES = {
   // Leaf sprites hold painted light and shade only; the shader supplies the hue
   foliageOak: { file: 'foliage-oak.webp', data: true, sprite: true },
   foliageBirch: { file: 'foliage-birch.webp', data: true, sprite: true },
-  spruceSprig: { file: 'spruce-sprig.webp', data: true, sprite: true },
   willowStrand: { file: 'willow-strand.webp', data: true, sprite: true },
   // For the seasons: bare twigs (light and shade only), sixteen fallen leaves
   // on one sheet (colour) and the cracks and frost of the creek's ice
   twigs: { file: 'twigs.webp', data: true, sprite: true },
   leaves: { file: 'leaves.webp', sprite: true },
-  // A cluster of blossom for the bushes that flower in spring (colour)
-  blossom: { file: 'blossom.webp', sprite: true },
   ice: { file: 'ice.webp', data: true, repeat: true },
   // Cushions of moss for the stones, and the crumbly earth of paths and bare ground
   moss: { file: 'moss.webp', data: true, repeat: true },

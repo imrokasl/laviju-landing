@@ -258,7 +258,24 @@ function wingGeometry(outline, { root = 0.55 } = {}) {
 
 const withSway = (g) => g.setAttribute('sway', new THREE.BufferAttribute(new Float32Array(g.attributes.position.count), 1));
 
-export function createCritters(field, kit, { meadow, water, props }, quality) {
+// The snail and the hedgehog are modelled in Blender, as the house has them
+// (flora.bin, landing-web/upelis/blender/flora.py); the ones made here stand
+// in when the file cannot be read
+function modelled(flora, name) {
+  const part = flora?.parts.get(name);
+  if (!part) return null;
+  const a = part.attributes;
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(a.position, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(a.normal, 3));
+  g.normalizeNormals();
+  g.setAttribute('color', new THREE.BufferAttribute(a.color, 3));
+  g.setIndex(new THREE.BufferAttribute(part.index, 1));
+  g.computeBoundingSphere();
+  return g;
+}
+
+export function createCritters(field, kit, { meadow, water, props, flora }, quality) {
   const group = new THREE.Group();
   group.name = 'critters';
   const rng = createRng(909);
@@ -571,7 +588,7 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
   // ---------- The snail and the hedgehog by the log ----------
   if (props.anchors.logTop) {
     const { point, yaw } = props.anchors.logTop;
-    const snail = mesh(snailGeometry(), kit.creature, { name: 'snail' });
+    const snail = mesh(modelled(flora, 'snail') ?? snailGeometry(), kit.creature, { name: 'snail' });
     snail.scale.setScalar(1.7);
     snail.rotation.y = yaw + Math.PI / 2;
     group.add(snail);
@@ -593,7 +610,7 @@ export function createCritters(field, kit, { meadow, water, props }, quality) {
   {
     // Out on the path, where it can be seen
     const { x: hx, z: hz, yaw: heading } = PROPS.hedgehog;
-    const hog = mesh(hedgehogGeometry(createRng(12)), kit.creature, { name: 'hedgehog' });
+    const hog = mesh(modelled(flora, 'hedgehog') ?? hedgehogGeometry(createRng(12)), kit.creature, { name: 'hedgehog' });
     hog.position.set(hx, field.height(hx, hz) - 0.005, hz);
     hog.rotation.order = 'YXZ';
     hog.rotation.y = heading;

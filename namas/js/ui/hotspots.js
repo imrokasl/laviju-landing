@@ -26,7 +26,7 @@ export function createHotspots(container, places, { onOpen, label, kind = 'spot'
   const spots = places.map((place, index) => {
     const stem = h('span', { class: 'spot__stem', 'aria-hidden': 'true' });
     const dot = h('span', { class: 'spot__dot', 'aria-hidden': 'true' });
-    const art = sticker(place.sticker, 72);
+    const art = sticker(place.sticker, 72, { lazy: !area });
     const name = h('span', null, place.name);
     const count = area ? h('span', { class: 'spot__count' }) : null;
     const label = h('span', { class: 'spot__label', 'aria-hidden': 'true' }, name, count);

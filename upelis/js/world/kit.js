@@ -52,6 +52,8 @@ const leafMove = (bare) => /* glsl */ `
 // shader leaves only the withy); a withy casts no shadow to speak of
 const LEAF_MOVE = leafMove('vBare = leafBare;');
 const LEAF_MOVE_SHADOW = leafMove('transformed = mix( transformed, aLeaf.xyz, leafBare );');
+// Leaves modelled in Blender are never a willow's strand
+const LEAF_MOVE_MODELLED = leafMove('');
 const BARE_PARS = /* glsl */ `varying float vBare;`;
 const BARE_ALBEDO = /* glsl */ `
   if ( vBare > 0.002 ) {
@@ -363,13 +365,32 @@ export function createKit(textures) {
     }
     return m;
   };
-  // Blossom: painted clusters that open on the flowering bushes in spring.
-  // The sprite brings its own colour; the card's tint turns it white or pink.
-  const blossom = stylized({
-    name: 'blossom',
-    map: textures.blossom,
-    alphaTest: 0.42,
-    alphaToCoverage: true,
+  // Leaves modelled one by one in Blender (the birches', the spruces' and the
+  // bushes', landing-web/upelis/blender/flora.py) and copied over the crowns.
+  // Both faces of a leaf are lit by the crown's shape, which its normal leans
+  // to, so a whole tree shades as one rounded form. `seasonal` leaves turn,
+  // fall and come back with the year; the evergreen ones are the spruces'
+  // boughs, which snow settles on.
+  const foliage = {
+    seasonal: stylized({
+      name: 'foliage',
+      side: THREE.DoubleSide,
+      keepNormals: true,
+      ramp: 0.75,
+      wrap: 0.42,
+      rim: 0.1,
+      wash: 0.42,
+      glow: 0.3,
+      wet: 0.3,
+      sway: true,
+      hooks: { vertexPars: LEAF_PARS, vertexLocal: LEAF_MOVE_MODELLED + LEAF_TINT },
+    }),
+    evergreen: stylized({ name: 'foliage-evergreen', side: THREE.DoubleSide, keepNormals: true, ramp: 0.7, wrap: 0.36, rim: 0.1, wash: 0.42, glow: 0.18, wet: 0.3, sway: true }),
+  };
+  // Blossom modelled flower by flower: the lilacs' plumes and the hazels'
+  // catkins, which open in spring
+  const petals = stylized({
+    name: 'petals',
     side: THREE.DoubleSide,
     keepNormals: true,
     ramp: 0.7,
@@ -444,11 +465,12 @@ export function createKit(textures) {
   // Shadows that follow the same year: what has fallen casts nothing
   const shadows = {
     leaves: () => shadowOf({ name: 'leaves', hooks: { vertexPars: LEAF_PARS, vertexLocal: LEAF_MOVE_SHADOW } }),
+    foliage: shadowOf({ name: 'foliage', hooks: { vertexPars: LEAF_PARS, vertexLocal: LEAF_MOVE_MODELLED } }),
     crown: shadowOf({ name: 'crown', hooks: { vertexPars: LEAF_PARS, vertexLocal: BODY_MOVE } }),
     twigs: shadowOf({ name: 'twigs', hooks: { vertexPars: LEAF_PARS, vertexLocal: TWIG_MOVE } }),
   };
 
-  return { solid, solidDouble, creature, creatureDouble, rock, wood, bark, birchBark, leaves, blossom, canopy, crown, twigs, shadows, seasonal };
+  return { solid, solidDouble, creature, creatureDouble, rock, wood, bark, birchBark, leaves, foliage, petals, canopy, crown, twigs, shadows, seasonal };
 }
 
 const _c = new THREE.Color();

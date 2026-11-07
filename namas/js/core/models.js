@@ -39,6 +39,60 @@ function unpack(buffer, start, count, a) {
   return out;
 }
 
+// How long a model is, from its head alone: the end of the last of its arrays
+function lengthOf(version, head, start) {
+  const sizes = { u16: 2, u8: 1, i8: 1, srgb: 1 };
+  let end = start;
+  for (const p of head.parts) {
+    const n = p.count;
+    if (version === 2) {
+      const arrays = { position: n * 6, normal: n * 3, uv: n * 4, color: n * 3, cut: n, lamp: n, index: (p.indexCount * p.indexBits) / 8 };
+      for (const [name, size] of Object.entries(arrays)) if (p[name] !== undefined) end = Math.max(end, start + p[name] + size);
+    } else {
+      for (const a of Object.values(p.attributes)) end = Math.max(end, start + a.offset + n * a.size * sizes[a.type]);
+      if (p.index) end = Math.max(end, start + p.index.offset + (p.index.count * p.index.bits) / 8);
+    }
+  }
+  return end;
+}
+
+// Fetches a model, telling as it comes in how much of it has: the length is
+// read from its head, since what comes over the wire is packed smaller
+async function fetchModel(file, onProgress) {
+  const response = await fetch(new URL(file, base));
+  if (!response.ok) throw new Error(`${file}: ${response.status}`);
+  if (!response.body?.getReader) return response.arrayBuffer();
+  const reader = response.body.getReader();
+  let bytes = new Uint8Array(1 << 20);
+  let received = 0;
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (received + value.length > bytes.length) {
+      const more = new Uint8Array(Math.max(bytes.length * 2, received + value.length, total));
+      more.set(bytes.subarray(0, received));
+      bytes = more;
+    }
+    bytes.set(value, received);
+    received += value.length;
+    if (!total && received >= 12) {
+      const length = new DataView(bytes.buffer).getUint32(8, true);
+      if (received >= 12 + length) {
+        try {
+          const { version, head, start } = readHead(bytes.buffer);
+          total = lengthOf(version, head, start);
+        } catch {
+          total = -1;
+        }
+      }
+    }
+    if (total > 0) onProgress(Math.min(1, received / total));
+  }
+  onProgress(1);
+  return bytes.buffer.slice(0, received);
+}
+
 function readHead(buffer) {
   const view = new DataView(buffer);
   const magic = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
@@ -66,17 +120,14 @@ function parseParts(buffer) {
 
 // The garden: trees, bushes, the templates of the lawn's tufts and flowers,
 // and the animals
-export async function loadFlora() {
-  const response = await fetch(new URL('flora.bin', base));
-  if (!response.ok) throw new Error(`flora.bin: ${response.status}`);
-  return parseParts(await response.arrayBuffer());
+export async function loadFlora(onProgress = () => {}) {
+  return parseParts(await fetchModel('flora.bin', onProgress));
 }
 
 function parse(buffer) {
   const { version, head: header, start } = readHead(buffer);
   if (version !== 2) throw new Error('not a house model');
   const parts = [];
-  const c = new THREE.Color();
   for (const p of header.parts) {
     const n = p.count;
     // 16-bit shares back to metres (or texture units) within the part's bounds
@@ -93,17 +144,11 @@ function parse(buffer) {
       g.normalizeNormals();
     }
     if (p.uv !== undefined) g.setAttribute('uv', new THREE.BufferAttribute(spread(p.uv, 2, p.uvMin, p.uvMax), 2));
-    const packed = new Uint8Array(buffer, start + p.color, n * 3);
-    const color = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) {
-      c.setRGB(packed[i * 3] / 255, packed[i * 3 + 1] / 255, packed[i * 3 + 2] / 255, THREE.SRGBColorSpace);
-      color[i * 3] = c.r;
-      color[i * 3 + 1] = c.g;
-      color[i * 3 + 2] = c.b;
-    }
-    g.setAttribute('color', new THREE.BufferAttribute(color, 3));
-    // Bookkeeping bytes are read as they are: whole numbers in the shader
-    const bytes = (offset) => new THREE.BufferAttribute(offset === undefined ? new Uint8Array(n) : new Uint8Array(buffer, start + offset, n).slice(), 1);
+    g.setAttribute('color', new THREE.BufferAttribute(Float32Array.from(new Uint8Array(buffer, start + p.color, n * 3), (v) => LINEAR[v]), 3));
+    // Bookkeeping bytes are read as they are, whole numbers, but handed to
+    // the shader as the floats it reads them as: bytes for a float made
+    // Chrome on Windows build each house shader again at its first drawing
+    const bytes = (offset) => new THREE.BufferAttribute(offset === undefined ? new Float32Array(n) : Float32Array.from(new Uint8Array(buffer, start + offset, n)), 1);
     g.setAttribute('aCut', bytes(p.cut));
     g.setAttribute('aLamp', bytes(p.lamp));
     const Index = p.indexBits === 32 ? Uint32Array : Uint16Array;
@@ -116,10 +161,8 @@ function parse(buffer) {
 
 // Fetched alongside the textures. Resolves to the house's parts, or to null
 // when the file cannot be read: the page then shows its ideas without a picture.
-export async function loadHouse() {
-  const response = await fetch(new URL(FILE, base));
-  if (!response.ok) throw new Error(`${FILE}: ${response.status}`);
-  return parse(await response.arrayBuffer());
+export async function loadHouse(onProgress = () => {}) {
+  return parse(await fetchModel(FILE, onProgress));
 }
 
 // Every thing a seasonal part brings out is told apart from the others: the

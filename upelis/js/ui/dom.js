@@ -107,8 +107,11 @@ const STICKERS = new URL('../../assets/stickers/', import.meta.url);
 export const stickerUrl = (name) => new URL(`${name}.webp`, STICKERS).href;
 
 // A watercolour sticker. Decorative: the name next to it carries the meaning.
-export function sticker(name, size = 64) {
-  return h('img', { class: 'sticker', src: stickerUrl(name), alt: '', width: size, height: size, decoding: 'async', draggable: 'false' });
+// One that waits hidden (a spot's marker, a row of the list) is fetched only
+// when it is shown, so that it does not stand in the way of the picture
+// while the page loads.
+export function sticker(name, size = 64, { lazy = false } = {}) {
+  return h('img', { class: 'sticker', loading: lazy ? 'lazy' : null, src: stickerUrl(name), alt: '', width: size, height: size, decoding: 'async', draggable: 'false' });
 }
 
 export const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;

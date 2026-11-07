@@ -43,7 +43,7 @@ export function createChrome(root, seasons, { onPick, onHome, onSound, onSeason,
         const button = h(
           'button',
           { class: 'places__row', type: 'button', 'data-tone': place.tone },
-          h('span', { class: 'places__art' }, sticker(place.sticker, 56)),
+          h('span', { class: 'places__art' }, sticker(place.sticker, 56, { lazy: true })),
           h('span', { class: 'places__name' }, place.name),
           h('span', { class: 'places__count' }, TEXT.ideas(place.ideas.length)),
           check
@@ -237,9 +237,61 @@ export function createChrome(root, seasons, { onPick, onHome, onSound, onSeason,
   }
 
   // ---------- Loader ----------
-  function setLoading(share) {
-    loaderBar.style.transform = `scaleX(${Math.min(1, Math.max(0.04, share)).toFixed(3)})`;
+  // The bar keeps an even pace. Every step of the loading has its own stretch
+  // of it, as long as that step usually takes. Within a step the bar follows
+  // what can be counted (the bytes of the models, the textures, the building
+  // steps, the shaders built) and otherwise creeps on, ever slower, so that it
+  // never stands still and never runs into the next step's stretch. A step
+  // that ends early hands the next one the bar where it is: nothing jumps.
+  // The bar is set where it will be a moment later and the stylesheet glides
+  // it there, so that it carries on through a frame the building keeps busy.
+  const LEAD = 0.6;
+  const loading = { shown: 0, drawn: 0, from: 0, to: 0, share: 0, began: 0, expect: 1, last: 0, frame: 0, done: false };
+  // Before the scripts were in, the page's own stylesheet had the bar
+  // creeping: it goes on from there
+  {
+    const m = /matrix\(([-\d.e]+)/.exec(getComputedStyle(loaderBar).transform);
+    loading.shown = loading.drawn = loading.from = loading.to = m ? Number(m[1]) : 0.04;
+    loaderBar.style.animation = 'none';
+    loaderBar.style.transform = `scaleX(${loading.shown.toFixed(4)})`;
   }
+  const loadingAt = (now) => {
+    if (loading.done) return 1;
+    const t = Math.max(0, now - loading.began) / 1000;
+    const creep = 0.9 * (1 - Math.exp((-1.6 * t) / loading.expect));
+    return loading.from + (loading.to - loading.from) * Math.min(1, Math.max(loading.share, creep));
+  };
+  const rate = () => (loading.done ? 9 : 6);
+  function drawLoading(now) {
+    const dt = loading.last ? Math.min(0.1, (now - loading.last) / 1000) : 0;
+    loading.last = now;
+    loading.shown = Math.max(loading.shown, loading.shown + (loadingAt(now) - loading.shown) * (1 - Math.exp(-dt * rate())));
+    const ahead = loading.shown + (loadingAt(now + LEAD * 1000) - loading.shown) * (1 - Math.exp(-LEAD * rate()));
+    loading.drawn = Math.min(1, Math.max(loading.drawn, ahead));
+    loaderBar.style.transform = `scaleX(${loading.drawn.toFixed(4)})`;
+    loading.frame = loading.done && loading.drawn > 0.999 ? 0 : requestAnimationFrame(drawLoading);
+  }
+  const loadBar = {
+    // A new step, which ends at `to` (a share of the bar) and usually takes `seconds`
+    step(to, seconds) {
+      const now = performance.now();
+      loading.from = Math.max(loading.shown, loadingAt(now));
+      loading.to = Math.max(loading.from, to);
+      loading.share = 0;
+      loading.began = now;
+      loading.expect = Math.max(0.1, seconds);
+      if (!loading.frame) loading.frame = requestAnimationFrame(drawLoading);
+    },
+    // How much of the step is done, when that can be counted
+    progress(share) {
+      loading.share = Math.max(loading.share, Math.min(1, share));
+    },
+    done() {
+      loading.done = true;
+      if (!loading.frame) loading.frame = requestAnimationFrame(drawLoading);
+    },
+  };
 
-  return { setSeason, setHour, setProgress, toggleList, hideHint, showHint, say, setLoading };
+
+  return { setSeason, setHour, setProgress, toggleList, hideHint, showHint, say, loading: loadBar };
 }

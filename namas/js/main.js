@@ -3,6 +3,7 @@ import { pickQuality, isSoftwareRenderer, lowTier, pixelRatioFor } from './core/
 import { loadTextures } from './core/assets.js';
 import { loadHouse, loadFlora } from './core/models.js';
 import { shared, installSoftShadows } from './core/materials.js';
+import { rehearse, compiled } from './core/warm.js';
 import { createCalendar, season, seasonIndex, SEASON_IDS } from './core/season.js';
 import { createRig } from './core/rig.js';
 import { palette, col } from './core/palette.js';
@@ -104,9 +105,12 @@ async function boot() {
   });
   if (!audio.supported) document.getElementById('sound').hidden = true;
 
-  // Each finished step moves the loader along and lets the page breathe
+  // The loader's bar: every step of the loading has its own stretch of it
+  // (ui/chrome.js). Each building step moves it along, by about the share of
+  // the building it usually takes, and lets the page breathe.
+  const bar = ui.loading;
   const built = (share) => {
-    ui.setLoading(share);
+    bar.progress(share);
     return nextFrame();
   };
 
@@ -118,18 +122,74 @@ async function boot() {
   scene.fog.color = season.hues.haze;
   const camera = new THREE.PerspectiveCamera(CAMERA.fov, 1, 1, 400);
 
-  ui.setLoading(0.06);
-  // The house and the garden made in Blender are fetched alongside the textures
-  const modelArriving = loadHouse();
-  const floraArriving = loadFlora();
-  const textures = await loadTextures(renderer, (share) => ui.setLoading(0.06 + share * 0.3));
+  // The house and the garden made in Blender are fetched alongside the
+  // textures (index.html asks for all of them before the scripts are in).
+  // The bar follows the bytes of the models and the textures one by one, in
+  // the shares of what they weigh over the wire.
+  bar.step(0.38, 1.2);
+  const arrived = { house: 0, flora: 0, textures: 0 };
+  const fetched = (what) => (share) => {
+    arrived[what] = share;
+    bar.progress(0.26 * arrived.house + 0.16 * arrived.flora + 0.58 * arrived.textures);
+  };
+  const modelArriving = loadHouse(fetched('house'));
+  const floraArriving = loadFlora(fetched('flora'));
+  const textures = await loadTextures(renderer, fetched('textures'));
   const model = await modelArriving;
   const flora = await floraArriving;
   shared.uWash.value = textures.wash;
+  bar.step(0.88, 1.7);
   await nextFrame();
 
+  const post = createPost(renderer, quality, textures.wash);
+
+  // Behind the loader everything is brought out: the things of the other
+  // seasons, and whatever is out of the frame, so that a season never stops
+  // half-way through its change to build a shader
+  const everything = (draw) => {
+    const away = [];
+    const culled = [];
+    scene.traverse((object) => {
+      if (!object.visible) {
+        away.push(object);
+        object.visible = true;
+      }
+      if (object.frustumCulled) {
+        culled.push(object);
+        object.frustumCulled = false;
+      }
+    });
+    draw();
+    for (const object of away) object.visible = false;
+    for (const object of culled) object.frustumCulled = true;
+  };
+  const casters = () => {
+    const casting = [];
+    scene.traverse((object) => {
+      if (object.castShadow && !object.isLight) {
+        casting.push(object);
+        object.castShadow = false;
+      }
+    });
+    return casting;
+  };
+  // What is built so far is rehearsed straight away (core/warm.js), so that
+  // the driver builds its shaders while the rest is still being made. The
+  // shadows wait for the last rehearsal, which knows the whole frame.
+  const ahead = () => {
+    const casting = casters();
+    everything(() =>
+      rehearse(renderer, scene, camera, () => {
+        renderer.setRenderTarget(post.active ? post.sceneTarget : null);
+        renderer.render(scene, camera);
+      })
+    );
+    renderer.setRenderTarget(null);
+    for (const object of casting) object.castShadow = true;
+  };
+
   const field = createField(7);
-  await built(0.42);
+  await built(0.08);
 
   const atmosphere = createAtmosphere(textures, quality, { reducedMotion });
   scene.add(atmosphere.group);
@@ -137,23 +197,28 @@ async function boot() {
   const kit = createKit(textures);
   const house = createHouse(model, textures);
   scene.add(house.group);
-  await built(0.5);
+  ahead();
+  await built(0.46);
 
   const terrain = createTerrain(field, textures);
   scene.add(terrain.group);
-  await built(0.6);
+  ahead();
+  await built(0.58);
 
   const trees = createTrees(flora, field, kit, quality);
   scene.add(trees.group);
-  await built(0.74);
+  ahead();
+  await built(0.73);
 
   const meadow = createMeadow(field, terrain, quality, flora);
   scene.add(meadow.group);
-  await built(0.86);
+  ahead();
+  await built(0.83);
 
   const critters = createCritters(field, kit, { meadow, trees, flora }, quality);
   scene.add(critters.group);
-  await built(0.93);
+  ahead();
+  await built(1);
 
   // The smoke leaves the chimney a little above its cap
   const chimney = { x: HOUSE.x0 + HOUSE.wall + 0.275, y: HOUSE.ridge + 1.13, z: -3.0 };
@@ -183,7 +248,6 @@ async function boot() {
   });
   ui.attach({ rig, camera, house });
 
-  const post = createPost(renderer, quality, textures.wash);
   // The stars and the moon are drawn over the finished frame, and are told
   // what of it stands in front of them
   if (post.active) atmosphere.behind(post.sceneTarget.depthTexture);
@@ -256,42 +320,37 @@ async function boot() {
   if (debug || reducedMotion) rig.goHome(0);
   else rig.intro();
 
-  // Draw behind the loader, so every shader is ready before the flight. The
-  // things of the other seasons are brought out for this drawing and nothing
-  // is passed over for being out of the frame: a season must not stop
-  // half-way through its change to build a shader. It is drawn twice, first
-  // with nothing casting a shadow: the shadow pass builds its shaders for the
-  // lights of the frame before, and before the first frame there are none.
-  // The shadow map itself is still drawn that first time, empty, so that the
-  // lit shaders have one to read.
+  // Draw behind the loader, so every shader is ready before the flight, and
+  // every texture and buffer is on the graphics card. It is drawn twice,
+  // first with nothing casting a shadow: the shadow pass builds its shaders
+  // for the lights of the frame before, and before the first frame there are
+  // none. The shadow map itself is still drawn that first time, empty, so
+  // that the lit shaders have one to read. The drawing is rehearsed first
+  // (core/warm.js): the driver builds what shaders are still missing all at
+  // once, and the textures go up while it does.
   post.state.reveal = 0;
   rig.update(0, 0);
-  const away = [];
-  const culled = [];
-  const casting = [];
-  scene.traverse((object) => {
-    if (!object.visible) {
-      away.push(object);
-      object.visible = true;
-    }
-    if (object.frustumCulled) {
-      culled.push(object);
-      object.frustumCulled = false;
-    }
-    if (object.castShadow && !object.isLight) {
-      casting.push(object);
-      object.castShadow = false;
-    }
-  });
-  for (const withShadows of [false, true]) {
-    if (withShadows) for (const object of casting) object.castShadow = true;
+  const firstFrames = () => {
+    const casting = casters();
+    everything(() => {
+      for (const withShadows of [false, true]) {
+        if (withShadows) for (const object of casting) object.castShadow = true;
+        renderer.shadowMap.needsUpdate = true;
+        post.render(scene, camera, { focus: rig.view.dist, time: 0 });
+      }
+    });
     renderer.shadowMap.needsUpdate = true;
-    post.render(scene, camera, { focus: rig.view.dist, time: 0 });
+  };
+  rehearse(renderer, scene, camera, firstFrames);
+  bar.step(0.98, 0.5);
+  const uploads = Object.values(textures);
+  for (let i = 0; i < uploads.length; i++) {
+    renderer.initTexture(uploads[i]);
+    if (i % 4 === 3) await nextFrame();
   }
-  renderer.shadowMap.needsUpdate = true;
-  for (const object of away) object.visible = false;
-  for (const object of culled) object.frustumCulled = true;
-  await built(1);
+  await compiled(renderer, (share) => bar.progress(share));
+  firstFrames();
+  bar.done();
   await nextFrame();
 
   let last = performance.now();

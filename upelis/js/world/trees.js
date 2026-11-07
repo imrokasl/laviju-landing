@@ -2,14 +2,17 @@ import * as THREE from '../core/three.js';
 import { TAU, createRng, lerp, saturate, smoothstep } from '../core/math.js';
 import { palette, col } from '../core/palette.js';
 import { season } from '../core/season.js';
-import { blob, tube, curvePoints, lathe, roundedBox, icoSphere, place, paint, displace, setSway, merge } from '../core/geo.js';
+import { blob, tube, curvePoints, roundedBox, place, paint, setSway, merge } from '../core/geo.js';
 import { shadeByOpenness } from '../core/models.js';
 import { mesh, part, grainUv } from './kit.js';
+import { growFlora } from './flora.js';
 import { OAK, TREES } from './layout.js';
 
-// The trees and bushes. Each crown is a few soft lumps dressed in painted leaf
-// cards; the cards borrow their normals from the crown's overall shape, so a
-// whole tree shades like one rounded form.
+// The trees and bushes. The birches, the spruces and the bushes are grown in
+// Blender (world/flora.js). The oak and the willow are grown here: each crown
+// is a few soft lumps dressed in painted leaf cards, which borrow their
+// normals from the crown's overall shape, so a whole tree shades like one
+// rounded form.
 
 const LIGHT = new THREE.Vector3(-0.45, 0.82, 0.36).normalize();
 const UP = new THREE.Vector3(0, 1, 0);
@@ -122,16 +125,12 @@ export function createTrees(field, kit, textures, quality, models = {}) {
   const yearRng = createRng(1717);
 
   const oakCards = cardBatch();
-  const birchCards = cardBatch();
-  const sprigCards = cardBatch();
+  const willowCards = cardBatch();
   const strandCards = cardBatch();
   const twigCards = cardBatch();
-  const blossomCards = cardBatch();
   const crowns = []; // soft bodies behind the cards: evergreen
   const leafBodies = []; // ...and the ones that thin away with their leaves
   const barks = [];
-  const birchTrunks = [];
-  const solids = [];
   // `crowns` lists the lumps of every crown that sheds its leaves, for the air to drop them from
   const anchors = { crowns: [] };
 
@@ -285,41 +284,11 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     }
   }
 
-  // ---------- Blossom: painted clusters set all over a crown ----------
-  // Each opens from in among the leaves when its turn comes in spring.
-  function bloom(clumps, centre, tint) {
-    const dir = new THREE.Vector3();
-    const point = new THREE.Vector3();
-    const shade = new THREE.Vector3();
-    const facing = new THREE.Vector3();
-    const foot = new THREE.Vector3();
-    const hue = new THREE.Color();
-    for (const c of clumps) {
-      const squash = c.squash ?? 0.92;
-      const count = Math.round(c.r * c.r * 60 * Math.max(0.6, quality.foliage));
-      for (let k = 0; k < count; k++) {
-        randomDirection(dir, 0.45);
-        if (dir.y < -0.2) continue;
-        point.set(c.x + dir.x * c.r * 1.03, c.y + dir.y * c.r * squash * 1.03, c.z + dir.z * c.r * 1.03);
-        if (clumps.some((o) => o !== c && _a.set(point.x - o.x, point.y - o.y, point.z - o.z).length() < o.r * 0.9)) continue;
-        shade.copy(point).sub(centre).normalize().lerp(dir, 0.4).lerp(UP, 0.3).normalize();
-        facing.copy(dir).addScaledVector(randomDirection(_b), 0.26).normalize();
-        foot.set(c.x + dir.x * c.r * 0.72, c.y + dir.y * c.r * squash * 0.72, c.z + dir.z * c.r * 0.72);
-        hue.copy(tint).offsetHSL(rng.range(-0.012, 0.012), 0, rng.range(-0.03, 0.02));
-        blossomCards.add(point, facing, 0.4 * rng.range(0.78, 1.2), hue, shade, 0.05, { roll: rng.range(0, TAU), cup: 0.24, pivot: foot, number: yearRng() });
-      }
-    }
-  }
-
   const colours = (dark, mid, light) => ({ dark: col(dark).clone(), mid: col(mid).clone(), light: col(light).clone() });
   const oakColours = colours(palette.oakDark, palette.oakMid, palette.oakLight);
-  const birchColours = colours(palette.birchLeafDark, palette.birchLeafMid, palette.birchLeafLight);
-  const bushColours = colours(palette.bushDark, palette.bushMid, palette.bushLight);
   const willowColours = colours(palette.willowDark, palette.willowMid, palette.willowLight);
   // What each of them turns to in autumn
   const oakGold = colours(palette.oakAutumnDark, palette.oakAutumnMid, palette.oakAutumnLight);
-  const birchGold = colours(palette.birchAutumnDark, palette.birchAutumnMid, palette.birchAutumnLight);
-  const bushGold = colours(palette.bushAutumnDark, palette.bushAutumnMid, palette.bushAutumnLight);
   const willowGold = colours(palette.willowAutumnDark, palette.willowAutumnMid, palette.willowAutumnLight);
 
   // ---------- Limbs ----------
@@ -435,199 +404,6 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     anchors.swing = { point: hang.clone(), limbRadius: 0.16 * S, yaw: Math.atan2(-(swingLimb[10].z - swingLimb[6].z), swingLimb[10].x - swingLimb[6].x) };
   }
 
-  // ---------- Birches ----------
-  anchors.birches = [];
-  TREES.birches.forEach((b, bi) => {
-    const y = field.height(b.x, b.z) - 0.06;
-    const h = b.h;
-    const lean = b.lean * h;
-    const bend = rng.range(-0.25, 0.25);
-    const path = [
-      new THREE.Vector3(b.x, y, b.z),
-      new THREE.Vector3(b.x + lean * 0.22, y + h * 0.3, b.z + bend * 0.3),
-      new THREE.Vector3(b.x + lean * 0.62, y + h * 0.64, b.z + bend * 0.8),
-      new THREE.Vector3(b.x + lean, y + h * 0.97, b.z + bend),
-    ];
-    const pts = curvePoints(path, 18);
-    const g = tube(pts, (t) => lerp(0.165, 0.03, Math.pow(t, 0.8)) + 0.07 * Math.exp(-t * 14), { radial: 9, capStart: false });
-    const uvs = g.attributes.uv;
-    for (let i = 0; i < uvs.count; i++) uvs.setXY(i, uvs.getX(i) * 6.2832 + bi * 3.1, uvs.getY(i) * h * 4.2);
-    const white = col(palette.birch);
-    const grey = col(palette.birchShade);
-    const foot = col(palette.barkDark);
-    paint(g, (p, n, i, out) => {
-      const lit = saturate((n.dot(LIGHT) + 0.4) / 1.3);
-      out.copy(grey).lerp(white, lit);
-      out.lerp(foot, (1 - smoothstep(0.0, 0.55, p.y - y)) * 0.6);
-    });
-    birchTrunks.push(g);
-    anchors.birches.push({ base: path[0].clone(), points: pts, height: h });
-
-    const trunkAt = (t) => {
-      const f = saturate(t) * (pts.length - 1);
-      const i = Math.min(Math.floor(f), pts.length - 2);
-      return pts[i].clone().lerp(pts[i + 1], f - i);
-    };
-
-    // Fine dark branches reaching into the crown
-    const clumps = [];
-    const n = 8 + bi;
-    for (let k = 0; k < n; k++) {
-      const t = lerp(0.42, 1.02, k / (n - 1));
-      const origin = trunkAt(Math.min(t, 0.98));
-      const a = k * 2.4 + bi + rng.range(-0.4, 0.4);
-      const spread = (1 - Math.pow((t - 0.42) / 0.6, 1.6)) * 1.25 + 0.2;
-      const r = lerp(0.95, 0.55, (t - 0.42) / 0.6) * rng.range(0.85, 1.1);
-      const cx = origin.x + Math.cos(a) * spread;
-      const cz = origin.z + Math.sin(a) * spread;
-      const cy = origin.y + rng.range(-0.1, 0.35);
-      clumps.push({ x: cx, y: cy, z: cz, r, squash: 1.05 });
-      if (k < n - 1) {
-        limb([trunkAt(t - 0.08), new THREE.Vector3(lerp(origin.x, cx, 0.5), origin.y - 0.05, lerp(origin.z, cz, 0.5)), new THREE.Vector3(cx, cy - r * 0.3, cz)], 0.04, 0.012, {
-          radial: 5,
-          samples: 6,
-          dark: palette.birchMark,
-          lightCol: palette.barkDark,
-        });
-      }
-    }
-    crown(clumps, trunkAt(0.72), birchCards, birchColours, {
-      cardSize: 0.8,
-      density: 82,
-      swayBase: 0.06,
-      swayTop: 0.22,
-      bodyScale: 0.5,
-      upBias: 0.1,
-      droop: 0.5,
-      autumn: birchGold,
-      cling: 0.025,
-      twig: col(palette.twigBirch),
-      sheds: 0,
-      fans: 3,
-      fanSize: 2.3,
-    });
-  });
-
-  // ---------- Spruces ----------
-  anchors.spruces = [];
-  {
-    const dark = col(palette.spruceDark);
-    const mid = col(palette.spruceMid);
-    const light = col(palette.spruceLight);
-    const tint = new THREE.Color();
-    const centre = new THREE.Vector3();
-    const facing = new THREE.Vector3();
-    const up = new THREE.Vector3();
-    const shade = new THREE.Vector3();
-
-    for (const s of TREES.spruces) {
-      const y = field.height(s.x, s.z) - 0.05;
-      const h = s.h;
-      const R = h * 0.29;
-      limb([new THREE.Vector3(s.x, y, s.z), new THREE.Vector3(s.x, y + h * 0.4, s.z)], 0.17, 0.1, { radial: 7, samples: 4, dark: palette.barkDark, lightCol: palette.barkOak, flare: 0.08 });
-
-      const tiers = 7;
-      const turn = rng.range(0, TAU);
-      // Rows of boughs on a tier: how far out, how big, how far up the tier, how steeply they hang
-      const ROWS = [
-        [0.8, 1.0, 0.02, 0.5],
-        [0.5, 0.82, 0.36, 0.66],
-        [0.23, 0.6, 0.68, 0.84],
-      ];
-      for (let i = 0; i < tiers; i++) {
-        const k = i / (tiers - 1);
-        const y0 = y + h * (0.13 + 0.116 * i);
-        const r = R * Math.pow(1 - k * 0.87, 0.95);
-        const th = h * 0.25 * (1 - k * 0.3);
-        // The dark heart of the tier: what shows between the boughs and from underneath
-        const g = lathe(
-          [
-            [r * 0.46, y0 - th * 0.05],
-            [r * 0.84, y0 + th * 0.02],
-            [r * 0.6, y0 + th * 0.28],
-            [r * 0.33, y0 + th * 0.62],
-            [0.03, y0 + th],
-          ],
-          18
-        );
-        // Scalloped, slightly drooping skirts
-        displace(g, (p) => {
-          const a = Math.atan2(p.z, p.x);
-          const edge = saturate(Math.hypot(p.x, p.z) / r);
-          const scallop = Math.sin(a * 7 + i * 1.7 + turn) * 0.5 + 0.5;
-          const rr = 1 + (scallop * 0.16 - 0.05) * edge + noise.noise3(p.x * 2 + i, p.y, p.z * 2) * 0.05;
-          p.x *= rr;
-          p.z *= rr;
-          p.y -= edge * edge * (0.07 + scallop * 0.07) * r;
-        });
-        place(g, { x: s.x, z: s.z });
-        paint(g, (p, n, vi, out) => {
-          const lit = saturate((n.dot(LIGHT) + 0.3) / 1.2);
-          const rim = saturate(Math.hypot(p.x - s.x, p.z - s.z) / r);
-          // Dark underneath and near the trunk, where the tier above shades it
-          out.copy(dark).multiplyScalar(0.5 + 0.26 * rim).lerp(mid, saturate(lit * 0.4 + rim * 0.12) * saturate(n.y * 1.6 + 0.3) * 0.6);
-        });
-        setSway(g, (p) => 0.02 + 0.07 * saturate((p.y - y) / h) * saturate(Math.hypot(p.x - s.x, p.z - s.z) / r + 0.3));
-        crowns.push(g);
-
-        // Painted boughs lie over the tier like shingles, the lowest row hanging past its rim
-        ROWS.forEach(([share, scale, lift, steep], ri) => {
-          const rr = r * share;
-          const span = (r * 0.6 + 0.3) * scale;
-          const count = Math.max(ri === 2 ? 3 : 5, Math.round(((TAU * rr) / (span * 0.44)) * quality.foliage));
-          for (let j = 0; j < count; j++) {
-            const a = (j / count) * TAU + turn + i * 0.6 + ri * 1.1 + rng.range(-0.2, 0.2);
-            const out = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
-            const size = span * rng.range(0.84, 1.14);
-            const tilt = steep + rng.range(-0.1, 0.12);
-            // The sprite's stem is at its top: it hangs outwards and down
-            up.copy(out).multiplyScalar(-Math.cos(tilt)).addScaledVector(UP, Math.sin(tilt));
-            facing.copy(out).multiplyScalar(Math.sin(tilt)).addScaledVector(UP, Math.cos(tilt));
-            const reach = rr * rng.range(0.94, 1.08);
-            centre.set(s.x + out.x * reach, y0 + th * lift + size * 0.06 - size * 0.14 * Math.sin(tilt), s.z + out.z * reach);
-            shade.copy(out).multiplyScalar(0.8 - ri * 0.12).addScaledVector(UP, 0.6 + ri * 0.14).normalize();
-            const lit = saturate((shade.dot(LIGHT) + 0.3) / 1.2);
-            tint.copy(dark).lerp(mid, saturate(lit + 0.12)).lerp(light, lit * lit * 0.55).offsetHSL(rng.range(-0.012, 0.012), 0, rng.range(-0.03, 0.03));
-            // The tier above keeps the inner rows in its shade
-            if (ri > 0 && i < tiers - 1) tint.multiplyScalar(1 - ri * 0.07);
-            sprigCards.add(centre, facing, size, tint, shade, 0.03 + 0.05 * k, { up, cup: 0.1, tipTint: light.clone().lerp(tint, ri === 0 ? 0.4 : 0.6), swayTip: 0.1 - ri * 0.025 });
-          }
-        });
-      }
-      // Leader: a slim spike, with two whorls of young shoots reaching up around it
-      const top = lathe(
-        [
-          [R * 0.075, y + h * 0.88],
-          [0.012, y + h * 1.07],
-        ],
-        7
-      );
-      place(top, { x: s.x, z: s.z });
-      paint(top, (p, n, vi, out) => out.copy(dark).lerp(mid, 0.55));
-      setSway(top, () => 0.12);
-      crowns.push(top);
-      for (const [at, n, scale] of [
-        [0.9, 5, 1],
-        [0.97, 4, 0.72],
-      ]) {
-        for (let j = 0; j < n; j++) {
-          const a = (j / n) * TAU + turn + at * 9;
-          const out = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
-          const size = (R * 0.2 + 0.2) * scale * rng.range(0.9, 1.12);
-          // Stem down and in, tip up and out
-          up.copy(out).multiplyScalar(-0.42).addScaledVector(UP, -0.9).normalize();
-          facing.copy(out).multiplyScalar(0.9).addScaledVector(UP, -0.42).normalize();
-          centre.set(s.x + out.x * size * 0.2, y + h * at + size * 0.4, s.z + out.z * size * 0.2);
-          shade.copy(out).multiplyScalar(0.6).addScaledVector(UP, 0.8).normalize();
-          const lit = saturate((shade.dot(LIGHT) + 0.3) / 1.2);
-          tint.copy(dark).lerp(mid, saturate(lit + 0.2)).lerp(light, lit * 0.5);
-          sprigCards.add(centre, facing, size, tint, shade, 0.1, { up, cup: 0.1, tipTint: light.clone().lerp(tint, 0.35), swayTip: 0.14 });
-        }
-      }
-      anchors.spruces.push(new THREE.Vector3(s.x, y + h * 1.06, s.z));
-    }
-  }
-
   // ---------- The willow ----------
   {
     const { x, z } = TREES.willow;
@@ -712,7 +488,7 @@ export function createTrees(field, kit, textures, quality, models = {}) {
         });
       }
     }
-    crown(clumps, at(1.2, 3.2), birchCards, willowColours, {
+    crown(clumps, at(1.2, 3.2), willowCards, willowColours, {
       cardSize: 0.82,
       density: 74,
       swayBase: 0.06,
@@ -728,64 +504,6 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     anchors.willow = at(1.2, 2.6);
   }
 
-  // ---------- Bushes ----------
-  {
-    const berry = [];
-    const blossomWhite = new THREE.Color(1, 0.975, 0.95);
-    const blossomPink = col(palette.pink).clone().lerp(new THREE.Color(1, 1, 1), 0.3);
-    TREES.bushes.forEach((b, bi) => {
-      const y = field.height(b.x, b.z);
-      const clumps = [];
-      const n = b.r > 0.85 ? 4 : 3;
-      for (let k = 0; k < n; k++) {
-        const a = (k / n) * TAU + bi;
-        const d = k === 0 ? 0 : b.r * 0.55;
-        const r = b.r * (k === 0 ? 0.74 : rng.range(0.46, 0.6));
-        const cx = b.x + Math.cos(a) * d;
-        const cz = b.z + Math.sin(a) * d;
-        clumps.push({ x: cx, y: field.height(cx, cz) + r * 0.62, z: cz, r, squash: 0.86 });
-      }
-      // Every third bush flowers: clusters of blossom all over it in spring, white or pink
-      const flowering = bi % 3 === 0;
-      const middle = new THREE.Vector3(b.x, y + b.r * 0.2, b.z);
-      if (flowering) bloom(clumps, middle, bi % 2 ? blossomPink : blossomWhite);
-      crown(clumps, middle, oakCards, bushColours, {
-        cardSize: 0.58,
-        density: 146,
-        swayBase: 0.015,
-        swayTop: 0.07,
-        bodyScale: 0.7,
-        upBias: 0.12,
-        autumn: bushGold,
-        cling: 0.02,
-        blossom: flowering ? (bi % 2 ? 2 : 1) : 0,
-        twig: col(palette.twigBush),
-        sheds: 2,
-        fans: 2,
-        fanSize: 2.1,
-      });
-
-      // ...and every third one bears fruit, which stays on into the winter
-      if (bi % 3 === 2) {
-        const dir = new THREE.Vector3();
-        for (let k = 0; k < 22; k++) {
-          const c = clumps[k % clumps.length];
-          randomDirection(dir, 0.6);
-          const g = icoSphere(0.042, 1);
-          const at = { x: c.x + dir.x * c.r * 1.02, y: c.y + dir.y * c.r * 0.9, z: c.z + dir.z * c.r * 1.02 };
-          part(g, palette.red, at);
-          // Each berry swells where it hangs, in its own time
-          const turn = yearRng();
-          const pop = new Float32Array(g.attributes.position.count * 4);
-          for (let i = 0; i < pop.length; i += 4) pop.set([at.x, at.y, at.z, turn], i);
-          g.setAttribute('aPop', new THREE.BufferAttribute(pop, 4));
-          berry.push(g);
-        }
-      }
-    });
-    if (berry.length) solids.push(...berry);
-  }
-
   // ---------- Assemble ----------
   const add = (geometry, material, name, options) => {
     const m = mesh(geometry, material, { name, ...options });
@@ -793,27 +511,27 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     return m;
   };
   add(merge(barks, { keepUv: true, keep: ['aMoss'] }), kit.bark, 'bark');
-  add(merge(birchTrunks, { keepUv: true }), kit.birchBark, 'birch-trunks');
   add(merge(crowns), kit.canopy, 'crowns');
   const bodies = add(merge(leafBodies, { keep: ['aLeaf', 'aTurn'] }), kit.crown, 'leaf-crowns');
   bodies.customDepthMaterial = kit.shadows.crown;
-  // Berries ripen as the leaves turn, bush by bush as the autumn comes over
-  const ripe = { value: season.row(0) };
-  const ripening = kit.seasonal(ripe);
-  const fruit = solids.length ? add(merge(solids, { keep: ['aPop'] }), ripening.solid, 'berries') : null;
-  if (fruit) fruit.customDepthMaterial = ripening.shadow;
-  const blossom = blossomCards.count ? add(blossomCards.build(), kit.blossom, 'blossom', { cast: false, receive: false }) : null;
   const leafy = [
     add(oakCards.build(), kit.leaves(textures.foliageOak, { seasonal: true }), 'oak-leaves', { receive: false }),
-    add(birchCards.build(), kit.leaves(textures.foliageBirch, { seasonal: true }), 'birch-leaves', { receive: false }),
+    add(willowCards.build(), kit.leaves(textures.foliageBirch, { seasonal: true }), 'willow-leaves', { receive: false }),
     // Thin strands would vanish in the distance with the usual cut-off
     add(strandCards.build(), kit.leaves(textures.willowStrand, { alphaTest: 0.16, seasonal: true }), 'willow-strands', { receive: false }),
   ];
   // One shadow material to a mesh: each is handed its own leaf sprite to cut the shadow with
   for (const m of leafy) m.customDepthMaterial = kit.shadows.leaves();
-  add(sprigCards.build(), kit.leaves(textures.spruceSprig), 'spruce-sprigs', { receive: false });
   const twigs = add(twigCards.build(), kit.twigs, 'twigs', { receive: false });
   twigs.customDepthMaterial = kit.shadows.twigs;
+
+  // ---------- The birches, the spruces and the bushes ----------
+  // Grown in Blender; without their file the island is drawn without them
+  const garden = models.flora ? growFlora(models.flora, field, kit, quality, group) : null;
+  if (garden) {
+    anchors.crowns.push(...garden.anchors.crowns);
+    anchors.birches = garden.anchors.birches;
+  }
 
   // ---------- The swing ----------
   const swing = new THREE.Group();
@@ -847,8 +565,7 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     bodies.visible = fewest < 0.82;
     twigs.visible = season.most('leafDrop') > 0.1;
     for (const m of leafy) m.visible = fewest < 0.999;
-    if (blossom) blossom.visible = season.most('blossom') > 0.002;
-    if (fruit) fruit.visible = season.across((v) => smoothstep(0.2, 0.8, v.leafTurn), ripe.value) > 0.004;
+    garden?.dress();
   }
   dress();
 
@@ -862,6 +579,6 @@ export function createTrees(field, kit, textures, quality, models = {}) {
     group,
     anchors,
     update,
-    counts: { oak: oakCards.count, birch: birchCards.count, sprigs: sprigCards.count, strands: strandCards.count, twigs: twigCards.count, blossom: blossomCards.count },
+    counts: { oak: oakCards.count, willow: willowCards.count, strands: strandCards.count, twigs: twigCards.count },
   };
 }
