@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="/styles.css?v=20261027-1" />
   <link rel="stylesheet" href="/blog/blog.css?v=20261025-2" />
   <link rel="stylesheet" href="/home.css?v=20261027-1" />
+  <link rel="stylesheet" href="/plus/plus.css?v=20261110-1" />
   <script>document.documentElement.classList.add('js');</script>
   <script type="application/ld+json">
     {
@@ -84,6 +85,7 @@
         <a href="#features" class="nav__link" id="nav-features">Funkcijos</a>
         <a href="#principles" class="nav__link" id="nav-principles">Principai</a>
         <a href="#how-it-works" class="nav__link" id="nav-how">Kaip veikia</a>
+        <a href="/plus/" class="nav__link lp-nav" id="nav-plus" aria-label="Laviju+">Laviju<svg class="lp-plus" viewBox="0 0 48 48" aria-hidden="true"><path d="M24.6 6.5C22.8 16 26.2 30 23.8 41.5"/><path d="M6.5 24.8C17 22.4 31 26.6 41.5 23.2"/></svg></a>
         <a href="/blog/" class="nav__link nav__link--strong" id="nav-blog"><span class="nav__perch">Tinklaraštis<img class="nav__bird" src="/blog/assets/stickers/bird-perched-64.webp" width="73" height="64" alt="" decoding="async" /><img class="nav__notes" src="/blog/assets/stickers/notes-36.webp" width="44" height="36" alt="" decoding="async" /></span></a>
         <a href="#contact" class="nav__link" id="nav-contact">Kontaktai</a>
         <a href="https://admin.laviju.lt" class="nav__link" id="nav-admin">Prisijungti</a>
@@ -102,6 +104,7 @@
     <a href="#features" class="mobile-menu__link">Funkcijos</a>
     <a href="#principles" class="mobile-menu__link">Principai</a>
     <a href="#how-it-works" class="mobile-menu__link">Kaip veikia</a>
+    <a href="/plus/" class="mobile-menu__link lp-nav" aria-label="Laviju+">Laviju<svg class="lp-plus" viewBox="0 0 48 48" aria-hidden="true"><path d="M24.6 6.5C22.8 16 26.2 30 23.8 41.5"/><path d="M6.5 24.8C17 22.4 31 26.6 41.5 23.2"/></svg></a>
     <a href="/blog/" class="mobile-menu__link mobile-menu__link--strong"><span class="nav__perch">Tinklaraštis<img class="nav__bird" src="/blog/assets/stickers/bird-perched-64.webp" width="73" height="64" alt="" decoding="async" /><img class="nav__notes" src="/blog/assets/stickers/notes-36.webp" width="44" height="36" alt="" decoding="async" /></span></a>
     <a href="#contact" class="mobile-menu__link">Kontaktai</a>
     <a href="https://admin.laviju.lt" class="mobile-menu__link">Prisijungti</a>
@@ -859,6 +862,76 @@
       </div>
     </section>
 
+    <!-- ============ LAVIJU+ (the subscription, on a taped sheet beside four fridge notes) ============ -->
+    <section class="b-section notes lp lp-home" id="laviju-plus" data-tone="lilac" data-chapter="Laviju+" aria-labelledby="laviju-plus-title">
+      <div class="section__inner">
+        <div class="b-head b-head--split">
+          <div>
+            <span class="section__tag lp-tag" data-reveal="up"><svg class="lp-plus" viewBox="0 0 48 48" aria-hidden="true"><path d="M24.6 6.5C22.8 16 26.2 30 23.8 41.5"/><path d="M6.5 24.8C17 22.4 31 26.6 41.5 23.2"/></svg>Laviju+</span>
+            <h2 class="b-title" id="laviju-plus-title" data-reveal="up">Laviju lieka nemokama.<br class="lp-br" /> Su pliusu&nbsp;– <em class="serif-accent">šviečia ryškiau</em></h2>
+          </div>
+          <div class="b-head__aside" data-reveal="up">
+            <p>Laviju+ – prenumerata šeimoms, kurios nori daugiau: tikro pedagogo atsakymų, savaitės plano ir vaiko augimo, kurį matote savo akimis.</p>
+            <a class="h-blog__all lp-more" href="/plus/">Viskas apie Laviju+ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
+        </div>
+
+        <div class="lp-row">
+          <div class="lp-paper" data-reveal="left">
+            <span class="lp-paper__tape" aria-hidden="true"></span>
+            <img class="lp-paper__stk" src="/plus/star.webp" width="436" height="480" alt="" loading="lazy" decoding="async" />
+            <p class="lp-paper__head"><span class="lp-word" role="img" aria-label="Laviju+">Laviju<svg class="lp-plus" viewBox="0 0 48 48" aria-hidden="true"><path d="M24.6 6.5C22.8 16 26.2 30 23.8 41.5"/><path d="M6.5 24.8C17 22.4 31 26.6 41.5 23.2"/></svg></span></p>
+            <p class="lp-paper__price">2,99&nbsp;€ <small>/ mėn.</small></p>
+            <p class="lp-paper__or">arba 30&nbsp;€ metams <span class="pill">−16&nbsp;%</span></p>
+            <ul class="lp-list">
+              <li>Vienas planas jūsų šeimai</li>
+              <li>Atšaukite bet kada</li>
+              <li>14 dienų atsisakymo teisė pagal įstatymą</li>
+            </ul>
+            <a class="btn btn--primary magnetic" href="/plus/" id="plus-more">
+              <span>Plačiau apie Laviju+</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+
+          <div class="lp-side">
+            <span class="talk-bubble talk-bubble--butter lp-bubble" aria-hidden="true">Atsako žmogus, ne robotas!</span>
+            <ol class="notes__deck">
+              <li class="note note--sky" data-reveal="down" style="--rot:-2.5deg">
+                <span class="note__magnet" aria-hidden="true"></span>
+                <span class="note__num" aria-hidden="true">01</span>
+                <img class="note__stk" src="/plus/telephone.webp" width="360" height="277" alt="" loading="lazy" decoding="async" />
+                <h3 class="note__title">Klausk pedagogo</h3>
+                <p>Užduokite klausimą – atsakys tikras Laviju pedagogas.</p>
+              </li>
+              <li class="note note--butter" data-reveal="up" style="--rot:2deg">
+                <span class="note__magnet" aria-hidden="true"></span>
+                <span class="note__num" aria-hidden="true">02</span>
+                <img class="note__stk" src="/plus/calendar.webp" width="311" height="360" alt="" loading="lazy" decoding="async" />
+                <h3 class="note__title">Savaitės planas</h3>
+                <p>Laviju sudėlioja veiklas kiekvienai dienai pagal vaiko amžių.</p>
+              </li>
+              <li class="note note--sage" data-reveal="down" style="--rot:-1.5deg">
+                <span class="note__magnet" aria-hidden="true"></span>
+                <span class="note__num" aria-hidden="true">03</span>
+                <img class="note__stk" src="/blog/assets/stickers/seedling.webp" width="320" height="480" alt="" loading="lazy" decoding="async" />
+                <h3 class="note__title">Augimo statistika</h3>
+                <p>Vaiko pažanga ir jūsų laikas kartu – vaizdžiai.</p>
+              </li>
+              <li class="note note--peach" data-reveal="up" style="--rot:2.5deg">
+                <span class="note__magnet" aria-hidden="true"></span>
+                <span class="note__num" aria-hidden="true">04</span>
+                <img class="note__stk" src="/blog/assets/stickers/envelope.webp" width="480" height="351" alt="" loading="lazy" decoding="async" />
+                <h3 class="note__title">Mėnesio laiškas</h3>
+                <p>Šiltas laiškas apie tai, ką šį mėnesį nuveikėte kartu.</p>
+              </li>
+            </ol>
+            <p class="lp-free" data-reveal="up"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><b>Viskas, kas nemokama šiandien, lieka nemokama.</b> Laviju+ tik prideda.</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ FROM THE BLOG ============ -->
     <section class="b-section featured h-blog" id="tinklarastis" data-tone="peach" data-chapter="Tinklaraštis" aria-labelledby="tinklarastis-title">
       <div class="section__inner">
@@ -1042,6 +1115,7 @@
             <a href="#principles" class="footer__link">Principai</a>
             <a href="#how-it-works" class="footer__link">Kaip veikia</a>
             <a href="#domains" class="footer__link">Ugdymosi sritys</a>
+            <a href="/plus/" class="footer__link">Laviju+</a>
             <a href="/blog/" class="footer__link">Tinklaraštis</a>
             <a href="/docs" class="footer__link">Dokumentacija</a>
           </div>

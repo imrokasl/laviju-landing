@@ -1,0 +1,963 @@
+/* =============================================
+   LAVIJU+ — the subscription's look on laviju.lt
+   Builds on /styles.css, /blog/blog.css and /home.css: the fridge notes, the
+   feature cards with their painted little screens, the stickers. Used by the
+   home page's Laviju+ section and by /plus/.
+   „Žvaigždutė“: soft lilac, a hand-drawn golden plus, the little star. The
+   palette is these few variables, so another tone is a change here (and the
+   sections' data-tone).
+   ============================================= */
+
+.home {
+  --lp-tone: var(--lilac-1);
+  --lp-soft: var(--lilac-2);
+  --lp-mid: var(--lilac-3);
+  --lp-ink: var(--lilac-ink);
+  --lp-plus: #F0B429;
+  --lp-paper: #FFFDF8;
+}
+
+/* ---------- The hand-drawn plus and the wordmark ---------- */
+.lp-plus {
+  display: inline-block;
+  flex: none;
+  width: 0.62em;
+  height: 0.62em;
+  overflow: visible;
+}
+
+.lp-plus path {
+  fill: none;
+  stroke: var(--lp-plus);
+  stroke-width: 8.5;
+  stroke-linecap: round;
+}
+
+.lp-word {
+  display: inline-flex;
+  align-items: flex-start;
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.lp-word .lp-plus {
+  margin: -0.02em 0 0 0.05em;
+}
+
+/* In the shared nav and footer: "Laviju" with the plus beside it */
+.lp-nav {
+  display: inline-flex;
+  align-items: flex-start;
+  font-weight: 700;
+}
+
+.lp-nav .lp-plus {
+  width: 0.6em;
+  height: 0.6em;
+  margin: 0.08em 0 0 0.08em;
+}
+
+.lp-nav .lp-plus path {
+  stroke-width: 10;
+}
+
+.mobile-menu__link.lp-nav {
+  display: inline-flex;
+}
+
+.lp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  color: var(--lp-ink);
+  box-shadow: inset 0 0 0 1px rgba(30, 42, 58, 0.06);
+}
+
+.lp-tag .lp-plus {
+  width: 14px;
+  height: 14px;
+}
+
+.lp-tag .lp-plus path {
+  stroke-width: 10;
+}
+
+.lp .b-title .serif-accent,
+.lp .cta__title .serif-accent {
+  color: var(--lp-ink);
+}
+
+.lp-more {
+  margin-top: 14px;
+}
+
+/* ---------- The price, on a taped sheet of paper ---------- */
+.lp-paper {
+  position: relative;
+  padding: 34px 30px 30px;
+  border-radius: 10px 10px 26px 26px;
+  background: var(--lp-paper);
+  transform: rotate(var(--rot, -1.6deg));
+  box-shadow: 0 1px 0 rgba(30, 42, 58, 0.05), 0 34px 54px -30px rgba(30, 42, 58, 0.45);
+}
+
+.lp-paper__tape {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  width: 124px;
+  height: 28px;
+  border-radius: 3px;
+  translate: -50% 0;
+  rotate: -3deg;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.32) 0 6px, transparent 6px 12px),
+    color-mix(in srgb, var(--lp-mid) 86%, transparent);
+  box-shadow: 0 3px 8px -2px rgba(30, 42, 58, 0.2);
+}
+
+.lp-paper__stk {
+  position: absolute;
+  z-index: 2;
+  top: -60px;
+  right: -44px;
+  width: 128px;
+  height: auto;
+  rotate: 8deg;
+  filter: drop-shadow(0 14px 16px rgba(30, 42, 58, 0.16));
+}
+
+.lp-paper__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--lp-mid);
+}
+
+.lp-paper__head .lp-word {
+  font-size: 27px;
+}
+
+.lp-paper__kind {
+  color: var(--lp-ink);
+  font-family: var(--serif);
+  font-size: 19px;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.lp-paper__price {
+  margin-top: 22px;
+  color: var(--text);
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.lp-paper__price small {
+  color: var(--text-secondary);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.lp-paper__or {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.lp-paper__or .pill {
+  background: var(--lp-soft);
+  color: var(--lp-ink);
+}
+
+.lp-list {
+  display: grid;
+  gap: 9px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.lp-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.lp-list li::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--lp-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2354479E' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 11px no-repeat;
+}
+
+.lp-list--sage li::before {
+  background-color: var(--sage-2);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6B47' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.lp-paper .btn {
+  width: 100%;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.lp-paper__note {
+  margin-top: 12px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ---------- Home page section: the paper beside four fridge notes ---------- */
+.lp-home .b-head {
+  margin-bottom: clamp(56px, 6vw, 84px);
+}
+
+/* A longer title than the other home sections: give it two thirds of the
+   row and break it after the first sentence on wide screens. */
+@media (min-width: 1025px) {
+  .lp-home .b-head--split {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 24px 56px;
+  }
+}
+
+.lp-home .b-title {
+  font-size: clamp(32px, 4.1vw, 54px);
+}
+
+.lp-row {
+  display: grid;
+  grid-template-columns: minmax(300px, 372px) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(32px, 4.4vw, 56px);
+}
+
+.lp-side {
+  position: relative;
+  min-width: 0;
+}
+
+.lp-bubble {
+  position: absolute;
+  z-index: 4;
+  top: -66px;
+  right: -4px;
+  rotate: 4deg;
+}
+
+.lp-row .notes__deck {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  padding-top: 6px;
+}
+
+.lp-row .note {
+  min-height: 268px;
+  padding: 28px 20px 22px;
+}
+
+.lp-row .note__title {
+  font-size: 19px;
+}
+
+.lp-row .note p {
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.lp-row .note__stk {
+  max-width: 58%;
+  height: 68px;
+  margin-bottom: 16px;
+}
+
+.lp-free {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.lp-free svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  padding: 4px;
+  border-radius: 50%;
+  background: var(--sage-2);
+  fill: none;
+  stroke: var(--sage-ink);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lp-free b {
+  color: var(--text);
+}
+
+/* =============================================
+   /plus/ — the page
+   ============================================= */
+
+/* ---------- Hero ---------- */
+.b-hero.lp-hero {
+  min-height: 0;
+  padding: 148px 0 clamp(72px, 8vw, 110px);
+}
+
+.lp-hero__wash {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.6;
+  animation: orbFloat 22s ease-in-out infinite;
+}
+
+.lp-hero__wash--a {
+  top: -200px;
+  right: -140px;
+  width: 640px;
+  height: 640px;
+  background: radial-gradient(circle, #D3C8F4, transparent 68%);
+}
+
+.lp-hero__wash--b {
+  bottom: -180px;
+  left: -160px;
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, #F8E2A0, transparent 68%);
+  opacity: 0.45;
+  animation-delay: -9s;
+}
+
+.lp-hero .b-hero__inner {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: clamp(32px, 5vw, 72px);
+}
+
+.lp-hero .b-hero__title {
+  font-size: clamp(38px, 9.4vw, 68px);
+  line-height: 1.02;
+}
+
+@media (min-width: 901px) {
+  .lp-hero .b-hero__title {
+    font-size: clamp(44px, 4.7vw, 68px);
+  }
+}
+
+.lp-hero .b-hero__title .serif-accent {
+  position: relative;
+  background: none;
+  color: var(--lp-ink);
+  -webkit-text-fill-color: currentColor;
+}
+
+.lp-hero .b-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lp-ink);
+}
+
+.lp-hero .b-hero__badge .lp-plus {
+  width: 15px;
+  height: 15px;
+}
+
+.lp-hero .b-hero__badge .lp-plus path {
+  stroke-width: 10;
+}
+
+.lp-hero__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 6px;
+  color: var(--lp-ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.lp-hero__link svg {
+  width: 18px;
+  height: 18px;
+  transition: translate 0.4s var(--ease-out);
+}
+
+.lp-hero__link:hover svg {
+  translate: 0 3px;
+}
+
+.lp-stage {
+  position: relative;
+  width: min(100%, 390px);
+  margin: 0 auto;
+  padding-top: 40px;
+}
+
+.lp-stage .lp-bubble {
+  top: auto;
+  right: auto;
+  bottom: -26px;
+  left: -34px;
+  rotate: -4deg;
+}
+
+/* ---------- What is inside: four feature cards ---------- */
+.lp-feats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.lp-feats .feat__card {
+  flex-direction: row;
+}
+
+.lp-feats .feat__media {
+  flex: 1 1 46%;
+  min-height: 300px;
+  aspect-ratio: auto;
+}
+
+.lp-feats .feat__body {
+  flex: 1 1 54%;
+  justify-content: center;
+  padding: 26px 26px 28px;
+}
+
+.lp-feats .feat__title {
+  font-size: 23px;
+}
+
+.lp-feats .feat__list li {
+  align-items: flex-start;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+.lp-feats .feat__list--sky li::before { background-color: var(--sky-2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232A5599' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
+.lp-feats .feat__list--sage li::before { background-color: var(--sage-2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6B47' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
+.lp-feats .feat__list--peach li::before { background-color: var(--peach-2); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239C4A2F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
+
+.lp-feats .art__stk {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: auto;
+  rotate: var(--r, 0deg);
+  filter: drop-shadow(0 12px 14px rgba(30, 42, 58, 0.16));
+  transition: translate 0.8s var(--ease-out), scale 0.8s var(--ease-out);
+}
+
+/* A reply bubble: the pedagogue's answer, on the right */
+.lp-feats .mini-msg--reply {
+  border-radius: 4.6cqmin 4.6cqmin 1.4cqmin 4.6cqmin;
+  background: #EAF2FD;
+}
+
+.lp-feats .mini-msg--reply .mini-msg__ava {
+  background: linear-gradient(145deg, #F2B79F, #E58A6B);
+}
+
+/* The month's letter, as a small sheet */
+.mini-letter {
+  position: absolute;
+  z-index: 3;
+  left: var(--x);
+  top: var(--y);
+  width: 62%;
+  padding: 4cqmin 4.4cqmin 4.6cqmin;
+  border-radius: 1.6cqmin 1.6cqmin 4cqmin 4cqmin;
+  background: #FFFDF8;
+  box-shadow: 0 18px 36px -18px rgba(39, 62, 94, 0.4);
+  rotate: -3deg;
+}
+
+.mini-letter small {
+  display: block;
+  color: var(--peach-ink);
+  font-size: clamp(8px, 2.7cqmin, 12px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mini-letter b {
+  display: block;
+  margin-top: 1.6cqmin;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(11px, 4.4cqmin, 19px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.mini-letter i {
+  display: block;
+  height: max(4px, 1.4cqmin);
+  margin-top: 2.2cqmin;
+  border-radius: 99px;
+  background: rgba(30, 42, 58, 0.09);
+}
+
+.mini-letter i:last-child {
+  width: 62%;
+}
+
+.js .feat .mini-letter {
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 0.6s var(--ease-out), translate 0.7s var(--ease-spring);
+}
+
+.js .feat.is-in .mini-letter {
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: calc(0.4s + var(--d, 0) * 0.16s);
+}
+
+/* ---------- More Laviju AI: the numbers card, in Laviju+ lilac ---------- */
+.lp-numbers .numbers__title .serif-accent {
+  color: #FFE9A8;
+}
+
+.lp-numbers .stat__label small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.86em;
+  opacity: 0.7;
+}
+
+/* ---------- Free, and with the plus ---------- */
+.lp-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+}
+
+.lp-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(26px, 3.2vw, 38px);
+  border: 1px solid var(--border-light);
+  border-radius: 30px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.lp-col--plus {
+  border-color: rgba(84, 71, 158, 0.12);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.9), transparent 42%),
+    linear-gradient(160deg, #F8F6FE, var(--lp-soft));
+  box-shadow: 0 40px 80px -56px rgba(84, 71, 158, 0.55);
+}
+
+.lp-col__stk {
+  position: absolute;
+  top: -34px;
+  right: 22px;
+  width: 96px;
+  height: auto;
+  rotate: 8deg;
+  filter: drop-shadow(0 12px 14px rgba(30, 42, 58, 0.16));
+}
+
+.lp-col__name {
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.lp-col__name .lp-word {
+  font-size: inherit;
+}
+
+.lp-col__price {
+  margin-top: 14px;
+  color: var(--text);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.lp-col__price small {
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.lp-col__lead {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+
+.lp-col .lp-list {
+  margin-top: 22px;
+  gap: 11px;
+}
+
+.lp-col .lp-list li {
+  font-size: 15.5px;
+}
+
+.lp-col__foot {
+  margin-top: auto;
+  padding-top: 26px;
+}
+
+.lp-col__foot .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ---------- Price: two sheets ---------- */
+.lp-plans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 372px));
+  justify-content: center;
+  gap: clamp(28px, 5vw, 64px);
+  padding-top: 28px;
+}
+
+.lp-plans .lp-paper__stk {
+  top: -52px;
+  right: -36px;
+  width: 112px;
+}
+
+/* Keep the plan's name ("metai") clear of the star. */
+.lp-plans .lp-paper__stk ~ .lp-paper__head {
+  padding-right: 64px;
+}
+
+.lp-terms {
+  max-width: 46em;
+  margin: clamp(36px, 5vw, 56px) auto 0;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.lp-terms a {
+  color: var(--lp-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- How to start: three steps ---------- */
+.lp-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: clamp(44px, 6vw, 72px);
+  list-style: none;
+  counter-reset: lp-step;
+}
+
+.lp-step {
+  position: relative;
+  padding: 26px 24px 24px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(84, 71, 158, 0.1);
+  counter-increment: lp-step;
+}
+
+.lp-step::before {
+  content: counter(lp-step, decimal-leading-zero);
+  display: block;
+  margin-bottom: 10px;
+  color: var(--lp-ink);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.lp-step h3 {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.lp-step p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ---------- Questions and answers ---------- */
+.lp-faq {
+  display: grid;
+  gap: 12px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.lp-faq__item {
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.4s var(--ease-out);
+}
+
+.lp-faq__item[open] {
+  box-shadow: 0 26px 50px -34px rgba(30, 42, 58, 0.4);
+}
+
+.lp-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 24px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  cursor: pointer;
+  list-style: none;
+}
+
+.lp-faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.lp-faq__q::after {
+  content: '';
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--lp-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2354479E' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M12 6v12M6 12h12'/%3E%3C/svg%3E") center / 14px no-repeat;
+  transition: rotate 0.4s var(--ease-out);
+}
+
+.lp-faq__item[open] .lp-faq__q::after {
+  rotate: 45deg;
+}
+
+.lp-faq__q:focus-visible {
+  outline: 3px solid var(--lp-mid);
+  outline-offset: -3px;
+  border-radius: 22px;
+}
+
+.lp-faq__a {
+  padding: 0 24px 22px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+.lp-faq__a p + p {
+  margin-top: 10px;
+}
+
+.lp-faq__a a {
+  color: var(--lp-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Closing card ---------- */
+.lp-cta .b-cta__stk--star {
+  top: -54px;
+  right: -28px;
+  width: clamp(84px, 9vw, 124px);
+  rotate: 8deg;
+}
+
+/* =============================================
+   Smaller screens
+   ============================================= */
+@media (max-width: 1180px) {
+  .lp-br {
+    display: none;
+  }
+
+  .lp-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 72px;
+  }
+
+  .lp-row .lp-paper {
+    width: min(100%, 400px);
+    margin: 0 auto;
+  }
+
+  .lp-feats .feat__card {
+    flex-direction: column;
+  }
+
+  .lp-feats .feat__media {
+    flex: none;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 1024px) {
+  .lp-hero .b-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 64px;
+  }
+
+  .lp-stage .lp-bubble {
+    left: -8px;
+  }
+}
+
+@media (max-width: 900px) {
+  .lp-row .notes__deck {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 18px;
+  }
+
+  .lp-row .note {
+    min-height: 0;
+  }
+
+  .lp-steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .lp-feats,
+  .lp-compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lp-plans {
+    grid-template-columns: minmax(0, 372px);
+    gap: 64px;
+  }
+
+  .lp-col__stk {
+    width: 78px;
+    right: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .b-hero.lp-hero {
+    padding-top: 120px;
+  }
+
+  .lp-bubble {
+    top: -40px;
+    right: 6px;
+  }
+
+  .lp-row .note {
+    flex: 0 0 74%;
+    min-height: 230px;
+  }
+
+  .lp-paper {
+    padding: 30px 24px 26px;
+  }
+
+  .lp-paper__price {
+    font-size: 48px;
+  }
+
+  .lp-paper__stk {
+    right: -14px;
+    width: 104px;
+  }
+
+  .lp-plans .lp-paper__stk {
+    right: -10px;
+    width: 96px;
+  }
+
+  .lp-plans .lp-paper__stk ~ .lp-paper__head {
+    padding-right: 80px;
+  }
+
+  .lp-free {
+    align-items: flex-start;
+  }
+
+  .lp-faq__q {
+    padding: 18px 18px;
+    font-size: 16px;
+  }
+
+  .lp-faq__a {
+    padding: 0 18px 20px;
+  }
+
+  .lp-hero__link {
+    min-height: 44px;
+  }
+
+  .lp-cta .b-cta__stk--star {
+    top: -46px;
+    right: -6px;
+    width: 84px;
+  }
+
+  .lp-cta .btn {
+    padding-inline: 20px;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero__wash {
+    animation: none;
+  }
+}
