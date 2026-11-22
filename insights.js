@@ -3,10 +3,9 @@
 // No cookies, no identifiers and no third parties. Page, reading and click
 // events go to Laviju's own Supabase Edge Function and are visible only to the
 // platform owner. Whether a person used a page at all, only yes or no, tells
-// people from automated browsers. To tell new visitors from returning ones,
-// the browser keeps only the time of its last visit, a visit count and the
-// kind of source its first visit came from; just coarse groups of those are
-// sent.
+// people from automated browsers. Nothing about visits is kept in the browser,
+// so new and returning visitors are not told apart; the one thing stored there
+// is a visitor's own choice not to be counted.
 // Details: /privacy/#statistika
 // =============================================
 
@@ -16,7 +15,8 @@
   const ENDPOINT = 'https://hfmwcmgoduvhmmjiyteh.supabase.co/functions/v1/site-insights';
   const PRODUCTION_HOSTS = ['laviju.lt', 'www.laviju.lt'];
   const OPT_OUT_KEY = 'laviju:statistics-opt-out';
-  const VISIT_KEY = 'laviju:statistics-visits';
+  // Until 2026-11-22 the browser remembered its visits under this key.
+  const OLD_VISIT_KEY = 'laviju:statistics-visits';
   const CAMPAIGN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'ref'];
   // Click identifiers that social networks, ad systems and newsletters add to
   // links. Only which kind of service added one is sent, never its value.
@@ -25,16 +25,8 @@
     ['wbraid', 'google'], ['msclkid', 'bing'], ['ttclid', 'tiktok'], ['twclid', 'x'],
     ['li_fat_id', 'linkedin'], ['mc_cid', 'email'], ['mc_eid', 'email'],
   ];
-  const FIRST_CHANNELS = ['direct', 'qr', 'search', 'ai', 'social', 'email', 'referral', 'campaign'];
-  // The same host rules as supabase/functions/_shared/siteInsights.ts.
-  const AI_HOSTS = /(^|\.)(chatgpt\.com|chat\.openai\.com|perplexity\.ai|claude\.ai|gemini\.google\.com|copilot\.microsoft\.com|you\.com|phind\.com)$/;
-  const EMAIL_HOSTS = /^(mail\.google\.com|outlook\.live\.com|outlook\.office\.com|outlook\.office365\.com|mail\.yahoo\.com|mail\.proton\.me|(?:web)?mail\.[a-z0-9-]+\.[a-z.]{2,6}|com\.google\.android\.gm|com\.microsoft\.office\.outlook)$/;
-  const SEARCH_HOSTS = /^(google\.[a-z.]{2,6}|bing\.com|duckduckgo\.com|(?:search\.)?yahoo\.com|yandex\.[a-z]{2,3}|ecosia\.org|search\.brave\.com|startpage\.com|qwant\.com|baidu\.com|seznam\.cz|(?:search\.)?naver\.com|com\.google\.android\.googlequicksearchbox)$/;
-  const SOCIAL_HOSTS = /(^|\.)(facebook\.com|fb\.com|fb\.me|messenger\.com|instagram\.com|threads\.net|linkedin\.com|lnkd\.in|t\.co|twitter\.com|x\.com|pinterest\.[a-z.]{2,6}|pin\.it|tiktok\.com|youtube\.com|youtu\.be|reddit\.com|whatsapp\.com|wa\.me|telegram\.org|t\.me|vk\.com|snapchat\.com|bsky\.app|mastodon\.social|com\.facebook\.katana|com\.facebook\.orca|com\.instagram\.android|com\.linkedin\.android|com\.whatsapp|org\.telegram\.messenger|com\.zhiliaoapp\.musically)$/;
   const SECTION_SELECTOR = 'section[id], article[id], header[id], footer[id]';
   const SECTION_ID = /^[a-z0-9_-]{1,60}$/;
-  const VISIT_GAP_MS = 1800000;
-  const VISIT_MEMORY_MS = 34214400000;
   const IDLE_AFTER_MS = 90000;
   // Right after loading, the browser itself may scroll to a remembered
   // position or a #section; that is not a person using the page.
@@ -55,8 +47,15 @@
   // collector runs on Supabase's domain.
   const KEEPALIVE = typeof Request === 'function' && 'keepalive' in Request.prototype;
 
+  // A visit record left by an earlier version is removed.
+  try {
+    window.localStorage.removeItem(OLD_VISIT_KEY);
+  } catch (error) {
+    // Storage is blocked, so there is nothing to remove.
+  }
+
   // ---------------------------------------------
-  // Opt-out: the visitor's own choice, which also forgets past visits.
+  // Opt-out: the visitor's own choice, the only thing kept in the browser.
   // It works on every host so /privacy/ can offer it anywhere.
   // ---------------------------------------------
   function isOptedOut() {
@@ -71,7 +70,6 @@
     try {
       if (value) {
         window.localStorage.setItem(OPT_OUT_KEY, '1');
-        window.localStorage.removeItem(VISIT_KEY);
       } else {
         window.localStorage.removeItem(OPT_OUT_KEY);
       }
@@ -239,36 +237,6 @@
     return 'navigate';
   }
 
-  // The kind of source this page was reached from, by the server's rules.
-  // A browser's first visit remembers this one word, never the address.
-  function touchChannel() {
-    const query = campaign();
-    if (query.utm_source || query.ref || query.utm_medium || query.utm_campaign) return 'campaign';
-    let host = '';
-    try {
-      const url = new URL(document.referrer);
-      if (PRODUCTION_HOSTS.indexOf(url.hostname) === -1 && /^(https?|android-app):$/.test(url.protocol)) {
-        host = url.hostname.toLowerCase().replace(/^(?:www\d?|m|l|lm|mobile)\./, '');
-      }
-    } catch (error) {
-      // No referrer.
-    }
-    if (host) {
-      if (AI_HOSTS.test(host)) return 'ai';
-      if (EMAIL_HOSTS.test(host)) return 'email';
-      if (SEARCH_HOSTS.test(host)) return 'search';
-      return SOCIAL_HOSTS.test(host) ? 'social' : 'referral';
-    }
-    const click = clickSource();
-    if (click) return click === 'email' ? 'email' : click === 'google' || click === 'bing' ? 'search' : 'social';
-    const agent = nav.userAgent || '';
-    if (/FBAN|FBAV|FB_IAB|Instagram/.test(agent)) return 'social';
-    const handheld = /Mobi|Android|iPhone|iPad|iPod|Tablet|Silk|Kindle/.test(agent)
-      || (/Macintosh/.test(agent) && nav.maxTouchPoints > 1);
-    // The flyer QR code opens the blog without any source.
-    return handheld && pagePath() === '/blog/' ? 'qr' : 'direct';
-  }
-
   function timeZone() {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
@@ -279,95 +247,6 @@
 
   function isHidden() {
     return document.visibilityState === 'hidden';
-  }
-
-  // ---------------------------------------------
-  // New or returning. The browser remembers when it was last active here,
-  // how many visits it has made, the gap in days before the current one and
-  // the kind of source its first visit came from. A visit ends after 30
-  // minutes without activity, as on the server, and the memory lapses after
-  // 13 months. Only coarse groups leave the browser.
-  // ---------------------------------------------
-  let visit = null;
-  let visitSavedAt = 0;
-
-  function localDay(time) {
-    const date = new Date(time);
-    return Math.round(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
-  }
-
-  function readVisitMemory() {
-    const raw = window.localStorage.getItem(VISIT_KEY);
-    if (!raw) return null;
-    try {
-      const memory = JSON.parse(raw);
-      if (memory && Number.isFinite(memory.t) && Number.isInteger(memory.n) && memory.n >= 1) {
-        return {
-          t: memory.t,
-          n: memory.n,
-          g: Number.isInteger(memory.g) && memory.g >= 0 ? memory.g : null,
-          f: FIRST_CHANNELS.indexOf(memory.f) !== -1 ? memory.f : null,
-        };
-      }
-    } catch (error) {
-      // An unreadable memory starts over.
-    }
-    return null;
-  }
-
-  function saveVisit(time) {
-    try {
-      // A memory from before first sources were kept has none to save.
-      const memory = { t: time, n: visit.n, g: visit.g, f: visit.f || undefined };
-      window.localStorage.setItem(VISIT_KEY, JSON.stringify(memory));
-      visitSavedAt = time;
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  function beginVisit() {
-    const time = Date.now();
-    let memory = null;
-    try {
-      memory = readVisitMemory();
-    } catch (error) {
-      // Storage is blocked, so new and returning cannot be told apart.
-      visit = null;
-      return;
-    }
-    const elapsed = memory ? time - memory.t : Infinity;
-    if (memory && elapsed >= 0 && elapsed < VISIT_GAP_MS) {
-      visit = { n: memory.n, g: memory.g, f: memory.f };
-    } else if (memory && elapsed < VISIT_MEMORY_MS) {
-      visit = { n: Math.min(memory.n + 1, 999), g: Math.max(0, localDay(time) - localDay(memory.t)), f: memory.f };
-    } else {
-      visit = { n: 1, g: null, f: touchChannel() };
-    }
-    // Without a saved memory every visit would look new; send nothing then.
-    if (!saveVisit(time)) visit = null;
-  }
-
-  // A first visit's own page view already says where it came from, so the
-  // remembered first source only travels with later visits.
-  function visitGroups() {
-    if (!visit) return null;
-    const number = visit.n >= 6 ? 6 : visit.n >= 3 ? 3 : visit.n;
-    if (number === 1) return { n: 1 };
-    const groups = { n: number };
-    const gap = visit.g;
-    if (gap !== null) groups.d = gap >= 31 ? 31 : gap >= 8 ? 8 : gap >= 2 ? 2 : gap;
-    if (visit.f) groups.f = visit.f;
-    return groups;
-  }
-
-  // Activity keeps the visit open; saved at most once a minute unless leaving.
-  function touchVisit(force) {
-    if (!visit) return;
-    const time = Date.now();
-    if (!force && time - visitSavedAt < 60000) return;
-    if (!isOptedOut()) saveVisit(time);
   }
 
   // ---------------------------------------------
@@ -428,7 +307,6 @@
     if (!stretchStart) stretchStart = time;
     window.clearTimeout(idleTimer);
     idleTimer = window.setTimeout(stopStretch, IDLE_AFTER_MS);
-    touchVisit(false);
   }
 
   // ---------------------------------------------
@@ -635,7 +513,6 @@
     hadInput = false;
     collectSections();
     measure();
-    beginVisit();
 
     send({
       v: 1,
@@ -653,7 +530,6 @@
       touchPoints: Math.min(20, nav.maxTouchPoints || 0),
       language: nav.language || null,
       timeZone: timeZone(),
-      visit: visitGroups(),
       // Not yet used; reading updates report the first use.
       input: false,
     }, false);
@@ -886,7 +762,6 @@
     if (isHidden()) {
       stopStretch();
       flush(true);
-      touchVisit(true);
     } else {
       onActivity();
     }
@@ -894,7 +769,6 @@
   window.addEventListener('pagehide', () => {
     stopStretch();
     flush(true);
-    touchVisit(true);
   });
   window.addEventListener('pageshow', (event) => {
     if (event.persisted) startPageview(true);

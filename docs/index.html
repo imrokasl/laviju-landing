@@ -22,10 +22,10 @@
   <title>Dokumentacija — Laviju</title>
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/docs/docs.css?v=20260830-1" />
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin />
+  <link href="/fonts/fonts.css?v=20261122-1" rel="stylesheet" />
+  <link rel="stylesheet" href="/docs/docs.css?v=20261122-1" />
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -113,7 +113,7 @@
         </div>
 
         <div class="docs-updated" id="docs-updated">
-          Atnaujinta: 2026 m. rugpjūčio 27 d.
+          Atnaujinta: 2026 m. lapkričio 22 d.
         </div>
 
         <!-- =============================================
@@ -302,7 +302,24 @@
           <p class="docs-subtitle">Instrukcija, kaip tėvams naudotis mobiliąja Laviju programėle savo telefone.</p>
 
           <h2>1. Pirmasis prisijungimas</h2>
-          <p>Tėvai negali savarankiškai užsiregistruoti sistemoje – taip užtikrinamas vaikų duomenų privatumas. Registracija vyksta per darželį:</p>
+          <p>Nemokamą Laviju paskyrą šeimai galite susikurti patys arba gauti darželio pakvietimą.</p>
+          <h3>Jei paskyrą kuriate patys</h3>
+          <ol class="docs-steps">
+            <li>
+              <strong>Pradėkite registraciją</strong>
+              Programėlėje paspauskite „Sukurti paskyrą“ arba atverkite <a href="https://admin.laviju.lt/register">admin.laviju.lt/register</a>. Įrašykite vardą, pavardę ir el. pašto adresą, sutikite su naudojimo sąlygomis ir privatumo politika.
+            </li>
+            <li>
+              <strong>Patvirtinkite el. paštą</strong>
+              Į nurodytą adresą atsiųsime kodą – įrašykite jį registracijos lange.
+            </li>
+            <li>
+              <strong>Sugalvokite slaptažodį</strong>
+              Juo prisijungsite programėlėje ir svetainėje tuo pačiu el. pašto adresu. Tada pridėkite savo vaiką.
+            </li>
+          </ol>
+          <p>Kai jūsų darželis pradės naudoti Laviju ir pakvies jus tuo pačiu el. pašto adresu, kvietimą patvirtinsite programėlėje – jis rodomas pradžios ekrane.</p>
+          <h3>Jei jus pakvietė darželis</h3>
           <ol class="docs-steps">
             <li>
               <strong>Gaukite pakvietimą</strong>
@@ -312,13 +329,11 @@
               <strong>Sukurkite slaptažodį</strong>
               Paspaudę nuorodą el. pašte, būsite nukreipti į slaptažodžio nustatymo puslapį. Sukurkite saugų slaptažodį.
             </li>
-            <li>
-              <strong>Atsisiųskite programėlę</strong>
-              Darželis pateiks nuorodą į jūsų įrenginiui skirtą Laviju programėlės versiją. Viešos Google Play ir Apple App Store nuorodos bus paskelbtos po programėlės išleidimo.
-            </li>
           </ol>
+          <h3>Programėlė</h3>
+          <p>Android telefonams Laviju programėlė yra <a href="https://play.google.com/store/apps/details?id=com.laviju.app" target="_blank" rel="noopener noreferrer">„Google Play“</a> parduotuvėje, „App Store“ versija – jau greitai. Laviju galite naudotis ir naršyklėje, prisijungę adresu admin.laviju.lt.</p>
 
-          <h2>2. Pagrindinis ekranas („Pradinis“)</h2>
+          <h2>2. Pagrindinis ekranas („Pradžia“)</h2>
           <p>Prisijungus programėlėje matysite savo vaiko vardą, darželį, grupę, pedagogą ir pagrindines skiltis:</p>
           <ul>
             <li><strong>Veiklos:</strong> Laviju katalogo veiklos ir pedagogo jūsų grupei sukurtos užduotys.</li>
@@ -387,7 +402,7 @@
               <svg class="docs-faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="docs-faq-answer">
-              <p>Ne. Mobiliąją programėlę tėvai gali atsisiųsti ir naudotis visiškai nemokamai. Visas licencijavimo išlaidas apmoka jūsų vaiko lankoma ikimokyklinio ugdymo įstaiga (darželis).</p>
+              <p>Ne, Laviju tėvams nemokama: programėlę galite atsisiųsti, susikurti paskyrą ir ja naudotis nemokamai. Norintiems daugiau pagalbos yra pasirenkama mokama prenumerata <a href="/plus/">Laviju+</a> – 2,99&nbsp;€ per mėnesį arba 30&nbsp;€ metams.</p>
             </div>
           </div>
 
@@ -437,9 +452,14 @@
 
         <!-- Docs Footer -->
         <footer class="docs-footer">
-          <div>&copy; 2026 Laviju. Visos teisės saugomos.</div>
+          <div class="docs-company">
+            <span>&copy; 2026 MB „Koro“</span>
+            <span>juridinio asmens kodas 307918633</span>
+            <span>Ūtos g. 86, Šeškų k., LT-38418 Panevėžio r.</span>
+            <span><a href="mailto:info@laviju.lt">info@laviju.lt</a></span>
+          </div>
           <div>
-            Pagalba: <a href="mailto:info@laviju.lt">info@laviju.lt</a>
+            <a href="/privacy/">Privatumo politika</a> · <a href="/terms/">Naudojimo sąlygos</a> · <a href="/data-rights/">Duomenų teisės</a>
           </div>
         </footer>
 
@@ -708,6 +728,6 @@
     });
   </script>
 
-  <script src="/insights.js?v=20261029-1"></script>
+  <script src="/insights.js?v=20261122-1"></script>
 </body>
 </html>

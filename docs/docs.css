@@ -729,6 +729,10 @@ button:focus-visible {
 
 .docs-footer a:hover { color: var(--primary-dark); }
 
+/* Who runs the site, a line per part; links do not break inside */
+.docs-company span { display: block; }
+.docs-footer a { white-space: nowrap; }
+
 /* =============================================
    MOBILE OVERLAY
    ============================================= */

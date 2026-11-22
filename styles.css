@@ -1236,7 +1236,9 @@ img {
 
 .footer__links {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-3xl);
+  row-gap: var(--space-xl);
 }
 
 .footer__col {
@@ -1271,6 +1273,36 @@ img {
 .footer__copyright {
   font-size: 13px;
   color: rgba(255,255,255,0.35);
+}
+
+/* Who runs the site: one line on wide screens, a line per part on narrower ones */
+.footer__company span {
+  display: inline-block;
+}
+
+.footer__company span + span::before {
+  content: '·';
+  /* The space between the parts makes up the rest on the left */
+  margin: 0 0.5em 0 0.2em;
+}
+
+.footer__company a {
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.footer__company a:hover {
+  color: white;
+}
+
+@media (max-width: 980px) {
+  .footer__company span {
+    display: block;
+  }
+
+  .footer__company span + span::before {
+    content: none;
+  }
 }
 
 /* =============================================

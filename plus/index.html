@@ -27,10 +27,10 @@
   <title>Laviju+ – daugiau pagalbos šeimai</title>
 
   <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,72,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=20261027-1" />
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin />
+  <link href="/fonts/fonts.css?v=20261122-1" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20261122-1" />
   <link rel="stylesheet" href="/blog/blog.css?v=20261105-1" />
   <link rel="stylesheet" href="/home.css?v=20261027-1" />
   <link rel="stylesheet" href="/plus/plus.css?v=20261110-1" />
@@ -75,7 +75,7 @@
             {
               "@type": "Question",
               "name": "Ar galiu atgauti pinigus?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Per 14 dienų nuo užsakymo sutarties galite atsisakyti nenurodydami priežasties. Grąžinsime sumokėtą sumą, atėmę dalį už jau praėjusį laiką." }
+              "acceptedAnswer": { "@type": "Answer", "text": "Per 14 dienų nuo užsakymo sutarties galite atsisakyti nenurodydami priežasties. Grąžinsime sumokėtą sumą, atėmę dalį už jau praėjusį laiką. Jei mokate už metus ir norite prenumeratą nutraukti anksčiau, parašykite info@laviju.lt – prenumerata baigsis iš karto, o už likusią metų dalį sumokėtus pinigus grąžinsime proporcingai. Už likusią mėnesio plano dalį pinigai negrąžinami." }
             }
           ]
         }
@@ -463,7 +463,7 @@
         </ol>
 
         <p class="lp-terms" data-reveal="up">
-          Užsisakydami sutinkate su <a href="/terms/#laviju-plus">Laviju+ sąlygomis</a>. Per 14 dienų nuo užsakymo sutarties galite atsisakyti – grąžinsime sumokėtą sumą, atėmę dalį už jau praėjusį laiką.
+          Užsisakydami sutinkate su <a href="/terms/#laviju-plus">Laviju+ sąlygomis</a>. Per 14 dienų nuo užsakymo sutarties galite atsisakyti – grąžinsime sumokėtą sumą, atėmę dalį už jau praėjusį laiką. Pardavėjas – <a href="/terms/#kontaktai">MB „Koro“, juridinio asmens kodas 307918633</a>.
         </p>
       </div>
     </section>
@@ -506,7 +506,7 @@
           </details>
           <details class="lp-faq__item" data-reveal="up">
             <summary class="lp-faq__q">Ar galiu atgauti pinigus?</summary>
-            <div class="lp-faq__a"><p>Per 14 dienų nuo užsakymo sutarties galite atsisakyti nenurodydami priežasties – tiesiog programėlėje: „Laviju+“ → „Atsisakyti sutarties“. Grąžinsime sumokėtą sumą, atėmę dalį už jau praėjusį laiką. Plačiau – <a href="/terms/#laviju-plus">Laviju+ sąlygose</a>.</p></div>
+            <div class="lp-faq__a"><p>Per 14 dienų nuo užsakymo sutarties galite atsisakyti nenurodydami priežasties – tiesiog programėlėje: „Laviju+“ → „Atsisakyti sutarties“. Grąžinsime sumokėtą sumą, atėmę dalį už jau praėjusį laiką. Jei mokate už metus ir norite prenumeratą nutraukti anksčiau, parašykite <a href="mailto:info@laviju.lt">info@laviju.lt</a> – prenumerata baigsis iš karto, o už likusią metų dalį sumokėtus pinigus grąžinsime proporcingai. Už likusią mėnesio plano dalį pinigai negrąžinami. Plačiau – <a href="/terms/#laviju-plus">Laviju+ sąlygose</a>.</p></div>
           </details>
           <details class="lp-faq__item" data-reveal="up">
             <summary class="lp-faq__q">Kaip mokama ir ar saugu?</summary>
@@ -567,19 +567,29 @@
           <div class="footer__col">
             <h4 class="footer__col-title">Laviju+</h4>
             <a href="/terms/#laviju-plus" class="footer__link">Laviju+ sąlygos</a>
-            <a href="/privacy/" class="footer__link">Privatumas</a>
             <a href="mailto:info@laviju.lt" class="footer__link">info@laviju.lt</a>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__col-title">Teisinė informacija</h4>
+            <a href="/privacy/" class="footer__link">Privatumo politika</a>
+            <a href="/terms/" class="footer__link">Naudojimo sąlygos</a>
+            <a href="/data-rights/" class="footer__link">Duomenų teisės</a>
           </div>
         </div>
       </div>
       <div class="footer__bottom">
-        <p class="footer__copyright">&copy; 2026 Laviju. Visos teisės saugomos.</p>
+        <p class="footer__copyright footer__company">
+          <span>&copy; 2026 MB „Koro“</span>
+          <span>juridinio asmens kodas 307918633</span>
+          <span>Ūtos g. 86, Šeškų k., LT-38418 Panevėžio r.</span>
+          <span><a href="mailto:info@laviju.lt">info@laviju.lt</a></span>
+        </p>
       </div>
     </div>
   </footer>
 
   <script src="/script.js?v=20260927-1"></script>
   <script src="/blog/blog.js?v=20261028-1"></script>
-  <script src="/insights.js?v=20261029-1"></script>
+  <script src="/insights.js?v=20261122-1"></script>
 </body>
 </html>
