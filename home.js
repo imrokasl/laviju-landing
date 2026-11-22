@@ -11,6 +11,37 @@
   const hasIO = 'IntersectionObserver' in window;
 
   // ---------------------------------------------
+  // The main button follows the device: Google Play on an Android phone or
+  // tablet, sign-up in the browser everywhere else (there is no App Store
+  // version yet). Without this script the button opens sign-up for everyone.
+  // ---------------------------------------------
+  if (/Android/i.test(navigator.userAgent)) {
+    document.querySelectorAll('[data-app-link]').forEach((link) => {
+      link.href = 'https://play.google.com/store/apps/details?id=com.laviju.app';
+    });
+  }
+
+  // ---------------------------------------------
+  // Folded parts under the numbers (18 areas, 6 steps, 4 principles): an
+  // address that points into one opens it. The other pages' menus still
+  // link to /#domains and /#principles.
+  // ---------------------------------------------
+  const openFoldAtAddress = () => {
+    let target = null;
+    try {
+      target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    } catch (error) {
+      // An address that cannot be decoded opens nothing
+    }
+    const fold = target && target.closest('details');
+    if (!fold || fold.open) return;
+    fold.open = true;
+    target.scrollIntoView({ block: 'start' });
+  };
+  openFoldAtAddress();
+  window.addEventListener('hashchange', openFoldAtAddress);
+
+  // ---------------------------------------------
   // "Ką reiškia 6 žingsniai?" — a climber walks up the achievement steps
   // ---------------------------------------------
   const stairs = document.querySelector('[data-stairs]');

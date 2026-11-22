@@ -118,13 +118,15 @@
 .h-phone {
   position: relative;
   width: 100%;
-  aspect-ratio: 304 / 608;
+  aspect-ratio: 304 / 646;
   container-type: inline-size;
   rotate: -2.5deg;
 }
 
+/* 646 instead of the mockup's 608: the screen gets an iPhone's shape, the shape of the capture in it */
 .h-phone .phone-mockup {
   --phone-s: 0.73;
+  height: 646px;
   position: absolute;
   top: 0;
   left: 0;
@@ -145,6 +147,35 @@
     0 12px 34px rgba(23, 39, 62, 0.18),
     inset 0 0 0 1px rgba(255, 255, 255, 0.36),
     inset 0 0 0 3px rgba(6, 12, 20, 0.88);
+}
+
+/* The hero phone shows a capture of the app; the frame's own clock and island sit over it */
+.phone-mockup__shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+/* The phone's home bar, in the strip the app leaves free under its tab bar (an iPhone's proportions) */
+.phone-mockup__home,
+.h-device__screen::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 0.95%;
+  width: 34%;
+  aspect-ratio: 134 / 5;
+  border-radius: var(--radius-full);
+  background: #111c2a;
+  translate: -50% 0;
+}
+
+.phone-mockup__home {
+  z-index: 16;
 }
 
 .float-card__avatar {
@@ -2110,19 +2141,25 @@ img.h-float {
     display: none;
   }
 
+  .hero-stage .layer--phone {
+    --x: 28% !important;
+    --y: 6% !important;
+    --w: 44% !important;
+  }
+
   .hero-stage .h-float-note {
     --x: -3% !important;
-    --y: -2% !important;
+    --y: -5.5% !important;
   }
 
   .hero-stage .h-float-task {
     --x: -3% !important;
-    --y: 82% !important;
+    --y: 86% !important;
   }
 
   .hero-stage .h-float-week {
     --x: 55% !important;
-    --y: 91% !important;
+    --y: 95% !important;
   }
 
   .h-stage .float-card {
@@ -2242,5 +2279,287 @@ img.h-float {
 
   .stat__viz--stairs i {
     transform: none;
+  }
+}
+
+/* =============================================
+   SHORT HOME PAGE
+   One sentence and one button up top, four one-line cards, and the long
+   reference parts (18 areas, 6 steps, 4 principles) folded until asked for.
+   /plus/ loads this file too and shares the feature cards and the numbers,
+   so those two are addressed by the home page's own section ids.
+   ============================================= */
+.h-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* The padding and the negative margin make the line easier to tap without moving it */
+.h-kg-link {
+  margin: -8px 0;
+  padding: 8px 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.h-kg-link b {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+#features .feat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.h-more-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.h-more {
+  border: 1px solid var(--border-light);
+  border-radius: 22px;
+  background: var(--surface);
+  scroll-margin-top: 96px;
+}
+
+.h-more summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 22px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.h-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.h-more summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.h-more summary svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate 0.3s;
+}
+
+.h-more[open] summary svg {
+  rotate: 180deg;
+}
+
+.h-more > :not(summary) {
+  margin: 0 20px 20px;
+}
+
+.h-more__note {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Inside a fold the steps explorer is the fold's content, not a card of its own */
+.h-more .stairs {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.h-more .stairs__lede {
+  margin-top: 0;
+}
+
+.h-terms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 28px;
+}
+
+.h-terms dt {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.h-terms dd {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.h-kg__btn {
+  margin-top: 22px;
+}
+
+#contact {
+  scroll-margin-top: 96px;
+}
+
+.h-cta__link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 0;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  opacity: 0.92;
+}
+
+@media (max-width: 1024px) {
+  #features .feat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .h-how .why-step {
+    padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Four small cards, two by two, with their pictures scaled to fit */
+  #features .feat-grid {
+    gap: 12px;
+  }
+
+  #features .feat__card {
+    border-radius: 22px;
+  }
+
+  #features .feat__body {
+    gap: 4px;
+    padding: 12px 14px 16px;
+  }
+
+  #features .feat__title {
+    font-size: 16px;
+  }
+
+  #features .feat__text {
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+
+  #features .feat__media [class^="mini-"],
+  #features .feat__media .talk-bubble {
+    zoom: 0.58;
+  }
+
+  /* Laviju+ notes carry a name only here, so they sit two by two instead of in a swipe row */
+  .lp-home .lp-row .notes__deck {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 16px 0 0;
+    overflow: visible;
+  }
+
+  .lp-home .lp-row .note {
+    flex: none;
+    min-height: 0;
+    padding: 18px 14px 16px;
+  }
+
+  .lp-home .lp-row .note__stk {
+    height: 46px;
+    margin-bottom: 10px;
+  }
+
+  .lp-home .lp-row .note__title {
+    font-size: 16px;
+  }
+
+  .h-blog .featured__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .h-blog .story--lead {
+    grid-column: 1 / -1;
+  }
+
+  .h-blog .story--side .story__link {
+    flex-direction: column;
+  }
+
+  .h-blog .story--side .story__media {
+    flex: none;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .h-blog .story--side .story__body {
+    padding: 12px 14px 16px;
+  }
+
+  .h-blog .story--side .story__title {
+    font-size: 16px;
+  }
+
+  /* Small cards keep the topic and the reading time on one line */
+  .h-blog .story--side .meta > span:not(.pill):not(:last-child) {
+    display: none;
+  }
+
+  /* Room for the stork, which stands in the card's bottom left corner */
+  .h-cta__link {
+    margin-bottom: 34px;
+  }
+}
+
+@media (max-width: 640px) {
+  #skaiciai .numbers__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #skaiciai .stat {
+    gap: 6px;
+    padding: 16px 16px 14px;
+  }
+
+  #skaiciai .stat__value {
+    font-size: 40px;
+  }
+
+  #skaiciai .stat__label {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .h-more summary {
+    padding: 16px;
+  }
+
+  .h-more > :not(summary) {
+    margin: 0 16px 16px;
+  }
+
+  .h-terms {
+    grid-template-columns: 1fr;
   }
 }
