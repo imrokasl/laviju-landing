@@ -483,6 +483,18 @@ html:not(.js) .i-form {
   white-space: nowrap;
 }
 
+/* Footer links are about 40 px tall touch targets with room between them */
+.i-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 6px;
+}
+
+.i-footer p + p {
+  margin-top: 0;
+}
+
 /* Who runs the site: one line on wide screens, a line per part on narrower ones */
 .i-company span {
   display: inline-block;

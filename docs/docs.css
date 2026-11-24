@@ -199,11 +199,20 @@ button:focus-visible {
   outline-offset: 1px;
 }
 
-.docs-sidebar__section {
+.docs-sidebar__section,
+.docs-sidebar__site {
   margin-bottom: 28px;
 }
 
-.docs-sidebar__section h4 {
+/* The site's links, shown in the drawer on phones only */
+.docs-sidebar__site {
+  display: none;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.docs-sidebar__section h4,
+.docs-sidebar__site h4 {
   font-size: 11px;
   font-weight: 700;
   color: var(--text-tertiary);
@@ -213,7 +222,8 @@ button:focus-visible {
   margin-bottom: 6px;
 }
 
-.docs-sidebar__section a {
+.docs-sidebar__section a,
+.docs-sidebar__site a {
   display: flex;
   align-items: center;
   padding: 7px 12px;
@@ -225,7 +235,8 @@ button:focus-visible {
   transition: all 0.15s ease;
 }
 
-.docs-sidebar__section a:hover {
+.docs-sidebar__section a:hover,
+.docs-sidebar__site a:hover {
   background: var(--primary-ultralight);
   color: var(--primary);
 }
@@ -329,6 +340,39 @@ button:focus-visible {
   color: var(--text);
   margin-top: 24px;
   margin-bottom: 8px;
+}
+
+/* The page has one h1 (the hub). Every other section starts with an h2 that
+   looks like it, and its parts are h3 and h4 with the look of h2 and h3. */
+.docs-content .docs-sec__title {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 8px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.docs-content .docs-heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 48px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.docs-content .docs-subtitle + .docs-heading {
+  margin-top: 0;
+}
+
+.docs-content .docs-subheading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 12px;
 }
 
 .docs-content p {
@@ -733,6 +777,18 @@ button:focus-visible {
 .docs-company span { display: block; }
 .docs-footer a { white-space: nowrap; }
 
+/* Footer links are about 40 px tall touch targets with room between them */
+.docs-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 6px;
+}
+
+.docs-company a {
+  margin-left: -6px;
+}
+
 /* =============================================
    MOBILE OVERLAY
    ============================================= */
@@ -755,10 +811,16 @@ button:focus-visible {
 /* =============================================
    RESPONSIVE
    ============================================= */
+@media (max-width: 1024px) {
+  .docs-header__nav { gap: 18px; }
+}
+
 @media (max-width: 900px) {
   .docs-main {
     padding: 32px 24px;
   }
+
+  .docs-header__nav .docs-badge { display: none; }
 }
 
 @media (max-width: 768px) {
@@ -787,6 +849,14 @@ button:focus-visible {
   .docs-content h2 { font-size: 20px; margin-top: 36px; }
   .docs-content h3 { font-size: 16px; }
   .docs-content .docs-subtitle { font-size: 16px; }
+  .docs-content .docs-sec__title { font-size: 28px; margin-top: 0; }
+  .docs-content .docs-heading { font-size: 20px; margin-top: 36px; }
+  .docs-content .docs-subtitle + .docs-heading { margin-top: 0; }
+  .docs-content .docs-subheading { font-size: 16px; }
+
+  .docs-sidebar__site { display: block; }
+
+  .docs-company a { margin-left: 0; }
 
   .docs-cards { grid-template-columns: 1fr; }
 
@@ -799,8 +869,9 @@ button:focus-visible {
 @media (max-width: 480px) {
   .docs-header { padding: 0 16px; }
   .docs-main { padding: 20px 12px; }
-  .docs-content h1 { font-size: 24px; }
-  
+  .docs-content h1,
+  .docs-content .docs-sec__title { font-size: 24px; }
+
   .docs-steps li { padding-left: 44px; }
   .docs-steps li::before { width: 28px; height: 28px; font-size: 12px; }
 }

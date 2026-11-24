@@ -817,6 +817,71 @@
   rotate: 8deg;
 }
 
+/* ---------- The price beside the title (phones) ---------- */
+.lp-hero__price {
+  display: none;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: -8px 0 18px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.lp-hero__price b {
+  color: var(--text);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+/* ---------- Price: both plans on one sheet ---------- */
+.lp-plan {
+  width: min(100%, 560px);
+  margin: 28px auto 0;
+}
+
+.lp-plan .lp-paper__stk {
+  top: -52px;
+  right: -36px;
+  width: 112px;
+}
+
+.lp-plan__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.lp-plan__option {
+  min-width: 0;
+  padding: 16px 18px 18px;
+  border-radius: 18px;
+  background: var(--lp-tone);
+  box-shadow: inset 0 0 0 1px rgba(84, 71, 158, 0.1);
+}
+
+.lp-plan__option .lp-paper__price {
+  margin-top: 6px;
+  font-size: 40px;
+}
+
+.lp-plan__option .lp-paper__price small {
+  font-size: 15px;
+}
+
+.lp-plan__option .lp-paper__or {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.lp-plan .lp-paper__note {
+  margin-top: 14px;
+}
+
 /* =============================================
    Smaller screens
    ============================================= */
@@ -953,6 +1018,137 @@
   .lp-cta .btn {
     padding-inline: 20px;
     white-space: nowrap;
+  }
+}
+
+/* /plus/ on tablets and phones: the price moves beside the title, the cards
+   and the numbers get compact, so the page stays short. */
+@media (max-width: 1024px) {
+  .lp-page .lp-stage {
+    display: none;
+  }
+
+  .lp-hero__price {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .lp-page .lp-feats {
+    gap: 16px;
+  }
+
+  .lp-page .lp-feats .feat__media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .lp-page .lp-feats .feat__body {
+    gap: 4px;
+    padding: 16px 20px 20px;
+  }
+
+  .lp-page .lp-feats .feat__title {
+    font-size: 20px;
+  }
+
+  .lp-page .lp-numbers .numbers__head {
+    margin-bottom: 22px;
+  }
+
+  .lp-page .lp-numbers .numbers__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .lp-page .lp-numbers .stat {
+    gap: 6px;
+    padding: 16px 14px 14px;
+  }
+
+  .lp-page .lp-numbers .stat__value {
+    font-size: 38px;
+  }
+
+  .lp-page .lp-numbers .stat__label {
+    font-size: 13.5px;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 640px) {
+  /* The four parts as compact rows: the sticker on the left, one line beside it */
+  .lp-page .lp-feats {
+    gap: 12px;
+  }
+
+  .lp-page .lp-feats .feat__card {
+    flex-direction: row;
+    border-radius: 22px;
+  }
+
+  .lp-page .lp-feats .feat__media {
+    flex: 0 0 112px;
+    min-height: 116px;
+    aspect-ratio: auto;
+  }
+
+  .lp-page .lp-feats .feat__media :is(.mini-msg, .mini-act, .mini-steps, .mini-letter, .talk-bubble),
+  .lp-page .lp-feats .art__stk ~ .art__stk {
+    display: none;
+  }
+
+  .lp-page .lp-feats .art__stk {
+    left: 14%;
+    top: 14%;
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+  }
+
+  .lp-page .lp-feats .feat__body {
+    justify-content: center;
+    padding: 14px 16px 16px;
+  }
+
+  .lp-page .lp-feats .feat__title {
+    font-size: 18px;
+  }
+
+  .lp-page .lp-feats .feat__text {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .lp-page .lp-numbers {
+    padding-bottom: 36px;
+  }
+
+  .lp-plan .lp-paper__stk {
+    top: -46px;
+    right: -8px;
+    width: 86px;
+  }
+
+  .lp-plan__options {
+    gap: 10px;
+  }
+
+  .lp-plan__option {
+    padding: 14px 14px 16px;
+  }
+
+  .lp-plan__option .lp-paper__price {
+    font-size: 32px;
+  }
+
+  .lp-plan__option .lp-paper__price small {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+  }
+
+  .lp-plan__option .lp-paper__or {
+    font-size: 13px;
   }
 }
 

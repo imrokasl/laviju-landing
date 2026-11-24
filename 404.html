@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- GitHub Pages shows this page for every unknown address, at that address:
+       every link and file here is absolute (/...). -->
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#3565B0" />
+  <title>Puslapis nerastas – Laviju</title>
+
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin />
+  <link href="/fonts/fonts.css?v=20261122-1" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=20261122-1" />
+  <link rel="stylesheet" href="/blog/blog.css?v=20261105-1" />
+  <style>
+    .nf-hero .b-hero__inner {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    }
+
+    .nf-hero .b-hero__title {
+      font-size: clamp(38px, 9.4vw, 72px);
+      line-height: 1.02;
+    }
+
+    .nf-hero .b-hero__title .serif-accent {
+      color: var(--sky-ink);
+    }
+
+    .nf-hero .b-hero__actions {
+      margin-bottom: 0;
+    }
+
+    .nf-hero .btn {
+      min-height: 52px;
+      justify-content: center;
+    }
+
+    .nf-art {
+      position: relative;
+      width: min(100%, 360px);
+      margin: 0 auto;
+    }
+
+    .nf-art img {
+      display: block;
+      width: 100%;
+      height: auto;
+      rotate: -8deg;
+      filter: drop-shadow(0 22px 26px rgba(30, 42, 58, 0.18));
+    }
+
+    .nf-art .talk-bubble {
+      position: absolute;
+      top: 4%;
+      right: -4%;
+      rotate: 5deg;
+    }
+
+    @media (max-width: 900px) {
+      .nf-hero .b-hero__inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+      }
+
+      .nf-art {
+        order: -1;
+        width: 150px;
+        margin: 0;
+      }
+
+      .nf-art .talk-bubble {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nf-hero .b-hero__actions .btn {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body class="home">
+  <div class="tone-canvas" aria-hidden="true"></div>
+
+  <!-- Navigation: the home page's menu -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo" id="nav-logo" aria-label="Laviju pradinis puslapis">
+        <img class="nav__logo-icon" src="/logo.svg" alt="" aria-hidden="true" />
+        <span>Laviju</span>
+      </a>
+      <div class="nav__links" id="nav-links">
+        <a href="/#how-it-works" class="nav__link">Kaip veikia</a>
+        <a href="/#darzeliams" class="nav__link">Darželiams</a>
+        <a href="/plus/" class="nav__link">Laviju+</a>
+        <a href="/blog/" class="nav__link nav__link--strong"><span class="nav__perch">Tinklaraštis<img class="nav__bird" src="/blog/assets/stickers/bird-perched-64.webp" width="73" height="64" alt="" decoding="async" /><img class="nav__notes" src="/blog/assets/stickers/notes-36.webp" width="44" height="36" alt="" decoding="async" /></span></a>
+        <a href="https://admin.laviju.lt" class="nav__link">Prisijungti</a>
+        <a href="https://admin.laviju.lt/register" class="nav__link nav__link--signup">Sukurti paskyrą</a>
+      </div>
+      <button class="nav__menu-btn" id="nav-menu-btn" aria-label="Atidaryti meniu" aria-controls="mobile-menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Pagrindinė navigacija" aria-hidden="true">
+    <a href="/#how-it-works" class="mobile-menu__link">Kaip veikia</a>
+    <a href="/#darzeliams" class="mobile-menu__link">Darželiams</a>
+    <a href="/plus/" class="mobile-menu__link">Laviju+</a>
+    <a href="/blog/" class="mobile-menu__link mobile-menu__link--strong"><span class="nav__perch">Tinklaraštis<img class="nav__bird" src="/blog/assets/stickers/bird-perched-64.webp" width="73" height="64" alt="" decoding="async" /><img class="nav__notes" src="/blog/assets/stickers/notes-36.webp" width="44" height="36" alt="" decoding="async" /></span></a>
+    <a href="https://admin.laviju.lt" class="mobile-menu__link">Prisijungti</a>
+    <a href="https://admin.laviju.lt/register" class="mobile-menu__link">Sukurti paskyrą</a>
+  </div>
+
+  <main id="main">
+    <header class="b-hero nf-hero" id="nerasta" data-tone="base">
+      <div class="b-hero__bg" aria-hidden="true">
+        <span class="b-hero__wash b-hero__wash--sky"></span>
+        <span class="b-hero__wash b-hero__wash--peach"></span>
+        <span class="b-hero__wash b-hero__wash--sage"></span>
+        <span class="hero__grid"></span>
+      </div>
+
+      <div class="b-hero__inner">
+        <div class="b-hero__copy">
+          <h1 class="b-hero__title">Tokio puslapio <em class="serif-accent">neradome.</em></h1>
+          <p class="b-hero__lede">Gal adresas pasikeitė arba jame įsivėlė klaida.</p>
+          <div class="b-hero__actions">
+            <a href="/" class="btn btn--primary">
+              <span>Pradžia</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <a href="/blog/" class="btn btn--ghost">
+              <span>Tinklaraštis</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nf-art" aria-hidden="true">
+          <img src="/blog/assets/stickers/magnifier.webp" alt="" decoding="async" />
+          <span class="talk-bubble talk-bubble--butter">Ieškojome visur!</span>
+        </div>
+      </div>
+    </header>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo" aria-label="Laviju pradinis puslapis">
+            <img class="footer__logo-icon" src="/logo.svg" alt="" aria-hidden="true" />
+            <span>Laviju</span>
+          </a>
+          <p class="footer__tagline">Ugdymo kompanionas jūsų šeimai</p>
+        </div>
+        <div class="footer__links">
+          <div class="footer__col">
+            <h4 class="footer__col-title">Navigacija</h4>
+            <a href="/#how-it-works" class="footer__link">Kaip veikia</a>
+            <a href="/#darzeliams" class="footer__link">Darželiams</a>
+            <a href="/plus/" class="footer__link">Laviju+</a>
+            <a href="/blog/" class="footer__link">Tinklaraštis</a>
+            <a href="/docs/" class="footer__link">Dokumentacija</a>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__col-title">Kontaktai</h4>
+            <a href="mailto:info@laviju.lt" class="footer__link">info@laviju.lt</a>
+            <a href="mailto:kotryna@laviju.lt" class="footer__link">kotryna@laviju.lt</a>
+            <a href="mailto:rokas@laviju.lt" class="footer__link">rokas@laviju.lt</a>
+          </div>
+          <div class="footer__col">
+            <h4 class="footer__col-title">Teisinė informacija</h4>
+            <a href="/privacy/" class="footer__link">Privatumo politika</a>
+            <a href="/terms/" class="footer__link">Naudojimo sąlygos</a>
+            <a href="/data-rights/" class="footer__link">Duomenų teisės</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copyright footer__company">
+          <span>&copy; 2026 MB „Koro“</span>
+          <span>juridinio asmens kodas 307918633</span>
+          <span>Ūtos g. 86, Šeškų k., LT-38418 Panevėžio r.</span>
+          <span><a href="mailto:info@laviju.lt">info@laviju.lt</a></span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/script.js?v=20260927-1"></script>
+  <script src="/insights.js?v=20261122-1"></script>
+</body>
+</html>
